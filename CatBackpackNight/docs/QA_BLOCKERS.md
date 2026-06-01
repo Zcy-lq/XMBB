@@ -22,10 +22,10 @@
   - Owner Agent: CoreGameplayAgent/QAReleaseAgent
   - Suggested Fix: Record a complete first-session loop from login agreement through home, battle prepare, battle, settlement claim, growth spend, task/mail claim, settings persistence, restart, and recovery.
   - Do Not Modify By QA: balancing constants unless a reproducible launch-blocking defect requires it.
-- Selected-state UI actions for pet and talent are not launch-grade yet.
-  - Evidence: the release matrix marks pet upgrade/deploy and talent upgrade as still relying on sample IDs or missing selected-state proof.
+- Selected-state UI actions for pet and talent still need runtime proof.
+  - Evidence: pet upgrade/deploy and talent learn/reset now use selected UI/save state and are covered by `verify_scene_flow_guards`, but Cocos/WeChat runtime screenshots and save-delta proof are not recorded yet.
   - Owner Agent: CoreGameplayAgent/UIUXAgent
-  - Suggested Fix: Bind upgrade/deploy/reset actions to the currently selected pet or talent node and verify insufficient-resource, prerequisite, max-level, and power-change states.
+  - Suggested Fix: Verify selected pet upgrade/deploy and selected talent upgrade/reset in Cocos/WeChat, including insufficient-resource, prerequisite, max-level, and power-change states.
   - Do Not Modify By QA: save migrations unless the selected-state binding exposes a schema issue.
 
 ## P1 Issues

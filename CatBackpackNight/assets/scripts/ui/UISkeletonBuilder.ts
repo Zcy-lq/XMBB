@@ -106,6 +106,8 @@ export class UISkeletonBuilder extends BaseUIComponent {
   private battleState: BattleSessionState | null = null;
   private battleLiveLayer: Node | null = null;
   private renderRootOverride: Node | null = null;
+  private selectedPetId: string | null = null;
+  private selectedTalentNodeId: string | null = null;
 
   protected onLoad(): void {
     if (this.buildOnLoad) {
@@ -629,9 +631,12 @@ export class UISkeletonBuilder extends BaseUIComponent {
 
   private buildPet(): void {
     const save = gameLogic.getSnapshot().save;
-    const selectedPet = save.pets.find((pet) => pet.deployed) ?? save.pets.find((pet) => pet.owned) ?? save.pets[0];
+    const selectedPetId = this.getSelectedPetId();
+    const selectedPet = selectedPetId ? save.pets.find((pet) => pet.id === selectedPetId) : undefined;
     const selectedConfig = selectedPet ? gameLogic.repo.getPet(selectedPet.id) : undefined;
     const nextCost = selectedConfig && selectedPet ? gameLogic.progression.getPetUpgradeCost(selectedConfig, selectedPet.level) : null;
+    const selectedOwned = selectedPet?.owned === true;
+    const petMaterialCount = save.inventory.find((item) => item.itemId === 'pet_material_common')?.count ?? 0;
     this.addNightBackground('Bg_Pet');
     this.addCommercialRouteBackdrop('Pet');
     this.addWoodHeader('宠物');
@@ -651,9 +656,9 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addRect({ name: 'Pet_MaterialPanel', width: 300, height: 58, x: 166, y: 74, fill: new Color(20, 22, 20, 220), border: UIColors.highlightGold, borderSize: 4 });
     this.addText({ name: 'Pet_MaterialName', value: '灵兽精华', x: 70, y: 82, width: 146, height: 28, fontSize: 20, color: UIColors.whiteText, align: 'left', outline: true });
     this.addProgressBar('Pet_ExpProgress', 206, 62, 168, 18, selectedConfig ? Math.min(1, (selectedPet?.level ?? 1) / selectedConfig.maxLevel) : 0, UIColors.successGreen);
-    this.addText({ name: 'Pet_MaterialCount', value: nextCost ? '56/120' : '已满级', x: 206, y: 82, width: 112, height: 24, fontSize: 19, color: UIColors.highlightGold, outline: true });
-    this.addButton('Button_PetLevelUp', '喂养升级', -88, -4, 196, 66, UIColors.successGreen, UIColors.woodStroke, 27);
-    this.addButton('Button_PetDeploy', '出战中', 164, -4, 188, 66, UIColors.buttonGold, UIColors.woodStroke, 27);
+    this.addText({ name: 'Pet_MaterialCount', value: nextCost ? `${petMaterialCount}/${nextCost.petMaterial}` : '已满级', x: 206, y: 82, width: 112, height: 24, fontSize: 19, color: UIColors.highlightGold, outline: true });
+    this.addButton('Button_PetLevelUp', selectedOwned ? nextCost ? '喂养升级' : '已满级' : '未解锁', -88, -4, 196, 66, selectedOwned ? UIColors.successGreen : UIColors.woodLight, UIColors.woodStroke, 27);
+    this.addButton('Button_PetDeploy', selectedPet?.deployed ? '出战中' : '设为出战', 164, -4, 188, 66, selectedPet?.deployed ? UIColors.buttonGold : UIColors.successGreen, UIColors.woodStroke, 27);
     this.addRect({ name: 'Pet_ListPanel', width: 690, height: 346, x: 0, y: -286, fill: new Color(239, 205, 157, 246), border: UIColors.woodStroke, borderSize: 8 });
     this.addText({ name: 'Pet_ListTitle', value: '← 伙伴列表 →', x: 0, y: -130, width: 260, height: 38, fontSize: 29, color: UIColors.textBrown });
     save.pets.slice(0, 5).forEach((pet, index) => {
@@ -662,6 +667,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
       const y = -300;
       const owned = pet.owned === true;
       const deployed = pet.deployed === true;
+      const selected = pet.id === selectedPet?.id;
       this.addRect({
         name: `Pet_Card_${key}_${deployed ? 'Deployed' : owned ? 'Owned' : 'Locked'}`,
         width: 118,
@@ -669,8 +675,8 @@ export class UISkeletonBuilder extends BaseUIComponent {
         x,
         y,
         fill: owned ? new Color(255, 234, 191, 255) : new Color(72, 66, 58, 230),
-        border: deployed ? UIColors.highlightGold : UIColors.woodStroke,
-        borderSize: deployed ? 7 : 5,
+        border: selected ? UIColors.actionBlue : deployed ? UIColors.highlightGold : UIColors.woodStroke,
+        borderSize: selected ? 8 : deployed ? 7 : 5,
       });
       this.addRect({
         name: `Pet_Icon_${key}`,
@@ -708,13 +714,21 @@ export class UISkeletonBuilder extends BaseUIComponent {
       if (deployed) {
         this.addRect({ name: `Pet_DeployedBadge_${key}`, width: 76, height: 30, x: x - 16, y: y + 98, fill: UIColors.successGreen, border: UIColors.woodStroke, borderSize: 2, label: '出战中', fontSize: 16 });
       }
+      if (selected) {
+        this.addRect({ name: `Pet_SelectedRing_${key}`, width: 102, height: 210, x, y, fill: new Color(255, 255, 255, 34), border: UIColors.actionBlue, borderSize: 3 });
+      }
+      const selectHit = this.addRect({ name: `Button_PetSelect_${key}`, width: 118, height: 226, x, y, fill: new Color(0, 0, 0, 0) });
+      this.addButtonBehavior(selectHit, `Button_PetSelect_${pet.id}`);
     });
     this.addCommercialBottomNav('pet');
   }
 
   private buildPetDetail(): void {
     const save = gameLogic.getSnapshot().save;
-    const selectedPet = save.pets.find((pet) => pet.deployed) ?? save.pets.find((pet) => pet.owned) ?? save.pets[0];
+    const selectedPetId = this.getSelectedPetId();
+    const selectedPet = selectedPetId ? save.pets.find((pet) => pet.id === selectedPetId) : undefined;
+    const selectedConfig = selectedPet ? gameLogic.repo.getPet(selectedPet.id) : undefined;
+    const nextCost = selectedConfig && selectedPet ? gameLogic.progression.getPetUpgradeCost(selectedConfig, selectedPet.level) : null;
     const petName = this.getPetDisplayName(selectedPet?.id ?? 'pet_black_cat');
     this.addNightBackground('Bg_PetDetail');
     this.addCommercialRouteBackdrop('PetDetail');
@@ -732,16 +746,19 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addText({ name: 'PetDetail_Name', value: `${petName}\nLv.${selectedPet?.level ?? 8}`, x: 196, y: 340, width: 212, height: 84, fontSize: 35, color: UIColors.highlightGold, wrap: true, outline: true });
     this.addRect({ name: 'PetDetail_StarRow', width: 262, height: 58, x: 190, y: 238, fill: new Color(23, 26, 24, 218), border: UIColors.purpleGem, borderSize: 5, label: '★ ★ ★ ★ ☆', fontSize: 35, textColor: UIColors.buttonGold, outline: true });
     this.addRect({ name: 'PetDetail_AttributePanel', width: 262, height: 174, x: 190, y: 104, fill: new Color(23, 26, 24, 228), border: UIColors.woodStroke, borderSize: 5 });
-    this.addText({ name: 'PetDetail_Attributes', value: '属性\n⚔ 攻击        168\n♥ 生命      1,280\n盾 防御         96\n✹ 暴击率      12%', x: 190, y: 104, width: 218, height: 144, fontSize: 22, color: UIColors.whiteText, wrap: true, outline: true });
+    const petPower = selectedConfig ? selectedConfig.basePower + Math.max(0, (selectedPet?.level ?? 1) - 1) * selectedConfig.powerPerLevel : 0;
+    this.addText({ name: 'PetDetail_Attributes', value: `属性\n战力        ${petPower}\n等级        ${selectedPet?.level ?? 1}\n星级        ${selectedPet?.stars ?? 0}\n碎片        ${selectedPet?.fragments ?? 0}`, x: 190, y: 104, width: 218, height: 144, fontSize: 22, color: UIColors.whiteText, wrap: true, outline: true });
     this.addRect({ name: 'PetDetail_SkillPanel', width: 584, height: 104, x: 0, y: -60, fill: new Color(23, 26, 24, 230), border: UIColors.purpleGem, borderSize: 6 });
     this.addText({ name: 'PetDetail_SkillText', value: '夜巡加护：战斗金币 +8%\n影爪猫在夜间巡逻，伙伴获得金币加成效果。', x: 50, y: -60, width: 430, height: 74, fontSize: 23, color: UIColors.whiteText, wrap: true, align: 'left', outline: true });
     this.addRect({ name: 'PetDetail_SkillIcon', width: 76, height: 76, x: -238, y: -60, fill: UIColors.purpleGem, border: UIColors.woodStroke, borderSize: 4, label: '爪', fontSize: 30, textColor: UIColors.whiteText, outline: true });
     this.addRect({ name: 'PetDetail_MaterialPanel', width: 650, height: 76, x: 0, y: -176, fill: new Color(23, 26, 24, 230), border: UIColors.blueGem, borderSize: 5 });
     this.addText({ name: 'PetDetail_MaterialTitle', value: '升级材料', x: -260, y: -176, width: 130, height: 34, fontSize: 24, color: UIColors.whiteText, outline: true });
-    this.addProgressBar('PetDetail_MaterialProgress', 42, -176, 320, 24, 56 / 120, UIColors.successGreen);
-    this.addText({ name: 'PetDetail_MaterialCount', value: '56/120', x: 42, y: -176, width: 130, height: 26, fontSize: 20, color: UIColors.whiteText, outline: true });
-    this.addButton('Button_PetDetailUpgrade', '升级\nx20', -214, -284, 174, 82, UIColors.buttonGold, UIColors.woodStroke, 29);
-    this.addButton('Button_PetDetailDeploy', '设为出战', 0, -284, 208, 82, UIColors.successGreen, UIColors.woodStroke, 30);
+    const materialCount = save.inventory.find((item) => item.itemId === 'pet_material_common')?.count ?? 0;
+    const materialNeeded = nextCost?.petMaterial ?? 0;
+    this.addProgressBar('PetDetail_MaterialProgress', 42, -176, 320, 24, materialNeeded > 0 ? Math.min(1, materialCount / materialNeeded) : 1, UIColors.successGreen);
+    this.addText({ name: 'PetDetail_MaterialCount', value: nextCost ? `${materialCount}/${materialNeeded}` : '已满级', x: 42, y: -176, width: 130, height: 26, fontSize: 20, color: UIColors.whiteText, outline: true });
+    this.addButton('Button_PetDetailUpgrade', selectedPet?.owned ? nextCost ? '升级' : '已满级' : '未解锁', -214, -284, 174, 82, selectedPet?.owned ? UIColors.buttonGold : UIColors.woodLight, UIColors.woodStroke, 29);
+    this.addButton('Button_PetDetailDeploy', selectedPet?.deployed ? '出战中' : '设为出战', 0, -284, 208, 82, selectedPet?.deployed ? UIColors.buttonGold : UIColors.successGreen, UIColors.woodStroke, 30);
     this.addButton('Button_PetDetailBackList', '返回列表', 222, -284, 206, 82, UIColors.actionBlue, UIColors.woodStroke, 30);
     this.addRect({ name: 'PetDetail_EvolutionPreview', width: 650, height: 128, x: 0, y: -426, fill: new Color(23, 26, 24, 218), border: UIColors.warningRed, borderSize: 5 });
     this.addText({ name: 'PetDetail_EvolutionText', value: '当前形态       ➜       夜影猫\n★ ★ ??        ☆ ☆ ☆ ☆ ☆', x: 0, y: -426, width: 560, height: 88, fontSize: 22, color: UIColors.highlightGold, wrap: true, outline: true });
@@ -749,6 +766,11 @@ export class UISkeletonBuilder extends BaseUIComponent {
 
   private buildTalent(): void {
     const save = gameLogic.getSnapshot().save;
+    const selectedTalentNodeId = this.getSelectedTalentNodeId();
+    const selectedTalentConfig = selectedTalentNodeId ? gameLogic.repo.getTalent(selectedTalentNodeId) : null;
+    const selectedTalentSave = selectedTalentNodeId ? save.talents.find((row) => row.id === selectedTalentNodeId) : undefined;
+    const selectedTalentLevel = selectedTalentSave?.level ?? 0;
+    const nextTalentCost = selectedTalentConfig ? selectedTalentConfig.costPerLevel[selectedTalentLevel] ?? null : null;
     this.addNightBackground('Bg_Talent');
     this.addCommercialRouteBackdrop('Talent');
     this.addWoodHeader('天赋');
@@ -756,8 +778,8 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addRect({ name: 'Talent_PointPanel', width: 690, height: 86, x: 0, y: 350, fill: new Color(23, 26, 24, 226), border: UIColors.woodStroke, borderSize: 6, label: `可用天赋点：${save.progress.talentPoints}`, fontSize: 31, textColor: UIColors.highlightGold, outline: true });
     this.addRect({ name: 'Talent_TreePanel', width: 690, height: 648, x: 0, y: -10, fill: new Color(18, 26, 28, 224), border: UIColors.woodStroke, borderSize: 8 });
     this.addRect({ name: 'Talent_DetailPanel', width: 690, height: 132, x: 0, y: -360, fill: new Color(239, 205, 157, 246), border: UIColors.woodStroke, borderSize: 7 });
-    this.addText({ name: 'Talent_DetailTitle', value: '本页展示已学习和可学习天赋，提升守夜战力与收益。', x: 0, y: -334, width: 594, height: 34, fontSize: 23, color: UIColors.textBrown });
-    this.addText({ name: 'Talent_DetailHint', value: '优先点亮利爪与迅捷，能明显改善前几波清怪节奏。', x: 0, y: -380, width: 594, height: 32, fontSize: 21, color: new Color(94, 61, 38, 255) });
+    this.addText({ name: 'Talent_DetailTitle', value: selectedTalentConfig ? `${this.getTalentDisplayName(selectedTalentConfig.id)}  Lv.${selectedTalentLevel}/${selectedTalentConfig.maxLevel}` : '选择一个天赋节点', x: 0, y: -334, width: 594, height: 34, fontSize: 23, color: UIColors.textBrown });
+    this.addText({ name: 'Talent_DetailHint', value: selectedTalentConfig ? `消耗：${nextTalentCost ?? 0} 天赋点。${selectedTalentConfig.requires.length > 0 ? '需要先点亮前置节点。' : '可作为前期开局强化。'}` : '点击天赋树节点后再学习或重置。', x: 0, y: -380, width: 594, height: 32, fontSize: 21, color: new Color(94, 61, 38, 255) });
     const nodes = [
       ['attack_power_01', '利爪', '攻击 +8%', 0, 208],
       ['attack_speed_01', '迅捷', '攻速 +6%', -188, 44],
@@ -780,13 +802,19 @@ export class UISkeletonBuilder extends BaseUIComponent {
       const saved = save.talents.find((row) => row.id === node[0]);
       const level = saved?.level ?? 0;
       const learned = level > 0;
-      this.addRect({ name: `Talent_Node_${node[0]}`, width: 134, height: 134, x: node[3], y: node[4], fill: learned ? UIColors.buttonGold : new Color(82, 72, 58, 232), border: learned ? UIColors.highlightGold : UIColors.woodStroke, borderSize: learned ? 8 : 6 });
+      const selected = node[0] === selectedTalentNodeId;
+      this.addRect({ name: `Talent_Node_${node[0]}`, width: 134, height: 134, x: node[3], y: node[4], fill: learned ? UIColors.buttonGold : new Color(82, 72, 58, 232), border: selected ? UIColors.actionBlue : learned ? UIColors.highlightGold : UIColors.woodStroke, borderSize: selected ? 9 : learned ? 8 : 6 });
       this.addRect({ name: `Talent_NodeAura_${node[0]}`, width: 104, height: 104, x: node[3], y: node[4] + 8, fill: learned ? new Color(255, 230, 140, 70) : new Color(8, 14, 16, 80) });
       this.addText({ name: `Talent_Label_${node[0]}`, value: `${node[1]}\nLv.${level}`, x: node[3], y: node[4] + 10, width: 112, height: 58, fontSize: 24, color: learned ? UIColors.textBrown : UIColors.whiteText, outline: !learned });
       this.addText({ name: `Talent_NodeDesc_${node[0]}`, value: node[2], x: node[3], y: node[4] - 54, width: 118, height: 28, fontSize: 17, color: learned ? UIColors.textBrown : new Color(232, 222, 198, 230), outline: !learned });
+      if (selected) {
+        this.addRect({ name: `Talent_SelectedRing_${node[0]}`, width: 150, height: 150, x: node[3], y: node[4], fill: new Color(255, 255, 255, 28), border: UIColors.actionBlue, borderSize: 3 });
+      }
+      const selectHit = this.addRect({ name: `Button_TalentSelect_${node[0]}`, width: 134, height: 134, x: node[3], y: node[4], fill: new Color(0, 0, 0, 0) });
+      this.addButtonBehavior(selectHit, `Button_TalentSelect_${node[0]}`);
     });
-    this.addButton('Button_TalentLearn', '学习天赋', -118, -502, 284, 70, UIColors.buttonGold, UIColors.woodStroke, 30);
-    this.addButton('Button_TalentReset', '重置预览', 190, -502, 230, 70, UIColors.woodLight, UIColors.woodStroke, 27);
+    this.addButton('Button_TalentLearn', selectedTalentConfig && selectedTalentLevel >= selectedTalentConfig.maxLevel ? '已满级' : '学习/升级', -118, -502, 284, 70, UIColors.buttonGold, UIColors.woodStroke, 30);
+    this.addButton('Button_TalentReset', '重置本系', 190, -502, 230, 70, UIColors.woodLight, UIColors.woodStroke, 27);
     this.addCommercialBottomNav('talent');
   }
 
@@ -2046,16 +2074,67 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return this.claimAchievementFromButton(name);
     }
 
-    if (name.includes('Button_PetLevelUp')) {
-      return this.reportActionResult(gameLogic.upgradePet('pet_black_cat'), '宠物已升级，战力提升');
+    if (name.includes('Button_PetSelect_')) {
+      const petId = name.replace('Button_PetSelect_', '');
+      if (!gameLogic.getSnapshot().save.pets.some((pet) => pet.id === petId)) {
+        this.showToast('宠物数据不存在');
+        return true;
+      }
+
+      this.selectedPetId = petId;
+      this.showToast(`已选择 ${this.getPetDisplayName(petId)}`);
+      this.rebuild();
+      return true;
     }
 
-    if (name.includes('Button_PetDeploy')) {
-      return this.reportActionResult(gameLogic.deployPet('pet_black_cat'), '宠物已设为出战');
+    if (name.includes('Button_TalentSelect_')) {
+      const nodeId = name.replace('Button_TalentSelect_', '');
+      const config = gameLogic.repo.getTalent(nodeId);
+      if (!config) {
+        this.showToast('天赋节点不存在');
+        return true;
+      }
+
+      this.selectedTalentNodeId = nodeId;
+      this.showToast(`已选择 ${this.getTalentDisplayName(nodeId)}`);
+      this.rebuild();
+      return true;
+    }
+
+    if (name.includes('Button_PetLevelUp') || name.includes('Button_PetDetailUpgrade')) {
+      const petId = this.getSelectedPetId();
+      if (!petId) {
+        this.showToast('暂无可升级宠物');
+        return true;
+      }
+
+      return this.reportActionResult(gameLogic.upgradePet(petId), '宠物已升级，战力提升');
+    }
+
+    if (name.includes('Button_PetDeploy') || name.includes('Button_PetDetailDeploy')) {
+      const petId = this.getSelectedPetId();
+      if (!petId) {
+        this.showToast('暂无可出战宠物');
+        return true;
+      }
+
+      return this.reportActionResult(gameLogic.deployPet(petId), '宠物已设为出战');
     }
 
     if (name.includes('Button_TalentLearn')) {
-      return this.reportActionResult(gameLogic.upgradeTalent('attack_power_01'), '天赋已学习');
+      const nodeId = this.getSelectedTalentNodeId();
+      if (!nodeId) {
+        this.showToast('请先选择天赋节点');
+        return true;
+      }
+
+      return this.reportActionResult(gameLogic.upgradeTalent(nodeId), '天赋已学习');
+    }
+
+    if (name.includes('Button_TalentReset')) {
+      const nodeId = this.getSelectedTalentNodeId();
+      const branch = nodeId ? gameLogic.repo.getTalent(nodeId)?.branch : undefined;
+      return this.reportActionResult(gameLogic.resetTalents(branch), '天赋已重置，点数已返还');
     }
 
     if (name.includes('Button_SettingsLogout')) {
@@ -2098,6 +2177,35 @@ export class UISkeletonBuilder extends BaseUIComponent {
     AnalyticsService.instance.track(GameEvents.BattlePrepareOpen);
     void SceneRouter.instance.go('battlePrepare');
     return true;
+  }
+
+  private getSelectedPetId(): string | null {
+    const save = gameLogic.getSnapshot().save;
+    const selected = this.selectedPetId ? save.pets.find((pet) => pet.id === this.selectedPetId) : undefined;
+    const fallback = selected ?? save.pets.find((pet) => pet.deployed) ?? save.pets.find((pet) => pet.owned) ?? save.pets[0];
+    this.selectedPetId = fallback?.id ?? null;
+    return this.selectedPetId;
+  }
+
+  private getSelectedTalentNodeId(): string | null {
+    const save = gameLogic.getSnapshot().save;
+    const nodes = gameLogic.repo.configs.talents.nodes;
+    const selected = this.selectedTalentNodeId ? gameLogic.repo.getTalent(this.selectedTalentNodeId) : null;
+    if (selected) {
+      return selected.id;
+    }
+
+    const fallback = nodes.find((node) => {
+      const saved = save.talents.find((row) => row.id === node.id);
+      const level = saved?.level ?? 0;
+      const prerequisitesMet = node.requires.every((requirement) => {
+        const requiredNode = save.talents.find((row) => row.id === requirement.id);
+        return (requiredNode?.level ?? 0) >= requirement.level;
+      });
+      return level < node.maxLevel && prerequisitesMet;
+    }) ?? nodes[0];
+    this.selectedTalentNodeId = fallback?.id ?? null;
+    return this.selectedTalentNodeId;
   }
 
   private claimDailyTaskFromButton(name: string): boolean {
@@ -2314,6 +2422,22 @@ export class UISkeletonBuilder extends BaseUIComponent {
       pet_star_dog: '星犬',
     };
     return names[petId] ?? petId;
+  }
+
+  private getTalentDisplayName(nodeId: string): string {
+    const names: Record<string, string> = {
+      attack_power_01: '利爪',
+      attack_speed_01: '迅捷',
+      crit_rate_01: '暴击',
+      gold_bonus_01: '招财',
+      camp_hp_01: '守护',
+      attack_power_02: '夜巡大师',
+      hp_01: '生命训练',
+      defense_01: '护甲训练',
+      pierce_01: '穿刺夜袭',
+      skill_refresh_01: '灵感闪现',
+    };
+    return names[nodeId] ?? gameLogic.repo.getTalent(nodeId)?.displayName ?? nodeId;
   }
 
   private normalizeNodeKey(value: string): string {

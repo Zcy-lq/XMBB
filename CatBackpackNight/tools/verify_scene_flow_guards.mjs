@@ -926,11 +926,34 @@ if (failures.length === 0) {
     'private claimAchievementFromButton',
     'private claimMailFromButton',
     'private buyShopGoodsFromButton',
+    'private getSelectedPetId',
+    'private getSelectedTalentNodeId',
     'private toggleSettingFromButton',
     'private reportActionResult',
   ]) {
     if (!uiBuilder.includes(requiredHandler)) {
       fail(`UISkeletonBuilder is missing dedicated MVP action handler: ${requiredHandler}`);
+    }
+  }
+
+  for (const forbiddenFixedAction of [
+    "gameLogic.upgradePet('pet_black_cat')",
+    "gameLogic.deployPet('pet_black_cat')",
+    "gameLogic.upgradeTalent('attack_power_01')",
+  ]) {
+    if (uiBuilder.includes(forbiddenFixedAction)) {
+      fail(`Launch-critical UI action must use selected UI/save state instead of a fixed sample id: ${forbiddenFixedAction}`);
+    }
+  }
+
+  for (const selectedActionToken of [
+    'Button_PetSelect_',
+    'Button_TalentSelect_',
+    'this.getSelectedPetId()',
+    'this.getSelectedTalentNodeId()',
+  ]) {
+    if (!uiBuilder.includes(selectedActionToken)) {
+      fail(`Launch-critical pet/talent UI must expose selected-state action flow: ${selectedActionToken}`);
     }
   }
 

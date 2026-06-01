@@ -54,13 +54,13 @@ Status values:
 | AC-074 | P1 | Manual shop refresh | PARTIAL | `refreshShop` exists and UI calls success path | PlatformAgent/CoreGameplayAgent | Verify ad/gem branch and daily limits |
 | AC-075 | P1 | Special offer placeholder | UNVERIFIED | Shop tab/card UI exists | UIUXAgent | Verify no payment path and clear coming-soon state |
 | AC-080 | P0 | Pet page opens | PARTIAL | Pet page and screenshot exist | QAReleaseAgent | Verify detail/list states in Cocos/WeChat |
-| AC-081 | P0 | Pet upgrade | PARTIAL | Pet upgrade system exists; UI currently uses sample ID | CoreGameplayAgent | Bind upgrade to selected pet and verify |
+| AC-081 | P0 | Pet upgrade | PARTIAL | Selected pet binding added; `verify_scene_flow_guards` blocks fixed sample IDs | CoreGameplayAgent | Verify selected pet upgrade in Cocos/WeChat |
 | AC-082 | P0 | Pet upgrade failure | PARTIAL | Failure reasons exist | CoreGameplayAgent | Verify insufficient materials do not mutate save |
-| AC-083 | P1 | Pet deploy switch | PARTIAL | Deploy system exists; UI currently uses sample ID | CoreGameplayAgent | Bind deploy to selected pet and verify only one deployed |
+| AC-083 | P1 | Pet deploy switch | PARTIAL | Selected pet binding added; deploy/detail buttons use current selection | CoreGameplayAgent | Verify selected pet deploy and only one deployed |
 | AC-084 | P1 | Pet locked condition | PARTIAL | Config has locked pets; UI state needs verification | UIUXAgent | Verify locked cards show clear unlock condition |
 | AC-085 | P1 | Pet affects power | PARTIAL | `getPower` includes progression bonuses | CoreGameplayAgent | Verify prepare power changes after pet upgrade |
 | AC-090 | P0 | Talent page opens | PARTIAL | Talent page and screenshot exist | QAReleaseAgent | Verify tabs/tree/detail in runtime |
-| AC-091 | P0 | Talent upgrade | PARTIAL | Talent upgrade system exists; UI currently uses sample ID | CoreGameplayAgent | Bind upgrade to selected node and verify |
+| AC-091 | P0 | Talent upgrade | PARTIAL | Selected talent binding added; learn/reset buttons use current selected node/branch | CoreGameplayAgent | Verify selected talent upgrade and prerequisite blocking |
 | AC-092 | P0 | Talent prerequisite | PARTIAL | `prerequisite_missing` reason exists | CoreGameplayAgent | Verify blocked node does not spend points |
 | AC-093 | P1 | Talent max level | PARTIAL | `max_level` reason exists | CoreGameplayAgent | Verify max node state in UI |
 | AC-094 | P1 | Talent reset | PARTIAL | Reset system exists | CoreGameplayAgent | Verify confirm/reset/refund through UI |
@@ -104,6 +104,6 @@ Status values:
 - `AC-001`: WeChat DevTools import and preview evidence is missing.
 - `AC-002`: WeChat launch startup evidence is missing.
 - `AC-033`, `AC-040`, `AC-041`, `AC-050`: the full battle loop has static/self-check evidence but no fresh UI/WeChat proof.
-- `AC-081`, `AC-083`, `AC-091`: pet/talent UI actions still need selected-state bindings before launch-grade verification.
+- `AC-081`, `AC-083`, `AC-091`: pet/talent selected-state bindings now have static guard coverage; Cocos/WeChat runtime proof is still required.
 - `AC-123`, `AC-124`: restart/crash save recovery evidence is missing.
 - `AC-130` through `AC-132`: economy integrity has partial system evidence but needs UI stress evidence.
