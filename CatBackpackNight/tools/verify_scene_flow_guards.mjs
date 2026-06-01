@@ -961,6 +961,23 @@ if (failures.length === 0) {
     }
   }
 
+  for (const requiredVisibleButtonHandler of [
+    "name.includes('Button_ShopAddCurrency')",
+    "name.includes('Button_BackpackSort')",
+    "name.includes('Button_MergeGuideHelp')",
+    "name.includes('Button_ExploreStart')",
+    "name.includes('Button_GuildCheckIn')",
+    "name.includes('Button_GuildHelp')",
+    "name.includes('Button_StagePrev')",
+    "name.includes('Button_StageNext')",
+    "name.includes('Button_RewardDouble')",
+    "name.includes('Button_RefreshVideo')",
+  ]) {
+    if (!uiBuilder.includes(requiredVisibleButtonHandler)) {
+      fail(`Visible MVP button must be functional or explicitly disabled: ${requiredVisibleButtonHandler}`);
+    }
+  }
+
   const buildMailDetailStart = uiBuilder.indexOf('private buildMailDetail()');
   const buildMailDetailEnd = uiBuilder.indexOf('\n\n  private buildPolicyModal', buildMailDetailStart);
   const buildMailDetailBody = buildMailDetailStart >= 0 && buildMailDetailEnd > buildMailDetailStart

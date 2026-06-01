@@ -2087,6 +2087,60 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return this.reportActionResult(gameLogic.refreshShop('success'), '商店已刷新');
     }
 
+    if (name.includes('Button_ShopAddCurrency')) {
+      this.showToast('充值入口未开放，请通过战斗、任务和邮件获取资源');
+      return true;
+    }
+
+    if (name.includes('Button_BackpackSort')) {
+      SaveManager.instance.update((draft) => {
+        draft.inventory.sort((a, b) =>
+          a.itemType.localeCompare(b.itemType) ||
+          a.itemId.localeCompare(b.itemId) ||
+          b.level - a.level ||
+          b.count - a.count,
+        );
+      }, 'inventory-sort');
+      this.showToast('背包已按类型和等级整理');
+      this.rebuild();
+      return true;
+    }
+
+    if (name.includes('Button_MergeGuideHelp')) {
+      this.showToast('两个同名同等级武器可合成更高等级，材料不足时不会消耗道具');
+      return true;
+    }
+
+    if (name.includes('Button_ExploreStart')) {
+      this.showToast('探索系统暂未开放，请先通过守夜战斗推进章节');
+      return true;
+    }
+
+    if (name.includes('Button_GuildCheckIn')) {
+      this.showToast('公会签到暂未开放，当前版本不会消耗或发放资源');
+      return true;
+    }
+
+    if (name.includes('Button_GuildHelp')) {
+      this.showToast('公会互助暂未开放，入口已置为安全占位');
+      return true;
+    }
+
+    if (name.includes('Button_StagePrev') || name.includes('Button_StageNext')) {
+      this.showToast('章节切换暂未开放，当前使用默认守夜章节');
+      return true;
+    }
+
+    if (name.includes('Button_RewardDouble')) {
+      this.showToast('激励视频未接入，当前请使用普通领取');
+      return true;
+    }
+
+    if (name.includes('Button_RefreshVideo')) {
+      this.showToast('技能刷新暂未接入，当前保留本次技能选择');
+      return true;
+    }
+
     if (name.endsWith('_Buy')) {
       return this.buyShopGoodsFromButton(name);
     }
