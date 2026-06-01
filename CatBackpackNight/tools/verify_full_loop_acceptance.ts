@@ -69,6 +69,64 @@ const settlement = battleRewards.settle(save, {
 });
 check('claim_reward_once', settlement.ok && save.currencies.gold > goldBeforeReward, settlement.message);
 
+const goldBeforeDoubleReward = save.currencies.gold;
+const adTaskProgressBefore = save.dailyTasks.find((task) => task.id === 'daily_ad_1')?.progress ?? 0;
+const doubleReward = battleRewards.claimDoubleReward(save, {
+  battleId: firstStart.data?.battleId ?? 'full_loop_first_battle',
+  wave: firstSession.state.wave,
+  status: firstSession.state.status,
+  defeatedMonsters: firstSession.state.defeatedMonsters,
+  adState: 'success',
+});
+check(
+  'battle_double_reward_after_ad',
+  doubleReward.ok &&
+    save.currencies.gold > goldBeforeDoubleReward &&
+    (save.daily.adPlacementCounts?.battle_reward_double ?? 0) === 1 &&
+    (save.dailyTasks.find((task) => task.id === 'daily_ad_1')?.progress ?? 0) > adTaskProgressBefore,
+  doubleReward.message,
+);
+
+const doubleRewardAgain = battleRewards.claimDoubleReward(save, {
+  battleId: firstStart.data?.battleId ?? 'full_loop_first_battle',
+  wave: firstSession.state.wave,
+  status: firstSession.state.status,
+  defeatedMonsters: firstSession.state.defeatedMonsters,
+  adState: 'success',
+});
+check(
+  'battle_double_duplicate_blocked',
+  !doubleRewardAgain.ok && doubleRewardAgain.reason === 'already_claimed',
+  doubleRewardAgain.message,
+);
+
+const cancelledDoubleSave = cloneSave(save);
+const cancelledDoubleBefore = JSON.stringify({
+  currencies: cancelledDoubleSave.currencies,
+  dailyTasks: cancelledDoubleSave.dailyTasks,
+  adPlacementCounts: cancelledDoubleSave.daily.adPlacementCounts,
+  claimedRewardIds: cancelledDoubleSave.progress.claimedRewardIds,
+});
+const cancelledDouble = battleRewards.claimDoubleReward(cancelledDoubleSave, {
+  battleId: 'full_loop_cancelled_ad',
+  wave: firstSession.state.wave,
+  status: firstSession.state.status,
+  defeatedMonsters: firstSession.state.defeatedMonsters,
+  adState: 'cancelled',
+});
+check(
+  'battle_double_cancelled_ad_no_mutation',
+  !cancelledDouble.ok &&
+    cancelledDouble.reason === 'ad_not_completed' &&
+    JSON.stringify({
+      currencies: cancelledDoubleSave.currencies,
+      dailyTasks: cancelledDoubleSave.dailyTasks,
+      adPlacementCounts: cancelledDoubleSave.daily.adPlacementCounts,
+      claimedRewardIds: cancelledDoubleSave.progress.claimedRewardIds,
+    }) === cancelledDoubleBefore,
+  cancelledDouble.message,
+);
+
 const duplicateSettlement = battleRewards.settle(save, {
   battleId: firstStart.data?.battleId ?? 'full_loop_first_battle',
   wave: firstSession.state.wave,

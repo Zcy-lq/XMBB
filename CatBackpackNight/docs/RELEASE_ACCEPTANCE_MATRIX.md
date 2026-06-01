@@ -17,7 +17,7 @@ Status values:
 | AC-004 | P1 | Config loading | PASS | `validate_configs` passes 19 JSON files | QAReleaseAgent | Keep in regression suite |
 | AC-010 | P0 | Agreement gate | PARTIAL | `verify_full_loop_acceptance` covers `agreement_gate_blocks_start`; `UISkeletonBuilder` blocks start without agreement | QAReleaseAgent | Manually verify toast and route lock in Cocos/WeChat |
 | AC-011 | P0 | Enter home | PARTIAL | `verify_full_loop_acceptance` covers `accept_agreement_enters_home`; UI handler routes accepted agreement to `home` | QAReleaseAgent | Verify accepted agreement persists and enters home in WeChat |
-| AC-012 | P1 | Compliance info | PARTIAL | Login UI contains agreement, privacy, 16+, health notice nodes | ComplianceService/QAReleaseAgent | Compare against 22-page design and legal text |
+| AC-012 | P1 | Compliance info | PARTIAL | `verify_release_compliance` verifies readable agreement/privacy/16+/health text, login nodes, review-mode ad safety, and production-input blockers | ComplianceService/QAReleaseAgent | Verify legal URLs and content in WeChat runtime |
 | AC-013 | P1 | Second launch agreement | PARTIAL | `verify_full_loop_acceptance` covers restart clone with accepted agreement; real storage restart evidence missing | QAReleaseAgent | Restart after accepting agreement in Cocos/WeChat |
 | AC-020 | P0 | Home display | PARTIAL | `verify_page_function_coverage` covers the home route contract and screenshot; `verify_ui_design_parity` covers local portrait evidence | UIUXAgent/QAReleaseAgent | Verify player info/resources/chapter/start button in Cocos/WeChat |
 | AC-021 | P0 | Bottom navigation | PARTIAL | `verify_page_function_coverage` covers route map and bottom-nav route tokens | UIUXAgent/QAReleaseAgent | Tap every nav route on device |
@@ -38,8 +38,8 @@ Status values:
 | AC-046 | P1 | Damage number readability | PARTIAL | Static guards check live damage nodes | UIUXAgent/QAReleaseAgent | Stress test multi-monster damage readability |
 | AC-050 | P0 | Base reward claim | PARTIAL | `verify_full_loop_acceptance` covers `claim_reward_once`; settlement grant path exists | CoreGameplayAgent/QAReleaseAgent | Verify victory confirm grants once and exits |
 | AC-051 | P0 | Duplicate reward prevention | PARTIAL | `verify_full_loop_acceptance` covers `duplicate_reward_blocked`; self-check covers duplicate settlement idempotency | CoreGameplayAgent | Verify fast-click UI path does not duplicate |
-| AC-052 | P1 | Double ad success | PARTIAL | Ad completion state supported in reward system | PlatformAgent | Verify rewarded-video success grants double |
-| AC-053 | P1 | Double ad failure | PARTIAL | Failure states exist in services/config | PlatformAgent | Verify cancel/fail/unavailable do not grant double |
+| AC-052 | P1 | Double ad success | PARTIAL | `verify_full_loop_acceptance` covers `battle_double_reward_after_ad`; UI calls `AdService.showRewardedAd('battle_reward_double')` before `claimBattleDoubleReward` | PlatformAgent | Verify rewarded-video success grants double in WeChat DevTools/device |
+| AC-053 | P1 | Double ad failure | PARTIAL | `verify_full_loop_acceptance` covers `battle_double_cancelled_ad_no_mutation`; `AdService` requires completed close result before success | PlatformAgent | Verify cancel/fail/unavailable do not grant double in WeChat runtime |
 | AC-054 | P1 | First-clear reward | PARTIAL | Reward rules exist; first-clear UI evidence missing | CoreGameplayAgent | Verify key wave first-clear idempotency |
 | AC-060 | P0 | Backpack opens | PARTIAL | `verify_page_function_coverage` covers backpack route contract, screenshot, merge/open/sort actions | QAReleaseAgent | Verify grid/detail/actions in Cocos/WeChat |
 | AC-061 | P1 | Item selection | PARTIAL | UI detail nodes exist; selected-state evidence missing | UIUXAgent | Verify selected outline and detail panel |
@@ -104,6 +104,7 @@ Status values:
 - `AC-001`: WeChat DevTools import and preview evidence is missing.
 - `AC-002`: WeChat launch startup evidence is missing.
 - `AC-033`, `AC-040`, `AC-041`, `AC-050`: the full battle loop has automated acceptance evidence, but no fresh Cocos/WeChat UI proof.
+- `AC-052`, `AC-053`: rewarded-video double reward has automated and UI wiring evidence, but no WeChat ad runtime success/cancel evidence.
 - `AC-081`, `AC-083`, `AC-091`: pet/talent selected-state bindings now have static guard coverage; Cocos/WeChat runtime proof is still required.
 - `AC-123`: restart restore has automated clone-save evidence, but real Cocos/WeChat storage restart evidence is missing.
 - `AC-124`: atomic commit has static guard coverage, but real crash recovery evidence is missing.

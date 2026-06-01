@@ -7,6 +7,8 @@ This document defines the minimum commercial release checks for PlatformAgent an
 - `appid` must come from `assets/configs/platform.json` or a build-time private setting. Do not hard-code it in TypeScript.
 - Rewarded video ad unit IDs, interstitial IDs, and banner IDs must be config-driven.
 - `reviewMode` must disable risky live monetization, remote experiments, and unreviewed content paths during audit.
+- `npm run verify:release-compliance` must pass before any release candidate is handed to WeChat DevTools.
+- `XMBB_RELEASE_FINAL=1 node tools/verify_release_compliance.mjs` is the hard final-release mode; it must fail while production AppID or legal URLs are placeholders.
 
 ## Privacy And User Consent
 
@@ -21,6 +23,8 @@ This document defines the minimum commercial release checks for PlatformAgent an
 - Interstitial ads need frequency caps and scene restrictions.
 - Banner ads must account for safe area and narrow-screen layout.
 - Rewards must never imply a reward was granted when the ad failed or was cancelled.
+- Battle double reward and daily ad-task progress must call `AdService.showRewardedAd(...)` and may grant only after `success=true`.
+- While `reviewMode=true`, live ads stay disabled. Editor mock ads are allowed only outside the WeChat runtime.
 
 ## Sharing
 

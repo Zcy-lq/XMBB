@@ -18,7 +18,7 @@
   - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
   - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.
 - Full launch gameplay loop is not proven through UI and WeChat runtime.
-  - Evidence: `tools/verify_full_loop_acceptance.ts` covers 38 logic checks across agreement, first battle, victory/defeat settlement, duplicate reward blocking, backpack merge, failure no-mutation paths, selected pet/talent upgrades, task/activity/achievement claims, mail single/all claim/delete, shop free-good/paid/insufficient-resource paths, second battle, restart clone, settings persistence, and non-negative economy. `tools/verify_page_function_coverage.mjs` covers 25 routes, 22 screenshot-backed pages, and 25 key page function contracts. Cocos/WeChat UI runtime logs, device logs, and real storage restart proof are still missing.
+  - Evidence: `tools/verify_full_loop_acceptance.ts` covers 41 logic checks across agreement, first battle, victory/defeat settlement, rewarded-video double reward success/duplicate/cancel safety, backpack merge, failure no-mutation paths, selected pet/talent upgrades, task/activity/achievement claims, mail single/all claim/delete, shop free-good/paid/insufficient-resource paths, second battle, restart clone, settings persistence, and non-negative economy. `tools/verify_page_function_coverage.mjs` covers 25 routes, 22 screenshot-backed pages, and 25 key page function contracts. Cocos/WeChat UI runtime logs, device logs, and real storage restart proof are still missing.
   - Owner Agent: CoreGameplayAgent/QAReleaseAgent
   - Suggested Fix: Record a complete first-session loop from login agreement through home, battle prepare, battle, settlement claim, growth spend, task/mail claim, settings persistence, restart, and recovery.
   - Do Not Modify By QA: balancing constants unless a reproducible launch-blocking defect requires it.
@@ -48,8 +48,8 @@
 
 ## P2 Issues
 
-- Real WeChat AppID, ad unit IDs, privacy URL, agreement URL, and final legal text remain release-ops inputs.
-  - Evidence: platform service mocks exist, but production credentials/legal URLs are not configured in this workspace.
+- Real WeChat AppID, privacy URL, agreement URL, and optional production ad unit IDs remain release-ops inputs.
+  - Evidence: `tools/verify_release_compliance.mjs` passes the code/config compliance gate but emits `BLOCKED_INPUT` rows for `wechat.appid`, `wechat.privacyPolicyUrl`, and `wechat.userAgreementUrl`. Ads stay disabled while `reviewMode=true`; production ad unit IDs are required before live monetization is enabled.
   - Owner Agent: PlatformAgent
   - Suggested Fix: Configure only after the official mini-game account and legal URLs are available.
   - Do Not Modify By QA: mock service fallback behavior.

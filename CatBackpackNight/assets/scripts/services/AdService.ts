@@ -17,6 +17,7 @@ export interface AdServiceConfig {
   placements?: RewardedAdPlacement[];
   defaultMockOutcome?: MockRewardedAdOutcome;
   mockDelayMs?: number;
+  grantRewardOnlyOnCompletedRewardedVideo?: boolean;
 }
 
 export interface RewardedAdResult {
@@ -37,6 +38,7 @@ export class AdService {
   private mockRewardedAds = true;
   private defaultMockOutcome: MockRewardedAdOutcome = 'success';
   private mockDelayMs = 300;
+  private grantRewardOnlyOnCompletedRewardedVideo = true;
 
   public static get instance(): AdService {
     if (!AdService.singleton) {
@@ -48,6 +50,8 @@ export class AdService {
   public configure(config: AdServiceConfig): void {
     this.defaultMockOutcome = config.defaultMockOutcome ?? this.defaultMockOutcome;
     this.mockDelayMs = config.mockDelayMs ?? this.mockDelayMs;
+    this.grantRewardOnlyOnCompletedRewardedVideo =
+      config.grantRewardOnlyOnCompletedRewardedVideo ?? this.grantRewardOnlyOnCompletedRewardedVideo;
     for (const placement of config.placements ?? []) {
       this.registerPlacement(placement);
     }
@@ -149,7 +153,8 @@ export class AdService {
       };
 
       const onClose = (closeResult?: { isEnded?: boolean }): void => {
-        if (closeResult?.isEnded || closeResult === undefined) {
+        const completed = closeResult?.isEnded === true || (!this.grantRewardOnlyOnCompletedRewardedVideo && closeResult === undefined);
+        if (completed) {
           finish(this.createResult(placementId, 'rewarded', '广告观看完成。'));
           return;
         }

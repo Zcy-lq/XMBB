@@ -2,13 +2,19 @@
 
 ## P0
 
-No active P0 blocker after the 2026-05-30 Browser Preview route pass.
+1. WeChat DevTools import/preview and real-device launch evidence are still missing.
+
+   Impact: Local Cocos build output and automated gates pass, but the game cannot be called launch-ready until the generated WeChat Mini Game package is imported, previewed, and smoke-tested on device.
+
+   Current evidence: `build/wechatgame` exists locally and passes `tools/verify_wechat_build_output.mjs`; WeChat DevTools CLI import/login/open commands timed out in this desktop environment.
+
+   Next action: Import the generated package manually in WeChat DevTools with the configured AppID/test AppID, record screenshots/logs, then run one full loop and one restart check on device.
 
 Resolved/outdated item:
 
 1. The old "Cocos Browser Preview is serving a stale home-screen bundle" blocker was rechecked and is no longer active after the 2026-05-29 preview-cache refresh.
 
-   Current evidence: `temp/programming/packer-driver/targets/preview/import-map.json` and the served `http://127.0.0.1:7456/scripting/x/import-map.json` now map every known `UISkeletonBuilder` preview import to `./chunks/codex/UISkeletonBuilder.72156f66933b48803945.js`. That active chunk contains readable Chinese UI text, the refreshed battle HUD placement, and the route-panel runtime asset mappings from the 2026-05-30 commercial UI route pass.
+   Current evidence: `temp/programming/packer-driver/targets/preview/import-map.json` now maps every known `UISkeletonBuilder` preview import to `./chunks/codex/UISkeletonBuilder.1d792689aa2f1c395054.js` after the 2026-06-01 rewarded-ad UI wiring pass. That active chunk contains readable Chinese UI text, the refreshed battle HUD placement, route-panel runtime asset mappings, and current ad button handlers.
 
    Note: old `chunks/1c`, `chunks/79`, `chunks/da`, and intermediate `chunks/codex` history can still exist under `temp/`, but the active import-map targets for the current workspace path point at the refreshed Codex chunk.
 
@@ -54,11 +60,11 @@ Resolved/outdated item:
 
 ## P2
 
-1. Real WeChat AppID, ad unit IDs, and legal URLs are not configured.
+1. Real WeChat AppID, privacy URL, agreement URL, and optional production ad unit IDs are not configured.
 
-   Impact: Platform services run through mocks or placeholders.
+   Impact: `tools/verify_release_compliance.mjs` passes the code-side compliance gate but reports `BLOCKED_INPUT` rows for the missing AppID and legal URLs. Ads stay disabled while `reviewMode=true`.
 
-   Next action: Configure them only after the game loop is stable and an official account/AppID is ready.
+   Next action: Configure them only after the official mini-game account and legal pages are ready; run `XMBB_RELEASE_FINAL=1 node tools/verify_release_compliance.mjs` before upload.
 
 2. Real-device performance is not measured yet.
 

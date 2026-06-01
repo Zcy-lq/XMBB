@@ -33,11 +33,31 @@ export interface BattleSettlementInput {
 
 export interface BattleSettlementResult {
   battleId: string;
+  chapterId: string;
+  wave: number;
+  status: BattleStatus;
+  defeatedMonsters: number;
   victory: boolean;
   firstClear: boolean;
+  doubleClaimed: boolean;
   rewards: RewardPayload[];
   nextWave: number;
   highestWave: number;
+}
+
+export interface BattleDoubleRewardInput {
+  battleId: string;
+  chapterId?: string;
+  wave: number;
+  status: BattleStatus;
+  defeatedMonsters: number;
+  adState: AdCompletionState;
+}
+
+export interface BattleDoubleRewardResult {
+  battleId: string;
+  adPlacementId: 'battle_reward_double';
+  rewards: RewardPayload[];
 }
 
 export class BattleRewardSystem {
@@ -112,6 +132,7 @@ export class BattleRewardSystem {
     }
 
     if (input.adState === 'success') {
+      save.progress.claimedRewardIds!.push(`battle-double:${input.battleId}`);
       incrementAdPlacement(save, 'battle_reward_double');
       this.progression.recordEvent(save, 'adWatch', 1);
     }
@@ -119,14 +140,52 @@ export class BattleRewardSystem {
     return success(
       {
         battleId: input.battleId,
+        chapterId,
+        wave: input.wave,
+        status: input.status,
+        defeatedMonsters: input.defeatedMonsters,
         victory,
         firstClear,
+        doubleClaimed: input.adState === 'success',
         rewards,
         nextWave: save.progress.currentWave,
         highestWave: save.progress.highestWave,
       },
       'battle settled',
     );
+  }
+
+  public claimDoubleReward(save: GameSaveData, input: BattleDoubleRewardInput): GameLogicResult<BattleDoubleRewardResult> {
+    ensureProgressRuntimeFields(save);
+    if (input.adState !== 'success') {
+      return failure('ad_not_completed', 'rewarded video was not completed');
+    }
+    if (input.status !== 'victory') {
+      return failure('not_ready', 'double reward is only available after victory');
+    }
+
+    const claimId = `battle:${input.battleId}`;
+    const doubleClaimId = `battle-double:${input.battleId}`;
+    if (!save.progress.claimedRewardIds!.includes(claimId)) {
+      return failure('not_ready', 'battle settlement must be claimed before double reward');
+    }
+    if (save.progress.claimedRewardIds!.includes(doubleClaimId)) {
+      return failure('already_claimed', 'battle double reward already claimed');
+    }
+    if (!this.canDoubleReward(save)) {
+      return failure('daily_limit_reached', 'daily double reward ad limit reached');
+    }
+
+    const rewards = this.buildDoubleRewardBonus(save, input);
+    const grant = grantRewards(save, rewards, this.repo);
+    if (!grant.ok) {
+      return failure(grant.reason ?? 'invalid_input', grant.message);
+    }
+
+    save.progress.claimedRewardIds!.push(doubleClaimId);
+    incrementAdPlacement(save, 'battle_reward_double');
+    this.progression.recordEvent(save, 'adWatch', 1);
+    return success({ battleId: input.battleId, adPlacementId: 'battle_reward_double', rewards }, 'battle double reward claimed');
   }
 
   private buildSettlementRewards(save: GameSaveData, input: BattleSettlementInput, victory: boolean): RewardPayload[] {
@@ -187,6 +246,39 @@ export class BattleRewardSystem {
       }
     }
     return rewards;
+  }
+
+  private buildDoubleRewardBonus(save: GameSaveData, input: BattleDoubleRewardInput): RewardPayload[] {
+    const rules = this.repo.configs.levels.rewardRules;
+    const battle = this.repo.configs.levels.battle;
+    const wave = this.repo.getWave(input.chapterId ?? save.progress.chapterId, input.wave);
+    if (!wave) {
+      return [];
+    }
+
+    const rewardMultiplier = wave.rewardMultiplier ?? 1;
+    const bonuses = this.progression.getCombatBonuses(save);
+    const baseGold = Math.floor((rules.victoryGoldBase + input.wave * rules.victoryGoldPerWave) * rewardMultiplier);
+    const baseExp = Math.floor((rules.victoryExpBase + input.wave * rules.victoryExpPerWave) * rewardMultiplier);
+    const regular: RewardPayload[] = [
+      { kind: 'currency', id: 'gold', amount: baseGold },
+      { kind: 'exp', id: 'exp', amount: baseExp },
+    ];
+
+    if (input.wave >= rules.petMaterialStartWave) {
+      regular.push({
+        kind: 'petMaterial',
+        id: this.repo.configs.pets.materialItemId,
+        amount: rules.petMaterialBase + input.wave * rules.petMaterialPerWave,
+      });
+    }
+
+    const extraMultiplier = Math.max(0, battle.rewardDoubleMultiplier - 1);
+    return regular
+      .map((reward) => rewardWithMultipliers(reward, bonuses))
+      .filter((reward) => reward.kind === 'currency' || reward.kind === 'exp' || reward.kind === 'petMaterial')
+      .map((reward) => ({ ...reward, amount: Math.floor(reward.amount * extraMultiplier) }))
+      .filter((reward) => reward.amount > 0);
   }
 
   private canDoubleReward(save: GameSaveData): boolean {

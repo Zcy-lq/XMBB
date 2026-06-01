@@ -13,6 +13,7 @@
     "verify:wechat-build": "node tools/verify_wechat_build_output.mjs",
     "verify:scene-flow": "node tools/verify_scene_flow_guards.mjs",
     "verify:page-functions": "node tools/verify_page_function_coverage.mjs",
+    "verify:release-compliance": "node tools/verify_release_compliance.mjs",
     "refresh:preview-ui": "node tools/refresh_cocos_preview_ui_chunk.mjs",
     "generate:runtime-assets": "node tools/generate_runtime_asset_index.mjs",
     "verify:runtime-assets": "node tools/verify_runtime_asset_index.mjs",
@@ -29,7 +30,7 @@
     "validate:assets": "node tools/validate_assets.js",
     "validate:handoffs": "node tools/validate_handoffs.js",
     "build:check": "node tools/build_check.js",
-    "workflow:check": "npm run validate:configs && npm run validate:assets && npm run verify:design-parity && npm run verify:page-functions && npm run validate:handoffs -- --allow-missing && npm run build:check"
+    "workflow:check": "npm run validate:configs && npm run validate:assets && npm run verify:design-parity && npm run verify:page-functions && npm run verify:release-compliance && npm run validate:handoffs -- --allow-missing && npm run build:check"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

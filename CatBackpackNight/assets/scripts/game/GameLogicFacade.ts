@@ -2,7 +2,14 @@ import { SaveManager } from '../core/SaveManager';
 import { eventBus } from '../core/EventBus';
 import { CurrencyState, GameSaveData, MailSave, PetSave, RewardPayload } from '../data/GameTypes';
 import { BattleSessionModel } from './BattleSessionModel';
-import { BattleRewardSystem, BattleSettlementInput, BattleSettlementResult, BattleStartResult } from './BattleRewardSystem';
+import {
+  BattleDoubleRewardInput,
+  BattleDoubleRewardResult,
+  BattleRewardSystem,
+  BattleSettlementInput,
+  BattleSettlementResult,
+  BattleStartResult,
+} from './BattleRewardSystem';
 import { EconomySystem } from './EconomySystem';
 import { GameLogicConfigs, ProgressEventType } from './GameConfigTypes';
 import { GameConfigRepository, getDefaultGameLogicConfigs } from './GameConfigRepository';
@@ -41,6 +48,7 @@ export class GameLogicFacade {
   public readonly battleRewards: BattleRewardSystem;
   public readonly mail: MailSystem;
   private activeBattleStart: BattleStartResult | null = null;
+  private lastBattleSettlement: BattleSettlementResult | null = null;
 
   public constructor(
     configs: GameLogicConfigs = getDefaultGameLogicConfigs(),
@@ -119,9 +127,31 @@ export class GameLogicFacade {
   }
 
   public settleBattle(input: BattleSettlementInput): GameLogicResult<BattleSettlementResult> {
-    return this.commit(input.status === 'victory' ? 'battle-win' : 'battle-fail', input.status === 'victory' ? GameEvents.BattleWin : GameEvents.BattleFail, (save) =>
+    const result = this.commit(input.status === 'victory' ? 'battle-win' : 'battle-fail', input.status === 'victory' ? GameEvents.BattleWin : GameEvents.BattleFail, (save) =>
       this.battleRewards.settle(save, input),
     );
+    if (result.ok && result.data) {
+      this.lastBattleSettlement = { ...result.data, rewards: result.data.rewards.map((reward) => ({ ...reward })) };
+    }
+    return result;
+  }
+
+  public getLastBattleSettlement(): BattleSettlementResult | null {
+    return this.lastBattleSettlement
+      ? { ...this.lastBattleSettlement, rewards: this.lastBattleSettlement.rewards.map((reward) => ({ ...reward })) }
+      : null;
+  }
+
+  public claimBattleDoubleReward(input: BattleDoubleRewardInput): GameLogicResult<BattleDoubleRewardResult> {
+    const result = this.commit('battle-reward-double', GameEvents.RewardClaim, (save) => this.battleRewards.claimDoubleReward(save, input));
+    if (result.ok && this.lastBattleSettlement?.battleId === input.battleId) {
+      this.lastBattleSettlement = {
+        ...this.lastBattleSettlement,
+        doubleClaimed: true,
+        rewards: [...this.lastBattleSettlement.rewards, ...(result.data?.rewards ?? [])].map((reward) => ({ ...reward })),
+      };
+    }
+    return result;
   }
 
   public mergeWeapon(itemId: string, level: number): GameLogicResult<MergeResult> {

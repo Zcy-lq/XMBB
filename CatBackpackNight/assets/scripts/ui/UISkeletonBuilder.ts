@@ -20,6 +20,7 @@ import { MailSave, RewardPayload, RouteId, SettingsSave } from '../data/GameType
 import { GameEvents } from '../game/GameEvents';
 import { gameLogic } from '../game/GameLogicFacade';
 import { BattleSessionState } from '../game/BattleSessionModel';
+import { adService } from '../services/AdService';
 import { AnalyticsService } from '../services/AnalyticsService';
 import { RuntimeSpriteAssets, RuntimeSpriteAssetKey } from './RuntimeSpriteAssets';
 import { loadRuntimeSpriteFrame } from './RuntimeSpriteLoader';
@@ -2132,7 +2133,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     }
 
     if (name.includes('Button_RewardDouble')) {
-      this.showToast('激励视频未接入，当前请使用普通领取');
+      void this.claimBattleDoubleRewardFromAd();
       return true;
     }
 
@@ -2393,10 +2394,52 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return true;
     }
     if (key === 'Ad') {
-      return this.reportActionResult(gameLogic.recordProgressEvent('adWatch', 1), '广告占位已完成，任务进度已更新');
+      void this.recordDailyAdProgressFromAd();
+      return true;
     }
 
     return this.reportActionResult(gameLogic.claimDailyTask(taskId), '每日任务奖励已领取');
+  }
+
+  private async claimBattleDoubleRewardFromAd(): Promise<void> {
+    const settlement = gameLogic.getLastBattleSettlement();
+    if (!settlement || settlement.status !== 'victory') {
+      this.showToast('当前没有可双倍领取的胜利奖励');
+      return;
+    }
+    if (settlement.doubleClaimed) {
+      this.showToast('双倍奖励已经领取过了');
+      return;
+    }
+
+    this.showToast('正在拉起激励视频...');
+    const adResult = await adService.showRewardedAd('battle_reward_double');
+    if (!adResult.success) {
+      this.showToast(adResult.message ?? '广告未完整观看，无法发放双倍奖励');
+      return;
+    }
+
+    this.reportActionResult(
+      gameLogic.claimBattleDoubleReward({
+        battleId: settlement.battleId,
+        chapterId: settlement.chapterId,
+        wave: settlement.wave,
+        status: settlement.status,
+        defeatedMonsters: settlement.defeatedMonsters,
+        adState: 'success',
+      }),
+      '双倍奖励已领取',
+    );
+  }
+
+  private async recordDailyAdProgressFromAd(): Promise<void> {
+    this.showToast('正在拉起激励视频...');
+    const adResult = await adService.showRewardedAd('daily_task_ad');
+    if (!adResult.success) {
+      this.showToast(adResult.message ?? '广告未完整观看，任务进度未更新');
+      return;
+    }
+    this.reportActionResult(gameLogic.recordProgressEvent('adWatch', 1), '广告观看完成，任务进度已更新');
   }
 
   private claimAchievementFromButton(name: string): boolean {
@@ -2515,7 +2558,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
       daily_battle_3: '完成 3 次守夜战斗',
       daily_merge_5: '合成 5 次武器',
       daily_kill_100: '累计击败 100 个怪物',
-      daily_ad_1: '观看广告或触发广告占位',
+      daily_ad_1: '观看一次激励视频',
     };
     return descs[taskId] ?? '达成目标后领取';
   }

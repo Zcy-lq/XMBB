@@ -12,12 +12,13 @@ This runbook is the P0 launch proof path for the WeChat mini game. Do not mark t
 6. Start battle.
 7. Wait for victory or force one controlled victory in debug build.
 8. Claim reward once.
-9. Fast-click claim again; expect no duplicate reward.
-10. Open backpack and merge two same-level weapons.
-11. Open pet or talent and perform one upgrade.
-12. Return to battle prepare and confirm power/damage changed.
-13. Start second battle.
-14. Restart app and confirm save state persists.
+9. Try double reward through rewarded video; success should grant once, cancel/fail should grant nothing.
+10. Fast-click claim again; expect no duplicate reward.
+11. Open backpack and merge two same-level weapons.
+12. Open pet or talent and perform one upgrade.
+13. Return to battle prepare and confirm power/damage changed.
+14. Start second battle.
+15. Restart app and confirm save state persists.
 
 ## Automated Evidence
 
@@ -29,7 +30,7 @@ cd CatBackpackNight
 & $node '..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs' tools/verify_full_loop_acceptance.ts
 ```
 
-Expected: `[full-loop-acceptance] {"passed":true,"checks":38,"failed":0}`.
+Expected: `[full-loop-acceptance] {"passed":true,"checks":41,"failed":0}`.
 
 This automated gate is required, but it does not replace Cocos/WeChat screenshots, storage restart evidence, or real-device performance evidence.
 
@@ -45,12 +46,13 @@ This automated gate is required, but it does not replace Cocos/WeChat screenshot
 | 6. Start battle | UNVERIFIED |  | Energy cost and battle id must be recorded. |
 | 7. Reach victory | UNVERIFIED |  | Record battle result, wave, and reward id. |
 | 8. Claim reward once | UNVERIFIED |  | Currency/inventory delta must match reward. |
-| 9. Fast-click claim again | UNVERIFIED |  | Claimed reward id must prevent duplicate grant. |
-| 10. Backpack merge | UNVERIFIED |  | Inventory before/after must show consumed inputs and created output. |
-| 11. Pet or talent upgrade | UNVERIFIED |  | Selected pet/talent id, cost, and save delta must be recorded. |
-| 12. Confirm power/damage changed | UNVERIFIED |  | Battle prepare power or battle damage must reflect growth. |
-| 13. Start second battle | UNVERIFIED |  | Second battle must start from updated save. |
-| 14. Restart and restore save | UNVERIFIED |  | Agreement, rewards, merge, pet/talent, and currency must persist. |
+| 9. Double reward ad | UNVERIFIED |  | Success must grant double reward once; cancel/fail/unavailable must grant nothing. |
+| 10. Fast-click claim again | UNVERIFIED |  | Claimed reward id must prevent duplicate grant. |
+| 11. Backpack merge | UNVERIFIED |  | Inventory before/after must show consumed inputs and created output. |
+| 12. Pet or talent upgrade | UNVERIFIED |  | Selected pet/talent id, cost, and save delta must be recorded. |
+| 13. Confirm power/damage changed | UNVERIFIED |  | Battle prepare power or battle damage must reflect growth. |
+| 14. Start second battle | UNVERIFIED |  | Second battle must start from updated save. |
+| 15. Restart and restore save | UNVERIFIED |  | Agreement, rewards, merge, pet/talent, and currency must persist. |
 
 ## Pre-Run Static Gate
 
@@ -61,6 +63,7 @@ $node = 'C:\Users\Administrator\.cache\codex-runtimes\codex-primary-runtime\depe
 cd CatBackpackNight
 & $node tools/validate_configs.js
 & $node tools/validate_assets.js
+& $node tools/verify_release_compliance.mjs
 & $node tools/verify_scene_flow_guards.mjs
 & $node tools/build_check.js
 & $node '..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs' tools/verify_game_logic_self_check.ts

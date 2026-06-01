@@ -19,11 +19,13 @@ User direction: continue until the WeChat mini game meets launch standards. This
 Changes made:
 
 - Added `assets/scripts/game/MailSystem.ts` so mail claim/delete behavior is testable as a pure gameplay system and still used by `GameLogicFacade`.
-- Added `tools/verify_full_loop_acceptance.ts`, a 38-check full-loop acceptance script covering clear save, agreement gate, first battle, victory/defeat settlement, duplicate reward blocking, backpack merge, failure no-mutation paths, selected pet/talent upgrades, task/activity/achievement claims, mail single/all claim/delete, shop daily-free/paid/insufficient-resource paths, second battle, restart clone, settings persistence, and non-negative economy.
+- Added `tools/verify_full_loop_acceptance.ts`, a 41-check full-loop acceptance script covering clear save, agreement gate, first battle, victory/defeat settlement, post-settlement rewarded-video double reward, cancelled-ad no-mutation, duplicate reward blocking, backpack merge, failure no-mutation paths, selected pet/talent upgrades, task/activity/achievement claims, mail single/all claim/delete, shop daily-free/paid/insufficient-resource paths, second battle, restart clone, settings persistence, and non-negative economy.
 - Added `npm run verify:full-loop` and updated `verify_scene_flow_guards` so the full-loop gate cannot be accidentally removed from the release workflow.
 - Added `tools/verify_wechat_build_output.mjs` and `npm run verify:wechat-build` to validate the generated Cocos WeChat Mini Game output.
 - Added `tools/verify_ui_design_parity.mjs` and `npm run verify:design-parity` to aggregate the 22-page design reference audit, 8 page/modal parity scripts, and 22 local portrait screenshot evidence files.
 - Added `tools/verify_page_function_coverage.mjs` and `npm run verify:page-functions` to verify 25 routes, 22 screenshot-backed pages, and 25 key page function contracts.
+- Added `tools/verify_release_compliance.mjs` and `npm run verify:release-compliance` to verify readable compliance text, review-mode ad safety, config-driven WeChat IDs, rewarded-video completion gating, and production-input blockers.
+- Wired `Button_RewardDouble` and the daily ad task through `AdService`; reward/progress is granted only after a successful rewarded-video result.
 - Updated release matrix/runbook/blocker docs to separate automated logic evidence from missing Cocos/WeChat/device evidence.
 
 Fresh verification commands passed:
@@ -34,6 +36,7 @@ node tools/validate_assets.js
 node tools/audit_design_reference.mjs
 node tools/verify_ui_design_parity.mjs
 node tools/verify_page_function_coverage.mjs
+node tools/verify_release_compliance.mjs
 node tools/verify_scene_flow_guards.mjs
 node tools/build_check.js
 node tools/verify_wechat_build_output.mjs
@@ -50,7 +53,8 @@ Result:
 - Page function coverage gate: 25/25 routes, 22/22 screenshot-backed pages, and 25/25 page function contracts verified.
 - Cocos WeChat build output: `build/wechatgame` has 36 files, 4,969,185 bytes, required root files, portrait orientation, and `compileType: game`.
 - Game logic self-check: 12/12 passed.
-- Full-loop acceptance: 38/38 passed.
+- Release compliance code gate: passed with 3 explicit production-input blockers (`wechat.appid`, `wechat.privacyPolicyUrl`, `wechat.userAgreementUrl`).
+- Full-loop acceptance: 41/41 passed.
 
 Still BLOCKED for launch:
 
