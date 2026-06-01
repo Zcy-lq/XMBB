@@ -19,7 +19,7 @@ User direction: continue until the WeChat mini game meets launch standards. This
 Changes made:
 
 - Added `assets/scripts/game/MailSystem.ts` so mail claim/delete behavior is testable as a pure gameplay system and still used by `GameLogicFacade`.
-- Added `tools/verify_full_loop_acceptance.ts`, a 19-check full-loop acceptance script covering clear save, agreement gate, first battle, victory settlement, duplicate reward blocking, backpack merge, selected pet/talent upgrades, mail claim/delete, shop daily-free limit, second battle, restart clone, and non-negative economy.
+- Added `tools/verify_full_loop_acceptance.ts`, a 30-check full-loop acceptance script covering clear save, agreement gate, first battle, victory settlement, duplicate reward blocking, backpack merge, failure no-mutation paths, selected pet/talent upgrades, task/achievement claims, mail claim/delete, shop daily-free and insufficient-resource paths, second battle, restart clone, settings persistence, and non-negative economy.
 - Added `npm run verify:full-loop` and updated `verify_scene_flow_guards` so the full-loop gate cannot be accidentally removed from the release workflow.
 - Added `tools/verify_wechat_build_output.mjs` and `npm run verify:wechat-build` to validate the generated Cocos WeChat Mini Game output.
 - Updated release matrix/runbook/blocker docs to separate automated logic evidence from missing Cocos/WeChat/device evidence.
@@ -44,7 +44,7 @@ Result:
 - Design reference audit: 22/22 annotated design pages plus 12 legacy references checked.
 - Cocos WeChat build output: `build/wechatgame` has 36 files, 4,969,185 bytes, required root files, portrait orientation, and `compileType: game`.
 - Game logic self-check: 12/12 passed.
-- Full-loop acceptance: 19/19 passed.
+- Full-loop acceptance: 30/30 passed.
 
 Still BLOCKED for launch:
 

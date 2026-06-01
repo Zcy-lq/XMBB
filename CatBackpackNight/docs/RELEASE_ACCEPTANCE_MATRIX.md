@@ -44,33 +44,33 @@ Status values:
 | AC-060 | P0 | Backpack opens | PARTIAL | Backpack page and screenshot exist | QAReleaseAgent | Verify grid/detail/actions in Cocos/WeChat |
 | AC-061 | P1 | Item selection | PARTIAL | UI detail nodes exist; selected-state evidence missing | UIUXAgent | Verify selected outline and detail panel |
 | AC-062 | P0 | Same-type merge | PARTIAL | `verify_full_loop_acceptance` covers `backpack_merge`; inventory merge system and self-check exist | CoreGameplayAgent | Verify UI merge consumes two and creates one |
-| AC-063 | P0 | Merge failure safety | PARTIAL | Merge result failures exist | CoreGameplayAgent | Verify insufficient materials do not mutate save |
+| AC-063 | P0 | Merge failure safety | PARTIAL | `verify_full_loop_acceptance` covers `merge_failure_no_mutation`; merge result failures exist | CoreGameplayAgent | Verify insufficient materials do not mutate save through UI |
 | AC-064 | P1 | First merge tutorial | UNVERIFIED | Merge guide route exists | UIUXAgent/QAReleaseAgent | Verify first-time trigger and no repeated annoyance |
 | AC-065 | P1 | Open chest | PARTIAL | `openChest` action exists | CoreGameplayAgent | Verify cost/reward and insufficient-resource path |
 | AC-070 | P0 | Shop purchase | PARTIAL | Shop buy system exists | CoreGameplayAgent | Verify each goods card deducts/grants correctly |
-| AC-071 | P0 | Shop insufficient resource | PARTIAL | Economy failure result exists | CoreGameplayAgent | Verify no deduction and clear toast |
+| AC-071 | P0 | Shop insufficient resource | PARTIAL | `verify_full_loop_acceptance` covers `shop_insufficient_resource_no_mutation`; economy failure result exists | CoreGameplayAgent | Verify no deduction and clear toast |
 | AC-072 | P1 | Free daily goods | PARTIAL | `verify_full_loop_acceptance` covers `shop_free_good_once`; self-check covers free gold once | QAReleaseAgent | Verify visible claimed state after claim |
 | AC-073 | P1 | Refresh countdown | PARTIAL | Shop UI has countdown text | UIUXAgent | Verify countdown updates and fits |
 | AC-074 | P1 | Manual shop refresh | PARTIAL | `refreshShop` exists and UI calls success path | PlatformAgent/CoreGameplayAgent | Verify ad/gem branch and daily limits |
 | AC-075 | P1 | Special offer placeholder | UNVERIFIED | Shop tab/card UI exists | UIUXAgent | Verify no payment path and clear coming-soon state |
 | AC-080 | P0 | Pet page opens | PARTIAL | Pet page and screenshot exist | QAReleaseAgent | Verify detail/list states in Cocos/WeChat |
 | AC-081 | P0 | Pet upgrade | PARTIAL | `verify_full_loop_acceptance` covers `selected_pet_upgrade`; selected pet binding added and guarded against fixed sample IDs | CoreGameplayAgent | Verify selected pet upgrade in Cocos/WeChat |
-| AC-082 | P0 | Pet upgrade failure | PARTIAL | Failure reasons exist | CoreGameplayAgent | Verify insufficient materials do not mutate save |
+| AC-082 | P0 | Pet upgrade failure | PARTIAL | `verify_full_loop_acceptance` covers `pet_upgrade_failure_no_mutation`; failure reasons exist | CoreGameplayAgent | Verify insufficient materials do not mutate save through UI |
 | AC-083 | P1 | Pet deploy switch | PARTIAL | Selected pet binding added; deploy/detail buttons use current selection | CoreGameplayAgent | Verify selected pet deploy and only one deployed |
 | AC-084 | P1 | Pet locked condition | PARTIAL | Config has locked pets; UI state needs verification | UIUXAgent | Verify locked cards show clear unlock condition |
 | AC-085 | P1 | Pet affects power | PARTIAL | `getPower` includes progression bonuses | CoreGameplayAgent | Verify prepare power changes after pet upgrade |
 | AC-090 | P0 | Talent page opens | PARTIAL | Talent page and screenshot exist | QAReleaseAgent | Verify tabs/tree/detail in runtime |
 | AC-091 | P0 | Talent upgrade | PARTIAL | `verify_full_loop_acceptance` covers `selected_talent_upgrade`; learn/reset buttons use current selected node/branch | CoreGameplayAgent | Verify selected talent upgrade and prerequisite blocking |
-| AC-092 | P0 | Talent prerequisite | PARTIAL | `prerequisite_missing` reason exists | CoreGameplayAgent | Verify blocked node does not spend points |
+| AC-092 | P0 | Talent prerequisite | PARTIAL | `verify_full_loop_acceptance` covers `talent_prerequisite_blocked`; `prerequisite_missing` reason exists | CoreGameplayAgent | Verify blocked node does not spend points through UI |
 | AC-093 | P1 | Talent max level | PARTIAL | `max_level` reason exists | CoreGameplayAgent | Verify max node state in UI |
 | AC-094 | P1 | Talent reset | PARTIAL | Reset system exists | CoreGameplayAgent | Verify confirm/reset/refund through UI |
 | AC-095 | P1 | Talent affects power | PARTIAL | Power calculation includes talent bonuses | CoreGameplayAgent | Verify prepare power or damage increases |
-| AC-100 | P0 | Task progress | PARTIAL | Progression records events | CoreGameplayAgent | Verify battle/merge/kill progress increments |
-| AC-101 | P0 | Task claim | PARTIAL | Claim system and UI handlers exist | QAReleaseAgent | Verify completed task reward and claimed state |
-| AC-102 | P0 | Task duplicate prevention | PARTIAL | Self-check covers daily task idempotency | CoreGameplayAgent | Verify fast-click claim path |
+| AC-100 | P0 | Task progress | PARTIAL | `verify_full_loop_acceptance` covers `task_progress_updates`; progression records events | CoreGameplayAgent | Verify battle/merge/kill progress increments in UI |
+| AC-101 | P0 | Task claim | PARTIAL | `verify_full_loop_acceptance` covers `task_claim`; claim system and UI handlers exist | QAReleaseAgent | Verify completed task reward and claimed state |
+| AC-102 | P0 | Task duplicate prevention | PARTIAL | `verify_full_loop_acceptance` covers `task_duplicate_blocked`; self-check covers daily task idempotency | CoreGameplayAgent | Verify fast-click claim path |
 | AC-103 | P1 | Activity chests | PARTIAL | Activity claim method exists | QAReleaseAgent | Verify 30/60/90/120 thresholds |
 | AC-104 | P1 | Daily refresh | UNVERIFIED | Time manager/save fields exist | CoreGameplayAgent | Simulate cross-day reset |
-| AC-105 | P0 | Achievement claim | PARTIAL | Achievement claim system exists | QAReleaseAgent | Verify one achievement reward |
+| AC-105 | P0 | Achievement claim | PARTIAL | `verify_full_loop_acceptance` covers `achievement_claim` and `achievement_duplicate_blocked`; achievement claim system exists | QAReleaseAgent | Verify one achievement reward in UI |
 | AC-106 | P1 | Claim all achievements | PARTIAL | `claimAllAchievements` exists | QAReleaseAgent | Verify multi-claim idempotency |
 | AC-110 | P0 | Mail opens | PARTIAL | Mail list/detail selected-state binding added; detail renders selected mail data | QAReleaseAgent | Verify list and detail drawer in Cocos/WeChat |
 | AC-111 | P0 | Mail attachment claim | PARTIAL | `verify_full_loop_acceptance` covers `mail_claim`; mail list/detail claim buttons use selected mail id | QAReleaseAgent | Verify single attachment grant and read-only mail path |
@@ -78,13 +78,13 @@ Status values:
 | AC-113 | P1 | Claim all mails | PARTIAL | `claimAllMails` exists | QAReleaseAgent | Verify multiple attachments grant once |
 | AC-114 | P1 | Delete all mails | PARTIAL | `verify_full_loop_acceptance` covers `mail_delete_after_claim`; delete-all and selected detail delete are bound; unclaimed attachments block delete | QAReleaseAgent | Verify only safe mails delete |
 | AC-115 | P1 | Mail red dot | UNVERIFIED | Red-dot system exists | UIUXAgent | Verify red dot before/after claim |
-| AC-120 | P0 | Settings save | PARTIAL | Settings toggle updates save | QAReleaseAgent | Restart after toggles |
+| AC-120 | P0 | Settings save | PARTIAL | `verify_full_loop_acceptance` covers `settings_persist_after_restart`; settings toggle updates save | QAReleaseAgent | Restart after toggles in Cocos/WeChat |
 | AC-121 | P1 | Policy entry | PARTIAL | Settings privacy route exists | ComplianceService | Verify agreement/privacy content and access |
 | AC-122 | P1 | Version display | PARTIAL | Settings version node exists | QAReleaseAgent | Verify version matches config |
 | AC-123 | P0 | Save restore | PARTIAL | `verify_full_loop_acceptance` covers `restart_restore_save`; real Cocos/WeChat storage restart evidence missing | QAReleaseAgent | Restart after reward/merge/pet/talent changes |
 | AC-124 | P0 | Crash/restart safety | UNVERIFIED | Atomic commit pattern exists | QAReleaseAgent/CoreGameplayAgent | Force restart during battle/claim and inspect save |
 | AC-130 | P0 | Non-negative currency | PARTIAL | `verify_full_loop_acceptance` covers `economy_non_negative`; self-check covers no negative currency | CoreGameplayAgent | Stress purchase/upgrade/open chest through UI |
-| AC-131 | P0 | Atomic transaction | PARTIAL | Commit pattern clones and replaces on success | CoreGameplayAgent | Simulate failure and verify no partial mutation |
+| AC-131 | P0 | Atomic transaction | PARTIAL | `verify_full_loop_acceptance` covers failure no-mutation checks for merge, pet upgrade, and shop purchase; commit pattern clones and replaces on success | CoreGameplayAgent | Simulate UI failures and verify no partial mutation |
 | AC-132 | P0 | Reward idempotency | PARTIAL | `verify_full_loop_acceptance` covers duplicate battle, mail, and shop claims; claimed reward IDs exist for battle | CoreGameplayAgent | Verify all reward sources are idempotent |
 | AC-133 | P1 | Energy recovery | PARTIAL | `recoverEnergy` exists | CoreGameplayAgent | Verify cap and time behavior |
 | AC-134 | P1 | Daily limits | PARTIAL | Daily limits exist for shop/ad paths | QAReleaseAgent | Verify buttons disable or toast after limit |

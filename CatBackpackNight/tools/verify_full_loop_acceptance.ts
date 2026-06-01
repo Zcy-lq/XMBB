@@ -83,16 +83,71 @@ if (merge.ok) {
 }
 check('backpack_merge', merge.ok && save.inventory.some((item) => item.itemId === 'weapon_sword' && item.level === 2), merge.message);
 
+const mergeFailureBefore = JSON.stringify(save.inventory);
+const mergeFailure = inventory.mergeWeapon(save, 'weapon_bow', 2);
+check(
+  'merge_failure_no_mutation',
+  !mergeFailure.ok && mergeFailure.reason === 'insufficient_item' && JSON.stringify(save.inventory) === mergeFailureBefore,
+  mergeFailure.message,
+);
+
 const petUpgrade = progression.upgradePet(save, 'pet_shadow_cat');
 check('selected_pet_upgrade', petUpgrade.ok && petUpgrade.data?.pet.id === 'pet_shadow_cat', petUpgrade.message);
+
+const petFailureSave = cloneSave(save);
+petFailureSave.inventory = petFailureSave.inventory.filter((item) => item.itemId !== 'pet_material_common');
+const petFailureBefore = JSON.stringify(petFailureSave);
+const petUpgradeFailure = progression.upgradePet(petFailureSave, 'pet_shadow_cat');
+check(
+  'pet_upgrade_failure_no_mutation',
+  !petUpgradeFailure.ok && petUpgradeFailure.reason === 'insufficient_item' && JSON.stringify(petFailureSave) === petFailureBefore,
+  petUpgradeFailure.message,
+);
 
 const talentUpgrade = progression.upgradeTalent(save, 'attack_power_01');
 check('selected_talent_upgrade', talentUpgrade.ok && talentUpgrade.data?.node.id === 'attack_power_01', talentUpgrade.message);
 
+const talentFailureSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(talentFailureSave);
+const talentFailureBefore = JSON.stringify(talentFailureSave);
+const talentPrerequisite = progression.upgradeTalent(talentFailureSave, 'attack_speed_01');
+check(
+  'talent_prerequisite_blocked',
+  !talentPrerequisite.ok && talentPrerequisite.reason === 'prerequisite_missing' && JSON.stringify(talentFailureSave) === talentFailureBefore,
+  talentPrerequisite.message,
+);
+
 const powerAfterGrowth = progression.getPower(save);
 check('power_changes_after_growth', powerAfterGrowth > powerBeforeGrowth, `${powerBeforeGrowth} -> ${powerAfterGrowth}`);
 
+check(
+  'task_progress_updates',
+  (save.dailyTasks.find((task) => task.id === 'daily_battle_3')?.progress ?? 0) >= 1 &&
+    (save.dailyTasks.find((task) => task.id === 'daily_merge_5')?.progress ?? 0) >= 1,
+  JSON.stringify(save.dailyTasks),
+);
+
+const taskGemBefore = save.currencies.purpleGem;
+const taskClaim = progression.claimDailyTask(save, 'daily_login');
+check('task_claim', taskClaim.ok && save.currencies.purpleGem > taskGemBefore, taskClaim.message);
+const taskClaimAgain = progression.claimDailyTask(save, 'daily_login');
+check('task_duplicate_blocked', !taskClaimAgain.ok && taskClaimAgain.reason === 'already_claimed', taskClaimAgain.message);
+
+progression.recordEvent(save, 'highestWave', 5);
+const achievementGemBefore = save.currencies.purpleGem;
+const achievementClaim = progression.claimAchievement(save, 'wave_5');
+check('achievement_claim', achievementClaim.ok && save.currencies.purpleGem > achievementGemBefore, achievementClaim.message);
+const achievementClaimAgain = progression.claimAchievement(save, 'wave_5');
+check('achievement_duplicate_blocked', !achievementClaimAgain.ok && achievementClaimAgain.reason === 'already_claimed', achievementClaimAgain.message);
+
 const mailGoldBefore = save.currencies.gold;
+const unclaimedDeleteBefore = JSON.stringify(save.mails);
+const unclaimedDelete = mail.deleteMail(save, 'mail_maintenance');
+check(
+  'mail_unclaimed_delete_blocked',
+  !unclaimedDelete.ok && unclaimedDelete.reason === 'not_ready' && JSON.stringify(save.mails) === unclaimedDeleteBefore,
+  unclaimedDelete.message,
+);
 const mailClaim = mail.claimMail(save, 'mail_login_gift', 1710000000000);
 check('mail_claim', mailClaim.ok && save.currencies.gold > mailGoldBefore, mailClaim.message);
 const mailClaimAgain = mail.claimMail(save, 'mail_login_gift', 1710000000000);
@@ -106,6 +161,20 @@ check('shop_free_good_once', shopBuy.ok && save.currencies.gold > shopGoldBefore
 const shopBuyAgain = shop.buy(save, 'daily_free_gold');
 check('shop_duplicate_limit_blocked', !shopBuyAgain.ok && ['already_claimed', 'daily_limit_reached'].includes(shopBuyAgain.reason ?? ''), shopBuyAgain.message);
 
+const shopFailureSave = cloneSave(save);
+shopFailureSave.currencies.purpleGem = 0;
+const shopFailureBefore = JSON.stringify({ currencies: shopFailureSave.currencies, inventory: shopFailureSave.inventory, daily: shopFailureSave.daily });
+const shopFailure = shop.buy(shopFailureSave, 'daily_pet_food');
+const shopFailureAfter = JSON.stringify({ currencies: shopFailureSave.currencies, inventory: shopFailureSave.inventory, daily: shopFailureSave.daily });
+check(
+  'shop_insufficient_resource_no_mutation',
+  !shopFailure.ok && shopFailure.reason === 'insufficient_currency' && shopFailureAfter === shopFailureBefore,
+  shopFailure.message,
+);
+
+save.settings.musicEnabled = false;
+save.settings.powerSavingEnabled = true;
+
 const secondStart = battleRewards.startBattle(save, save.progress.currentWave);
 check('start_second_battle_after_growth', secondStart.ok && (secondStart.data?.wave ?? 0) >= 2, secondStart.message);
 
@@ -117,8 +186,16 @@ check(
     restored.progress.currentWave >= 2 &&
     restored.pets.find((pet) => pet.id === 'pet_shadow_cat')?.level === 2 &&
     (restored.talents.find((node) => node.id === 'attack_power_01')?.level ?? 0) >= 1 &&
-    restored.inventory.some((item) => item.itemId === 'weapon_sword' && item.level === 2),
-  `wave=${restored.progress.currentWave}, pet=${restored.pets.find((pet) => pet.id === 'pet_shadow_cat')?.level}, talent=${restored.talents.find((node) => node.id === 'attack_power_01')?.level}`,
+    restored.inventory.some((item) => item.itemId === 'weapon_sword' && item.level === 2) &&
+    restored.settings.musicEnabled === false &&
+    restored.settings.powerSavingEnabled === true,
+  `wave=${restored.progress.currentWave}, pet=${restored.pets.find((pet) => pet.id === 'pet_shadow_cat')?.level}, talent=${restored.talents.find((node) => node.id === 'attack_power_01')?.level}, settings=${JSON.stringify(restored.settings)}`,
+);
+
+check(
+  'settings_persist_after_restart',
+  restored.settings.musicEnabled === false && restored.settings.powerSavingEnabled === true,
+  JSON.stringify(restored.settings),
 );
 
 const noNegativeCurrency = Object.values(restored.currencies).every((value) => value >= 0);
