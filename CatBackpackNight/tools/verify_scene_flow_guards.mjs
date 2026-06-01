@@ -18,6 +18,10 @@ const assetReviewCenterPath = path.join(projectRoot, 'assets', 'configs', 'asset
 const assetReviewToolPath = path.join(projectRoot, 'tools', 'asset_review_center.mjs');
 const packagePath = path.join(projectRoot, 'package.json');
 const defaultSavePath = path.join(projectRoot, 'assets', 'scripts', 'data', 'DefaultSave.ts');
+const saveManagerPath = path.join(projectRoot, 'assets', 'scripts', 'core', 'SaveManager.ts');
+const redDotManagerPath = path.join(projectRoot, 'assets', 'scripts', 'core', 'RedDotManager.ts');
+const defaultRedDotRulesPath = path.join(projectRoot, 'assets', 'scripts', 'core', 'DefaultRedDotRules.ts');
+const dailyResetSystemPath = path.join(projectRoot, 'assets', 'scripts', 'game', 'DailyResetSystem.ts');
 const fullLoopAcceptancePath = path.join(projectRoot, 'tools', 'verify_full_loop_acceptance.ts');
 const wechatBuildOutputPath = path.join(projectRoot, 'tools', 'verify_wechat_build_output.mjs');
 const uiDesignParityPath = path.join(projectRoot, 'tools', 'verify_ui_design_parity.mjs');
@@ -261,7 +265,7 @@ function readMappedPreviewUiChunks() {
     });
 }
 
-for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath, pageFunctionCoveragePath, releaseCompliancePath, launchEvidencePath]) {
+for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, saveManagerPath, redDotManagerPath, defaultRedDotRulesPath, dailyResetSystemPath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath, pageFunctionCoveragePath, releaseCompliancePath, launchEvidencePath]) {
   if (!fs.existsSync(filePath)) {
     fail(`Missing required file: ${path.relative(projectRoot, filePath)}`);
   }
@@ -282,6 +286,10 @@ if (failures.length === 0) {
   const assetReviewCenter = JSON.parse(read(assetReviewCenterPath));
   const packageJson = JSON.parse(read(packagePath));
   const defaultSave = read(defaultSavePath);
+  const saveManager = read(saveManagerPath);
+  const redDotManager = read(redDotManagerPath);
+  const defaultRedDotRules = read(defaultRedDotRulesPath);
+  const dailyResetSystem = read(dailyResetSystemPath);
   const fullLoopAcceptance = read(fullLoopAcceptancePath);
   const wechatBuildOutput = read(wechatBuildOutputPath);
   const uiDesignParity = read(uiDesignParityPath);
@@ -300,6 +308,30 @@ if (failures.length === 0) {
     if (badTokens.length > 0) {
       fail(`${label} contains mojibake in visible player-facing text: ${badTokens.join(', ')}`);
     }
+  }
+
+  if (!saveManager.includes('refreshDailySaveIfNeeded(this.saveData')) {
+    fail('SaveManager must use the testable DailyResetSystem helper for daily refresh logic.');
+  }
+
+  for (const dailyResetToken of ['shopPurchaseCounts: {}', 'adPlacementCounts: {}', "progress: task.id === 'daily_login' ? 1 : 0"]) {
+    if (!dailyResetSystem.includes(dailyResetToken)) {
+      fail(`DailyResetSystem is missing required reset behavior: ${dailyResetToken}`);
+    }
+  }
+
+  if (!redDotManager.includes('createDefaultRedDotRules()')) {
+    fail('RedDotManager must register config-backed default red dot rules.');
+  }
+
+  for (const redDotToken of ['achievementTargets', 'dailyTaskTargets', 'calculateDefaultRedDots', 'config.requires.every']) {
+    if (!defaultRedDotRules.includes(redDotToken)) {
+      fail(`DefaultRedDotRules is missing required launch red-dot behavior: ${redDotToken}`);
+    }
+  }
+
+  if (/achievement\.progress\s*>\s*0/.test(defaultRedDotRules) || /achievement\.progress\s*>\s*0/.test(redDotManager)) {
+    fail('Achievement red dots must wait for the configured target threshold, not any partial progress.');
   }
 
   const previewUiChunks = new Set(readMappedPreviewUiChunks());
@@ -1112,7 +1144,12 @@ if (failures.length === 0) {
   for (const fullLoopToken of [
     'agreement_gate_blocks_start',
     'start_first_battle',
+    'release_energy_insufficient_blocks_start_no_mutation',
+    'release_energy_start_spends_configured_cost',
     'first_battle_reaches_settlement',
+    'battle_pause_resume_blocks_and_restores_ticks',
+    'battle_auto_merge_toggle_state',
+    'skill_choice_offer_apply_and_duplicate_block',
     'battle_double_reward_after_ad',
     'battle_double_duplicate_blocked',
     'battle_double_cancelled_ad_no_mutation',
@@ -1120,9 +1157,15 @@ if (failures.length === 0) {
     'defeat_settlement_no_wave_advance',
     'backpack_merge',
     'merge_failure_no_mutation',
+    'open_chest_consumes_cost_and_grants_reward',
+    'open_chest_insufficient_gold_no_mutation',
+    'open_chest_missing_chest_no_mutation',
     'selected_pet_upgrade',
+    'pet_deploy_switch_single_active',
+    'pet_deploy_locked_blocked_no_mutation',
     'pet_upgrade_failure_no_mutation',
     'selected_talent_upgrade',
+    'talent_reset_refunds_branch_points',
     'talent_prerequisite_blocked',
     'task_progress_updates',
     'task_claim',
@@ -1132,6 +1175,9 @@ if (failures.length === 0) {
     'activity_chest_duplicate_blocked',
     'achievement_claim',
     'achievement_duplicate_blocked',
+    'achievement_claim_all_multi_and_idempotent',
+    'red_dot_claimable_thresholds_and_clear',
+    'mail_red_dot_count_drops_after_claim_all',
     'mail_unclaimed_delete_blocked',
     'mail_claim',
     'mail_claim_all',
@@ -1140,6 +1186,11 @@ if (failures.length === 0) {
     'shop_free_good_once',
     'shop_insufficient_resource_no_mutation',
     'shop_paid_purchase_deducts_and_grants',
+    'shop_paid_daily_limit_blocked_no_mutation',
+    'shop_refresh_cancelled_ad_no_mutation',
+    'shop_refresh_ad_success_then_daily_limit',
+    'energy_recovery_interval_and_cap',
+    'daily_refresh_resets_tasks_and_limits_once',
     'start_second_battle_after_growth',
     'restart_restore_save',
     'settings_persist_after_restart',

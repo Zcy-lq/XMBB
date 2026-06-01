@@ -1,7 +1,8 @@
 import { sys } from 'cc';
 import { SAVE_KEY } from '../configs/GameConfig';
-import { createDefaultSave, getLocalDateKey } from '../data/DefaultSave';
+import { createDefaultSave } from '../data/DefaultSave';
 import { GameSaveData } from '../data/GameTypes';
+import { refreshDailySaveIfNeeded } from '../game/DailyResetSystem';
 import { GameEvents } from '../game/GameEvents';
 import { eventBus } from './EventBus';
 
@@ -87,23 +88,9 @@ export class SaveManager {
 
   public refreshDailyIfNeeded(now = new Date()): boolean {
     this.ensureLoaded(false);
-    const today = getLocalDateKey(now);
-    if (this.saveData.daily.dateKey === today) {
+    if (!refreshDailySaveIfNeeded(this.saveData, now)) {
       return false;
     }
-
-    this.saveData.daily = {
-      dateKey: today,
-      freeGoldClaimed: false,
-      adWatchCount: 0,
-      shopRefreshCount: 0,
-      activityClaimedIds: [],
-    };
-    this.saveData.dailyTasks = this.saveData.dailyTasks.map((task) => ({
-      ...task,
-      progress: task.id === 'daily_login' ? 1 : 0,
-      claimed: false,
-    }));
     this.saveData.updatedAt = Date.now();
     this.persist(false);
     eventBus.emit(GameEvents.DailyRefresh, this.getSnapshot());

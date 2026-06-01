@@ -1,18 +1,8 @@
 import { GameSaveData } from '../data/GameTypes';
+import { createDefaultRedDotRules, RedDotRule, RedDotValue } from './DefaultRedDotRules';
 import { GameEvents } from '../game/GameEvents';
 import { eventBus } from './EventBus';
 import { SaveManager } from './SaveManager';
-
-export type RedDotValue = number | boolean;
-export type RedDotRule = (save: GameSaveData) => RedDotValue;
-
-const DAILY_TASK_TARGETS: Record<string, number> = {
-  daily_login: 1,
-  daily_battle_3: 3,
-  daily_merge_5: 5,
-  daily_kill_100: 100,
-  daily_ad_1: 1,
-};
 
 export class RedDotManager {
   private static singleton: RedDotManager | null = null;
@@ -41,16 +31,9 @@ export class RedDotManager {
       return;
     }
     this.defaultsRegistered = true;
-    this.register('dailyTask', (save) =>
-      save.dailyTasks.some((task) => !task.claimed && task.progress >= (DAILY_TASK_TARGETS[task.id] ?? 1)),
-    );
-    this.register('mail', (save) => save.mails.filter((mail) => !mail.read || (!mail.claimed && mail.attachments.length > 0)).length);
-    this.register('backpack', (save) => save.inventory.some((item) => item.itemType === 'weapon' && item.count >= 2));
-    this.register('pet', (save) => save.inventory.some((item) => item.itemId === 'pet_material_common' && item.count >= 10));
-    this.register('talent', (save) => save.progress.talentPoints > 0);
-    this.register('shop', (save) => !save.daily.freeGoldClaimed);
-    this.register('battle', (save) => save.currencies.energy >= 5);
-    this.register('achievement', (save) => save.achievements.some((achievement) => !achievement.claimed && achievement.progress > 0));
+    for (const [key, rule] of Object.entries(createDefaultRedDotRules())) {
+      this.register(key, rule);
+    }
   }
 
   public recalculate(save = SaveManager.instance.getSnapshot()): Record<string, RedDotValue> {

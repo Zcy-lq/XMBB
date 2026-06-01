@@ -1,7 +1,10 @@
-import { createDefaultSave } from '../assets/scripts/data/DefaultSave';
+import { createDefaultSave, getLocalDateKey } from '../assets/scripts/data/DefaultSave';
 import { GameSaveData } from '../assets/scripts/data/GameTypes';
+import { calculateDefaultRedDots } from '../assets/scripts/core/DefaultRedDotRules';
 import { BattleRewardSystem } from '../assets/scripts/game/BattleRewardSystem';
 import { BattleSessionModel } from '../assets/scripts/game/BattleSessionModel';
+import { refreshDailySaveIfNeeded } from '../assets/scripts/game/DailyResetSystem';
+import { EconomySystem } from '../assets/scripts/game/EconomySystem';
 import { GameConfigRepository, getDefaultGameLogicConfigs } from '../assets/scripts/game/GameConfigRepository';
 import { InventorySystem } from '../assets/scripts/game/InventorySystem';
 import { MailSystem } from '../assets/scripts/game/MailSystem';
@@ -36,10 +39,24 @@ const save = createDefaultSave(1710000000000);
 const repo = new GameConfigRepository(getDefaultGameLogicConfigs());
 const progression = new ProgressionSystem(repo);
 const inventory = new InventorySystem(repo);
+const economy = new EconomySystem(repo);
 const shop = new ShopSystem(repo, progression);
 const battleRewards = new BattleRewardSystem(repo, progression);
 const mail = new MailSystem(repo);
 progression.syncConfiguredSaveRows(save);
+
+const releaseEnergyRepo = new GameConfigRepository({
+  ...repo.configs,
+  levels: {
+    ...repo.configs.levels,
+    battle: {
+      ...repo.configs.levels.battle,
+      unlimitedEnergyInDevelopment: false,
+    },
+  },
+});
+const releaseEnergyProgression = new ProgressionSystem(releaseEnergyRepo);
+const releaseEnergyBattleRewards = new BattleRewardSystem(releaseEnergyRepo, releaseEnergyProgression);
 
 check('clear_save', !save.settings.acceptedAgreement && save.progress.currentWave === 1, 'fresh default save starts at login gate and wave 1');
 
@@ -53,11 +70,67 @@ const powerBeforeGrowth = progression.getPower(save);
 const firstStart = battleRewards.startBattle(save, save.progress.currentWave);
 check('start_first_battle', firstStart.ok && firstStart.data?.wave === 1, firstStart.message);
 
+const releaseNoEnergySave = createDefaultSave(1710000000000);
+releaseEnergyProgression.syncConfiguredSaveRows(releaseNoEnergySave);
+releaseNoEnergySave.currencies.energy = 0;
+const releaseNoEnergyBefore = JSON.stringify({ currencies: releaseNoEnergySave.currencies, progress: releaseNoEnergySave.progress, stats: releaseNoEnergySave.stats });
+const releaseNoEnergyStart = releaseEnergyBattleRewards.startBattle(releaseNoEnergySave, releaseNoEnergySave.progress.currentWave);
+check(
+  'release_energy_insufficient_blocks_start_no_mutation',
+  !releaseNoEnergyStart.ok &&
+    releaseNoEnergyStart.reason === 'insufficient_currency' &&
+    JSON.stringify({ currencies: releaseNoEnergySave.currencies, progress: releaseNoEnergySave.progress, stats: releaseNoEnergySave.stats }) === releaseNoEnergyBefore,
+  releaseNoEnergyStart.message,
+);
+const releaseEnergySave = createDefaultSave(1710000000000);
+releaseEnergyProgression.syncConfiguredSaveRows(releaseEnergySave);
+const releaseEnergyBefore = releaseEnergySave.currencies.energy;
+const releaseEnergyStart = releaseEnergyBattleRewards.startBattle(releaseEnergySave, releaseEnergySave.progress.currentWave);
+check(
+  'release_energy_start_spends_configured_cost',
+  releaseEnergyStart.ok &&
+    releaseEnergyStart.data?.energyCost === repo.configs.levels.battle.energyCost &&
+    releaseEnergySave.currencies.energy === releaseEnergyBefore - repo.configs.levels.battle.energyCost,
+  releaseEnergyStart.message,
+);
+
 const firstSession = new BattleSessionModel(save, repo, { battleId: firstStart.data?.battleId, rng: seededRng(11) });
 for (let i = 0; i < 160 && firstSession.state.status === 'running'; i += 1) {
   firstSession.tick(0.5);
 }
 check('first_battle_reaches_settlement', firstSession.state.status === 'victory', `status=${firstSession.state.status}`);
+
+const battleControlSession = new BattleSessionModel(save, repo, { battleId: 'full_loop_control_session', rng: seededRng(31) });
+battleControlSession.pause();
+const pausedElapsed = battleControlSession.state.elapsedSeconds;
+const pausedEvents = battleControlSession.tick(5);
+battleControlSession.resume();
+const resumedEvents = battleControlSession.tick(0.5);
+check(
+  'battle_pause_resume_blocks_and_restores_ticks',
+  pausedEvents.length === 0 && battleControlSession.state.elapsedSeconds > pausedElapsed && resumedEvents.length > 0,
+  `pausedEvents=${pausedEvents.length}, resumedEvents=${resumedEvents.length}, elapsed=${battleControlSession.state.elapsedSeconds}`,
+);
+battleControlSession.setAutoMerge(false);
+const autoMergeOff = battleControlSession.state.autoMergeEnabled === false;
+battleControlSession.setAutoMerge(true);
+check('battle_auto_merge_toggle_state', autoMergeOff && battleControlSession.state.autoMergeEnabled === true, `${battleControlSession.state.autoMergeEnabled}`);
+
+const skillSession = new BattleSessionModel(save, repo, { battleId: 'full_loop_skill_session', rng: seededRng(32) });
+const skillReadyEvents = skillSession.tick(repo.configs.levels.battle.skillChoiceAtSecond);
+const skillDamageBefore = skillSession.state.weaponSlots[0]?.damage ?? 0;
+const skillApply = skillSession.applySkill('skill_flame_power');
+const skillApplyAgain = skillSession.applySkill('skill_flame_power');
+const skillDamageAfter = skillSession.state.weaponSlots[0]?.damage ?? 0;
+check(
+  'skill_choice_offer_apply_and_duplicate_block',
+  skillReadyEvents.some((event) => event.type === 'skillReady') &&
+    skillApply.ok &&
+    !skillApplyAgain.ok &&
+    skillSession.state.activeSkillIds.includes('skill_flame_power') &&
+    skillDamageAfter > skillDamageBefore,
+  `${skillApply.message}; duplicate=${skillApplyAgain.message}; damage=${skillDamageBefore}->${skillDamageAfter}`,
+);
 
 const goldBeforeReward = save.currencies.gold;
 const settlement = battleRewards.settle(save, {
@@ -165,8 +238,61 @@ check(
   mergeFailure.message,
 );
 
+const chestSave = cloneSave(save);
+const chestGoldBefore = chestSave.currencies.gold;
+const chestCountBefore = chestSave.inventory.find((item) => item.itemId === 'item_chest' && item.itemType === 'chest')?.count ?? 0;
+const weaponCountBeforeChest = chestSave.inventory.filter((item) => item.itemType === 'weapon').reduce((sum, item) => sum + item.count, 0);
+const chestOpen = inventory.openChest(chestSave, 'item_chest', () => 0);
+const chestCountAfter = chestSave.inventory.find((item) => item.itemId === 'item_chest' && item.itemType === 'chest')?.count ?? 0;
+const weaponCountAfterChest = chestSave.inventory.filter((item) => item.itemType === 'weapon').reduce((sum, item) => sum + item.count, 0);
+check(
+  'open_chest_consumes_cost_and_grants_reward',
+  chestOpen.ok && chestSave.currencies.gold < chestGoldBefore && chestCountAfter === chestCountBefore - 1 && weaponCountAfterChest > weaponCountBeforeChest,
+  chestOpen.message,
+);
+const noGoldChestSave = cloneSave(save);
+noGoldChestSave.currencies.gold = 0;
+const noGoldChestBefore = JSON.stringify({ currencies: noGoldChestSave.currencies, inventory: noGoldChestSave.inventory });
+const noGoldChestOpen = inventory.openChest(noGoldChestSave, 'item_chest', () => 0);
+check(
+  'open_chest_insufficient_gold_no_mutation',
+  !noGoldChestOpen.ok &&
+    noGoldChestOpen.reason === 'insufficient_currency' &&
+    JSON.stringify({ currencies: noGoldChestSave.currencies, inventory: noGoldChestSave.inventory }) === noGoldChestBefore,
+  noGoldChestOpen.message,
+);
+const noChestSave = cloneSave(save);
+noChestSave.inventory = noChestSave.inventory.filter((item) => item.itemId !== 'item_chest');
+const noChestBefore = JSON.stringify({ currencies: noChestSave.currencies, inventory: noChestSave.inventory });
+const noChestOpen = inventory.openChest(noChestSave, 'item_chest', () => 0);
+check(
+  'open_chest_missing_chest_no_mutation',
+  !noChestOpen.ok &&
+    noChestOpen.reason === 'insufficient_item' &&
+    JSON.stringify({ currencies: noChestSave.currencies, inventory: noChestSave.inventory }) === noChestBefore,
+  noChestOpen.message,
+);
+
 const petUpgrade = progression.upgradePet(save, 'pet_shadow_cat');
 check('selected_pet_upgrade', petUpgrade.ok && petUpgrade.data?.pet.id === 'pet_shadow_cat', petUpgrade.message);
+
+const petDeploySave = cloneSave(save);
+const petDeploy = progression.deployPet(petDeploySave, 'pet_shadow_cat');
+check(
+  'pet_deploy_switch_single_active',
+  petDeploy.ok &&
+    petDeploySave.pets.find((pet) => pet.id === 'pet_shadow_cat')?.deployed === true &&
+    petDeploySave.pets.filter((pet) => pet.deployed).length === 1,
+  petDeploy.message,
+);
+const lockedPetDeploySave = cloneSave(save);
+const lockedPetDeployBefore = JSON.stringify(lockedPetDeploySave.pets);
+const lockedPetDeploy = progression.deployPet(lockedPetDeploySave, 'pet_moon_fox');
+check(
+  'pet_deploy_locked_blocked_no_mutation',
+  !lockedPetDeploy.ok && lockedPetDeploy.reason === 'not_owned' && JSON.stringify(lockedPetDeploySave.pets) === lockedPetDeployBefore,
+  lockedPetDeploy.message,
+);
 
 const petFailureSave = cloneSave(save);
 petFailureSave.inventory = petFailureSave.inventory.filter((item) => item.itemId !== 'pet_material_common');
@@ -180,6 +306,18 @@ check(
 
 const talentUpgrade = progression.upgradeTalent(save, 'attack_power_01');
 check('selected_talent_upgrade', talentUpgrade.ok && talentUpgrade.data?.node.id === 'attack_power_01', talentUpgrade.message);
+
+const talentResetSave = cloneSave(save);
+const talentPointsBeforeReset = talentResetSave.progress.talentPoints;
+const talentReset = progression.resetTalents(talentResetSave, 'attack');
+check(
+  'talent_reset_refunds_branch_points',
+  talentReset.ok &&
+    talentReset.data?.refunded === 1 &&
+    talentResetSave.progress.talentPoints === talentPointsBeforeReset + 1 &&
+    (talentResetSave.talents.find((node) => node.id === 'attack_power_01')?.level ?? 0) === 0,
+  talentReset.message,
+);
 
 const talentFailureSave = createDefaultSave(1710000000000);
 progression.syncConfiguredSaveRows(talentFailureSave);
@@ -228,6 +366,47 @@ check('achievement_claim', achievementClaim.ok && save.currencies.purpleGem > ac
 const achievementClaimAgain = progression.claimAchievement(save, 'wave_5');
 check('achievement_duplicate_blocked', !achievementClaimAgain.ok && achievementClaimAgain.reason === 'already_claimed', achievementClaimAgain.message);
 
+const claimAllAchievementSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(claimAllAchievementSave);
+progression.recordEvent(claimAllAchievementSave, 'highestWave', 20);
+progression.recordEvent(claimAllAchievementSave, 'weaponMerge', 100);
+progression.recordEvent(claimAllAchievementSave, 'monsterKill', 1000);
+const claimAllAchievementGemBefore = claimAllAchievementSave.currencies.purpleGem;
+const claimAllAchievements = progression.claimAllAchievements(claimAllAchievementSave);
+check(
+  'achievement_claim_all_multi_and_idempotent',
+  claimAllAchievements.ok &&
+    (claimAllAchievements.data?.length ?? 0) >= 4 &&
+    claimAllAchievementSave.currencies.purpleGem > claimAllAchievementGemBefore &&
+    claimAllAchievementSave.achievements.filter((achievement) => achievement.claimed).length >= 4 &&
+    !progression.claimAllAchievements(claimAllAchievementSave).ok,
+  claimAllAchievements.message,
+);
+
+const redDotSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(redDotSave);
+progression.recordEvent(redDotSave, 'highestWave', 1);
+const redDotsPartial = calculateDefaultRedDots(redDotSave, repo.configs);
+progression.recordEvent(redDotSave, 'highestWave', 5);
+const redDotsReady = calculateDefaultRedDots(redDotSave, repo.configs);
+progression.claimAchievement(redDotSave, 'wave_5');
+const redDotsAfterClaim = calculateDefaultRedDots(redDotSave, repo.configs);
+check(
+  'red_dot_claimable_thresholds_and_clear',
+  redDotsPartial.achievement === false && redDotsReady.achievement === true && redDotsAfterClaim.achievement === false,
+  JSON.stringify({ partial: redDotsPartial.achievement, ready: redDotsReady.achievement, afterClaim: redDotsAfterClaim.achievement }),
+);
+
+const mailRedDotSave = createDefaultSave(1710000000000);
+const mailRedDotsBefore = calculateDefaultRedDots(mailRedDotSave, repo.configs).mail;
+mail.claimAllMails(mailRedDotSave, 1710000000000);
+const mailRedDotsAfter = calculateDefaultRedDots(mailRedDotSave, repo.configs).mail;
+check(
+  'mail_red_dot_count_drops_after_claim_all',
+  typeof mailRedDotsBefore === 'number' && typeof mailRedDotsAfter === 'number' && mailRedDotsBefore > mailRedDotsAfter,
+  JSON.stringify({ before: mailRedDotsBefore, after: mailRedDotsAfter }),
+);
+
 const mailGoldBefore = save.currencies.gold;
 const unclaimedDeleteBefore = JSON.stringify(save.mails);
 const unclaimedDelete = mail.deleteMail(save, 'mail_maintenance');
@@ -275,6 +454,25 @@ check(
   paidShopBuy.message,
 );
 
+const paidShopLimitSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(paidShopLimitSave);
+paidShopLimitSave.currencies.purpleGem = 1000;
+const paidLimitFirst = shop.buy(paidShopLimitSave, 'daily_pet_food');
+const paidLimitSecond = shop.buy(paidShopLimitSave, 'daily_pet_food');
+const paidLimitThird = shop.buy(paidShopLimitSave, 'daily_pet_food');
+const paidLimitBeforeFourth = JSON.stringify({ currencies: paidShopLimitSave.currencies, inventory: paidShopLimitSave.inventory, daily: paidShopLimitSave.daily });
+const paidLimitFourth = shop.buy(paidShopLimitSave, 'daily_pet_food');
+check(
+  'shop_paid_daily_limit_blocked_no_mutation',
+  paidLimitFirst.ok &&
+    paidLimitSecond.ok &&
+    paidLimitThird.ok &&
+    !paidLimitFourth.ok &&
+    paidLimitFourth.reason === 'daily_limit_reached' &&
+    JSON.stringify({ currencies: paidShopLimitSave.currencies, inventory: paidShopLimitSave.inventory, daily: paidShopLimitSave.daily }) === paidLimitBeforeFourth,
+  paidLimitFourth.message,
+);
+
 const shopFailureSave = cloneSave(save);
 shopFailureSave.currencies.purpleGem = 0;
 const shopFailureBefore = JSON.stringify({ currencies: shopFailureSave.currencies, inventory: shopFailureSave.inventory, daily: shopFailureSave.daily });
@@ -284,6 +482,77 @@ check(
   'shop_insufficient_resource_no_mutation',
   !shopFailure.ok && shopFailure.reason === 'insufficient_currency' && shopFailureAfter === shopFailureBefore,
   shopFailure.message,
+);
+
+const refreshCancelSave = cloneSave(save);
+const refreshCancelBefore = JSON.stringify({ currencies: refreshCancelSave.currencies, daily: refreshCancelSave.daily, dailyTasks: refreshCancelSave.dailyTasks });
+const refreshCancel = shop.refresh(refreshCancelSave, 'cancel', new Date('2024-03-10T08:00:00'));
+check(
+  'shop_refresh_cancelled_ad_no_mutation',
+  !refreshCancel.ok &&
+    refreshCancel.reason === 'ad_not_completed' &&
+    JSON.stringify({ currencies: refreshCancelSave.currencies, daily: refreshCancelSave.daily, dailyTasks: refreshCancelSave.dailyTasks }) === refreshCancelBefore,
+  refreshCancel.message,
+);
+const refreshLimitSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(refreshLimitSave);
+refreshLimitSave.currencies.purpleGem = 1000;
+const adTaskBeforeRefresh = refreshLimitSave.dailyTasks.find((task) => task.id === 'daily_ad_1')?.progress ?? 0;
+const refreshAd = shop.refresh(refreshLimitSave, 'success', new Date('2024-03-10T08:00:00'));
+const refreshManualOne = shop.refresh(refreshLimitSave, 'not_requested', new Date('2024-03-10T08:05:00'));
+const refreshManualTwo = shop.refresh(refreshLimitSave, 'not_requested', new Date('2024-03-10T08:10:00'));
+const refreshBeforeLimit = JSON.stringify({ currencies: refreshLimitSave.currencies, daily: refreshLimitSave.daily });
+const refreshLimit = shop.refresh(refreshLimitSave, 'not_requested', new Date('2024-03-10T08:15:00'));
+check(
+  'shop_refresh_ad_success_then_daily_limit',
+  refreshAd.ok &&
+    refreshManualOne.ok &&
+    refreshManualTwo.ok &&
+    (refreshLimitSave.daily.adPlacementCounts?.shop_refresh ?? 0) === 1 &&
+    (refreshLimitSave.dailyTasks.find((task) => task.id === 'daily_ad_1')?.progress ?? 0) > adTaskBeforeRefresh &&
+    !refreshLimit.ok &&
+    refreshLimit.reason === 'daily_limit_reached' &&
+    JSON.stringify({ currencies: refreshLimitSave.currencies, daily: refreshLimitSave.daily }) === refreshBeforeLimit,
+  refreshLimit.message,
+);
+
+const energySave = cloneSave(save);
+const energyMax = repo.configs.levels.battle.energyMax;
+const intervalMs = repo.configs.levels.battle.energyRecoverIntervalSec * 1000;
+energySave.currencies.energy = 0;
+energySave.progress.lastEnergyRecoverAt = 1710000000000;
+const recoveredOnce = economy.recoverEnergy(energySave, 1710000000000 + intervalMs * 2 + 1000);
+const recoveredToCap = economy.recoverEnergy(energySave, 1710000000000 + intervalMs * 100);
+check(
+  'energy_recovery_interval_and_cap',
+  recoveredOnce === 2 && recoveredToCap === energyMax - 2 && energySave.currencies.energy === energyMax,
+  `once=${recoveredOnce}, cap=${recoveredToCap}, energy=${energySave.currencies.energy}`,
+);
+
+const dailyRefreshSave = cloneSave(save);
+const nextDay = new Date('2024-03-10T08:00:00');
+dailyRefreshSave.daily.dateKey = '2024-03-09';
+dailyRefreshSave.daily.freeGoldClaimed = true;
+dailyRefreshSave.daily.adWatchCount = 4;
+dailyRefreshSave.daily.shopRefreshCount = 3;
+dailyRefreshSave.daily.activityClaimedIds = ['activity_30'];
+dailyRefreshSave.daily.shopPurchaseCounts = { daily_free_gold: 1, daily_pet_food: 3 };
+dailyRefreshSave.daily.adPlacementCounts = { battle_reward_double: 2, shop_refresh: 1 };
+dailyRefreshSave.dailyTasks = dailyRefreshSave.dailyTasks.map((task) => ({ ...task, progress: 999, claimed: true }));
+const didRefreshDaily = refreshDailySaveIfNeeded(dailyRefreshSave, nextDay);
+const didRefreshAgain = refreshDailySaveIfNeeded(dailyRefreshSave, nextDay);
+check(
+  'daily_refresh_resets_tasks_and_limits_once',
+  didRefreshDaily &&
+    !didRefreshAgain &&
+    dailyRefreshSave.daily.dateKey === getLocalDateKey(nextDay) &&
+    dailyRefreshSave.daily.freeGoldClaimed === false &&
+    dailyRefreshSave.daily.shopRefreshCount === 0 &&
+    dailyRefreshSave.daily.activityClaimedIds.length === 0 &&
+    Object.keys(dailyRefreshSave.daily.shopPurchaseCounts ?? {}).length === 0 &&
+    Object.keys(dailyRefreshSave.daily.adPlacementCounts ?? {}).length === 0 &&
+    dailyRefreshSave.dailyTasks.every((task) => !task.claimed && task.progress === (task.id === 'daily_login' ? 1 : 0)),
+  JSON.stringify({ daily: dailyRefreshSave.daily, tasks: dailyRefreshSave.dailyTasks }),
 );
 
 save.settings.musicEnabled = false;
