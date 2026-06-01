@@ -20,6 +20,7 @@ const packagePath = path.join(projectRoot, 'package.json');
 const defaultSavePath = path.join(projectRoot, 'assets', 'scripts', 'data', 'DefaultSave.ts');
 const fullLoopAcceptancePath = path.join(projectRoot, 'tools', 'verify_full_loop_acceptance.ts');
 const wechatBuildOutputPath = path.join(projectRoot, 'tools', 'verify_wechat_build_output.mjs');
+const uiDesignParityPath = path.join(projectRoot, 'tools', 'verify_ui_design_parity.mjs');
 const previewImportMapPath = path.join(projectRoot, 'temp', 'programming', 'packer-driver', 'targets', 'preview', 'import-map.json');
 
 const failures = [];
@@ -257,7 +258,7 @@ function readMappedPreviewUiChunks() {
     });
 }
 
-for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath, wechatBuildOutputPath]) {
+for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath]) {
   if (!fs.existsSync(filePath)) {
     fail(`Missing required file: ${path.relative(projectRoot, filePath)}`);
   }
@@ -280,6 +281,7 @@ if (failures.length === 0) {
   const defaultSave = read(defaultSavePath);
   const fullLoopAcceptance = read(fullLoopAcceptancePath);
   const wechatBuildOutput = read(wechatBuildOutputPath);
+  const uiDesignParity = read(uiDesignParityPath);
 
   for (const [label, source] of Object.entries({
     'UISkeletonBuilder.ts': uiBuilder,
@@ -1069,6 +1071,14 @@ if (failures.length === 0) {
     fail('package.json must expose npm run verify:wechat-build for Cocos WeChat build output acceptance.');
   }
 
+  if (!packageJson.scripts?.['verify:design-parity']?.includes('tools/verify_ui_design_parity.mjs')) {
+    fail('package.json must expose npm run verify:design-parity for 22-page UI launch evidence.');
+  }
+
+  if (!packageJson.scripts?.['workflow:check']?.includes('verify:design-parity')) {
+    fail('package.json workflow:check must include the 22-page UI design parity gate.');
+  }
+
   for (const fullLoopToken of [
     'agreement_gate_blocks_start',
     'start_first_battle',
@@ -1119,6 +1129,21 @@ if (failures.length === 0) {
   ]) {
     if (!wechatBuildOutput.includes(wechatBuildToken)) {
       fail(`WeChat build output verification script is missing required check: ${wechatBuildToken}`);
+    }
+  }
+
+  for (const designParityToken of [
+    'expectedScreenshots',
+    '01_login.png',
+    '22_toast_modal.png',
+    'verify_login_design_parity.mjs',
+    'verify_system_modal_design_parity.mjs',
+    'minScreenshotWidth',
+    'targetPortraitAspect',
+    'ui-design-parity',
+  ]) {
+    if (!uiDesignParity.includes(designParityToken)) {
+      fail(`UI design parity verification script is missing required check: ${designParityToken}`);
     }
   }
 

@@ -39,6 +39,6 @@ Status values:
 
 ## Current Design P0
 
-- The design audit must count all 22 annotated page references before any UI pass can be considered valid.
-- Screenshots in `tmp/final_mobile_pages_after_ui_pass` are useful local evidence, but they are not release evidence until each row above is reviewed and signed off.
+- `verify_ui_design_parity` now runs the 22-page design reference audit, 8 static parity scripts, and validates 22 local portrait screenshot evidence files.
+- Screenshots in `tmp/final_mobile_pages_after_ui_pass` are current local evidence, but they are not final release evidence until each row above is reviewed and signed off against the design reference.
 - Pet/talent selected-state actions and WeChat runtime screenshots must be verified before these rows can move to `PASS`.

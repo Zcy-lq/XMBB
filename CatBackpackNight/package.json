@@ -23,11 +23,12 @@
     "verify:asset-pipeline-state": "node tools/verify_asset_pipeline_state.mjs",
     "asset:review": "node tools/asset_review_center.mjs",
     "audit:design-reference": "node tools/audit_design_reference.mjs",
+    "verify:design-parity": "node tools/verify_ui_design_parity.mjs",
     "validate:configs": "node tools/validate_configs.js",
     "validate:assets": "node tools/validate_assets.js",
     "validate:handoffs": "node tools/validate_handoffs.js",
     "build:check": "node tools/build_check.js",
-    "workflow:check": "npm run validate:configs && npm run validate:assets && npm run audit:design-reference && npm run validate:handoffs -- --allow-missing && npm run build:check"
+    "workflow:check": "npm run validate:configs && npm run validate:assets && npm run verify:design-parity && npm run validate:handoffs -- --allow-missing && npm run build:check"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

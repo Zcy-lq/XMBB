@@ -8,7 +8,7 @@
   - Suggested Fix: Drive every P0 row in the release matrix to `PASS` with automated, Cocos, WeChat DevTools, screenshot, or device evidence.
   - Do Not Modify By QA: acceptance IDs or launch criteria just to reduce scope.
 - The 22-page AI annotated design set has not been signed off against the implemented UI.
-  - Evidence: `设计图_AI全页面2K标注版` contains the current 22-page target, but the older design audit only counted the legacy 12-image design directory.
+  - Evidence: `tools/verify_ui_design_parity.mjs` passes the 22-page reference audit, 8 static parity scripts, and 22 local portrait screenshots. Manual design sign-off and WeChat runtime screenshots are still not recorded.
   - Owner Agent: UIUXAgent
   - Suggested Fix: Maintain `docs/UI_DESIGN_PARITY_MATRIX.md`, compare every implemented screen against its matching design PNG, and keep the design audit locked to all 22 annotated references.
   - Do Not Modify By QA: visual requirements without a new design reference.
