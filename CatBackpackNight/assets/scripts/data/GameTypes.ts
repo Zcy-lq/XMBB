@@ -106,6 +106,7 @@ export interface SettingsSave {
   vibrationEnabled: boolean;
   powerSavingEnabled: boolean;
   acceptedAgreement: boolean;
+  mergeGuideSeen: boolean;
 }
 
 export interface DailySave {

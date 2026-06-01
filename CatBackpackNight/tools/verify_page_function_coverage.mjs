@@ -98,7 +98,7 @@ const pageContracts = {
   battlePrepare: ['BattlePrepare_HeroCat', 'Button_Back_BattlePrepare', 'Button_Close_BattlePrepare', 'Button_StartBattle', 'gameLogic.startBattle()', "SceneRouter.instance.go('battle')", "return 'home'"],
   battle: ['Button_BattlePause', "'Button_BattlePause')) return 'pauseModal'", 'Button_AutoMerge', 'updateBattleLiveState'],
   merge: ['Button_MergeConfirm', 'gameLogic.autoMergeAll()', "this.addBottomNav('merge')"],
-  mergeGuide: ['MergeGuide_Modal', 'Button_MergeGuideConfirm', 'Button_MergeGuideHelp'],
+  mergeGuide: ['MergeGuide_Modal', 'Button_MergeGuideConfirm', 'Button_MergeGuideHelp', 'settings.mergeGuideSeen', 'draft.settings.mergeGuideSeen = true'],
   explore: ['Explore_MapPanel', 'Button_ExploreStart', '探索系统暂未开放'],
   guild: ['Guild_MainPanel', 'Button_GuildCheckIn', 'Button_GuildHelp'],
   backpack: ['Button_Merge', 'Button_OpenChest', 'Button_BackpackSort', 'gameLogic.openChest()'],

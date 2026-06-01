@@ -102,6 +102,7 @@ export function createDefaultSave(now = Date.now()): GameSaveData {
       vibrationEnabled: true,
       powerSavingEnabled: false,
       acceptedAgreement: false,
+      mergeGuideSeen: false,
     },
     daily: {
       dateKey: getLocalDateKey(new Date(now)),

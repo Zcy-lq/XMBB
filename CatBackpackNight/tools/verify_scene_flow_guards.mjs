@@ -1009,6 +1009,16 @@ if (failures.length === 0) {
     }
   }
 
+  for (const mergeGuideToken of [
+    'mergeGuideSeen: false',
+    "if (name === 'Button_Merge') return SaveManager.instance.load().settings.mergeGuideSeen ? 'merge' : 'mergeGuide'",
+    'draft.settings.mergeGuideSeen = true',
+  ]) {
+    if (!uiBuilder.includes(mergeGuideToken) && !defaultSave.includes(mergeGuideToken)) {
+      fail(`First merge tutorial must be one-time and persisted: ${mergeGuideToken}`);
+    }
+  }
+
   for (const requiredVisibleButtonHandler of [
     "name.includes('Button_ShopAddCurrency')",
     "name.includes('Button_BackpackSort')",
@@ -1248,6 +1258,8 @@ if (failures.length === 0) {
     'Button_MailClaimAll',
     'Button_TalentLearn',
     'Button_DefeatRetry',
+    'settings.mergeGuideSeen',
+    'draft.settings.mergeGuideSeen = true',
   ]) {
     if (!pageFunctionCoverage.includes(pageFunctionToken)) {
       fail(`Page function coverage script is missing required check: ${pageFunctionToken}`);

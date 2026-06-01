@@ -2037,7 +2037,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Button_MailDetail')) return 'mail';
     if (name.includes('Button_PolicyClose') || name.includes('Button_PolicyDisagree')) return 'login';
     if (name.includes('Button_ConfirmClose') || name.includes('Button_ConfirmCancel') || name.includes('Button_ConfirmOk')) return 'home';
-    if (name === 'Button_Merge') return 'mergeGuide';
+    if (name === 'Button_Merge') return SaveManager.instance.load().settings.mergeGuideSeen ? 'merge' : 'mergeGuide';
     if (name.includes('Button_MergeGuideConfirm')) return 'backpack';
     if (name.includes('Button_PetDetailClose') || name.includes('Button_PetDetailBackList') || name.includes('Button_PetDetailDeploy')) return 'pet';
     if (name.includes('Button_StagePrev') || name.includes('Button_StageNext')) return 'battlePrepare';
@@ -2110,6 +2110,14 @@ export class UISkeletonBuilder extends BaseUIComponent {
 
     if (name.includes('Button_MergeGuideHelp')) {
       this.showToast('两个同名同等级武器可合成更高等级，材料不足时不会消耗道具');
+      return true;
+    }
+
+    if (name.includes('Button_MergeGuideConfirm')) {
+      SaveManager.instance.update((draft) => {
+        draft.settings.mergeGuideSeen = true;
+      }, 'merge-guide-seen');
+      void SceneRouter.instance.go('backpack');
       return true;
     }
 
