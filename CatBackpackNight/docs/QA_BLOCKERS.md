@@ -13,7 +13,7 @@
   - Suggested Fix: Maintain `docs/UI_DESIGN_PARITY_MATRIX.md`, compare every implemented screen against its matching design PNG, and keep the design audit locked to all 22 annotated references.
   - Do Not Modify By QA: visual requirements without a new design reference.
 - WeChat DevTools import and preview evidence is missing.
-  - Evidence: no current `build/wechatgame` import screenshot, DevTools console log, or one-loop preview record is stored in the QA docs. On 2026-06-01 `build/wechatgame` was absent and WeChat DevTools CLI `islogin` did not return within 64 seconds while the DevTools GUI process was running.
+  - Evidence: Cocos Creator 3.8.8 generated `build/wechatgame` on 2026-06-01 and `tools/verify_wechat_build_output.mjs` passed for required files, portrait orientation, `compileType: game`, and 4,969,185 bytes. WeChat DevTools `open`, `islogin`, and `quit` CLI commands repeatedly timed out, so no import screenshot, DevTools console log, or one-loop preview record is stored in the QA docs.
   - Owner Agent: PlatformAgent
   - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
   - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.
@@ -31,12 +31,12 @@
 ## P1 Issues
 
 - Cocos Creator editor-side import/hierarchy verification is still required.
-  - Evidence: Browser Preview route screenshots pass, but editor Console import errors and scene/prefab hierarchy have not been independently signed off in the Cocos Creator UI. On 2026-06-01 no `CocosCreator.exe` was found under Program Files, `D:\`, or the Administrator AppData folders; only Cocos Dashboard was previously detected.
+  - Evidence: Browser Preview route screenshots pass and Cocos Creator 3.8.8 command-line `wechatgame` build output now exists, but editor Console import errors and scene/prefab hierarchy have not been independently signed off in the Cocos Creator UI.
   - Owner Agent: QAReleaseAgent
   - Suggested Fix: Open the project in Cocos Creator 3.8.x, confirm clean Console output, and repair any missing script/component binding immediately.
   - Do Not Modify By QA: runtime asset mappings unless a screenshot shows the exact regression.
 - WeChat DevTools import and preview are still required before calling the game release-ready.
-  - Evidence: local Browser Preview is verified. A 2026-05-30 Cocos command-line `wechatgame` build probe refreshed Cocos logs but produced no `build/wechatgame` output. On 2026-06-01 `build/wechatgame` was still absent, WeChat DevTools was installed and running, but CLI login/import automation was not usable from this environment.
+  - Evidence: local Browser Preview is verified and 2026-06-01 Cocos command-line `wechatgame` build output is present. WeChat DevTools is installed and can launch, but CLI login/import automation was not usable from this environment.
   - Owner Agent: PlatformAgent
   - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
   - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.

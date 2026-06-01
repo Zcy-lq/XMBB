@@ -11,7 +11,7 @@ Status values:
 
 | AC ID | Priority | Area | Status | Evidence | Owner | Next Action |
 | --- | --- | --- | --- | --- | --- | --- |
-| AC-001 | P0 | WeChat import | BLOCKED | No WeChat DevTools import evidence recorded | PlatformAgent | Build WeChat target and import in DevTools |
+| AC-001 | P0 | WeChat import | BLOCKED | `build/wechatgame` output is generated and passes `verify_wechat_build_output`; WeChat DevTools CLI import/open still times out with no screenshot/log evidence | PlatformAgent | Import the generated WeChat target in DevTools and record launch evidence |
 | AC-002 | P0 | Startup | UNVERIFIED | Browser Preview route screenshots exist; WeChat startup not recorded | QAReleaseAgent | Record Cocos launch and WeChat launch logs/screenshots |
 | AC-003 | P1 | Resource loading | PARTIAL | `verify_runtime_asset_index` and UI asset contract pass locally | QAReleaseAgent | Cold-start home/backpack/battle in Cocos and WeChat |
 | AC-004 | P1 | Config loading | PASS | `validate_configs` passes 19 JSON files | QAReleaseAgent | Keep in regression suite |

@@ -69,6 +69,18 @@ cd CatBackpackNight
 
 Expected: every command exits `0`.
 
+## Post-Build WeChat Output Gate
+
+After running the Cocos WeChat Mini Game build, verify the generated package before importing it into WeChat DevTools:
+
+```powershell
+$node = 'C:\Users\Administrator\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
+cd CatBackpackNight
+& $node tools/verify_wechat_build_output.mjs
+```
+
+Expected: `[wechat-build-output] PASS`.
+
 ## Current P0 Runtime Gaps
 
 - WeChat DevTools import and preview evidence is not recorded.

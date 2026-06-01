@@ -19,6 +19,7 @@ const assetReviewToolPath = path.join(projectRoot, 'tools', 'asset_review_center
 const packagePath = path.join(projectRoot, 'package.json');
 const defaultSavePath = path.join(projectRoot, 'assets', 'scripts', 'data', 'DefaultSave.ts');
 const fullLoopAcceptancePath = path.join(projectRoot, 'tools', 'verify_full_loop_acceptance.ts');
+const wechatBuildOutputPath = path.join(projectRoot, 'tools', 'verify_wechat_build_output.mjs');
 const previewImportMapPath = path.join(projectRoot, 'temp', 'programming', 'packer-driver', 'targets', 'preview', 'import-map.json');
 
 const failures = [];
@@ -256,7 +257,7 @@ function readMappedPreviewUiChunks() {
     });
 }
 
-for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath]) {
+for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath, wechatBuildOutputPath]) {
   if (!fs.existsSync(filePath)) {
     fail(`Missing required file: ${path.relative(projectRoot, filePath)}`);
   }
@@ -278,6 +279,7 @@ if (failures.length === 0) {
   const packageJson = JSON.parse(read(packagePath));
   const defaultSave = read(defaultSavePath);
   const fullLoopAcceptance = read(fullLoopAcceptancePath);
+  const wechatBuildOutput = read(wechatBuildOutputPath);
 
   for (const [label, source] of Object.entries({
     'UISkeletonBuilder.ts': uiBuilder,
@@ -1059,6 +1061,10 @@ if (failures.length === 0) {
     fail('package.json must expose npm run verify:full-loop for launch-loop acceptance.');
   }
 
+  if (!packageJson.scripts?.['verify:wechat-build']?.includes('tools/verify_wechat_build_output.mjs')) {
+    fail('package.json must expose npm run verify:wechat-build for Cocos WeChat build output acceptance.');
+  }
+
   for (const fullLoopToken of [
     'agreement_gate_blocks_start',
     'start_first_battle',
@@ -1075,6 +1081,21 @@ if (failures.length === 0) {
   ]) {
     if (!fullLoopAcceptance.includes(fullLoopToken)) {
       fail(`Full-loop launch acceptance script is missing required check: ${fullLoopToken}`);
+    }
+  }
+
+  for (const wechatBuildToken of [
+    'build/wechatgame',
+    'game.js',
+    'game.json',
+    'project.config.json',
+    'deviceOrientation',
+    'compileType',
+    'miniprogramRoot',
+    'wechat-build-output',
+  ]) {
+    if (!wechatBuildOutput.includes(wechatBuildToken)) {
+      fail(`WeChat build output verification script is missing required check: ${wechatBuildToken}`);
     }
   }
 
