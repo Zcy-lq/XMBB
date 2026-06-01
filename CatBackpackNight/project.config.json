@@ -1,0 +1,40 @@
+{
+  "description": "猫猫背包守夜微信小游戏",
+  "projectname": "CatBackpackNight",
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "enhance": true,
+    "postcss": false,
+    "minified": true,
+    "newFeature": true
+  },
+  "packOptions": {
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "assets/textures/references"
+      },
+      {
+        "type": "folder",
+        "value": "library"
+      },
+      {
+        "type": "folder",
+        "value": "temp"
+      },
+      {
+        "type": "folder",
+        "value": "profiles"
+      }
+    ]
+  },
+  "compileType": "game",
+  "libVersion": "3.8.0",
+  "appid": "touristappid",
+  "condition": {},
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  }
+}

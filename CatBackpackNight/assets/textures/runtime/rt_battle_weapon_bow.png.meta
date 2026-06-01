@@ -1,0 +1,42 @@
+{
+  "ver": "1.0.27",
+  "importer": "image",
+  "imported": true,
+  "uuid": "4332b9b7-6b45-4114-b749-e0cb72a53cb2",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "id": "6c48a",
+      "imported": true,
+      "importer": "texture",
+      "name": "texture",
+      "files": [
+        ".json"
+      ],
+      "ver": "1.0.22",
+      "userData": {
+        "magfilter": "linear",
+        "imageUuidOrDatabaseUri": "4332b9b7-6b45-4114-b749-e0cb72a53cb2",
+        "anisotropy": 0,
+        "minfilter": "linear",
+        "isUuid": true,
+        "mipfilter": "none",
+        "visible": false,
+        "wrapModeS": "clamp-to-edge",
+        "wrapModeT": "clamp-to-edge"
+      },
+      "uuid": "4332b9b7-6b45-4114-b749-e0cb72a53cb2@6c48a",
+      "subMetas": {},
+      "displayName": "rt_battle_weapon_bow"
+    }
+  },
+  "userData": {
+    "hasAlpha": true,
+    "fixAlphaTransparencyArtifacts": true,
+    "redirect": "4332b9b7-6b45-4114-b749-e0cb72a53cb2@6c48a",
+    "type": "texture"
+  }
+}

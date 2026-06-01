@@ -1,0 +1,49 @@
+{
+  "version": "0.1.0",
+  "schemaVersion": 1,
+  "bundles": [
+    {
+      "id": "boot",
+      "kind": "main",
+      "targetMaxMB": 3.5,
+      "purpose": "Login, common UI, minimum boot resources",
+      "runtime": true,
+      "remote": false
+    },
+    {
+      "id": "home",
+      "kind": "subpackage",
+      "targetMaxMB": 6,
+      "purpose": "Home screen and daily operation UI",
+      "runtime": true,
+      "remote": false
+    },
+    {
+      "id": "battle",
+      "kind": "subpackage",
+      "targetMaxMB": 8,
+      "purpose": "Combat scene, enemies, projectiles, hit effects",
+      "runtime": true,
+      "remote": false
+    },
+    {
+      "id": "dev",
+      "kind": "development-only",
+      "targetMaxMB": 0,
+      "purpose": "Reference images, QA screenshots, temporary candidates",
+      "runtime": false,
+      "remote": false
+    }
+  ],
+  "rules": {
+    "excludeFromRuntime": [
+      "tmp/",
+      "temp/",
+      "library/",
+      "assets/textures/references/",
+      "tmp/asset_candidates/"
+    ],
+    "remoteBundleVersionField": "remoteBundleVersion",
+    "cacheInvalidation": "Change remoteBundleVersion when promoted remote assets change."
+  }
+}

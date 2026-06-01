@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "nextRefreshHour": 0,
+  "manualRefreshLimit": 3,
+  "adRefreshFreeCount": 1,
+  "manualRefreshCost": { "currency": "purpleGem", "amount": 20 },
+  "tabs": [
+    { "id": "daily", "displayName": "Daily Shop", "enabled": true },
+    { "id": "gem", "displayName": "Gem Shop", "enabled": true },
+    { "id": "special", "displayName": "Special Packs", "enabled": false }
+  ],
+  "goods": [
+    { "id": "daily_free_gold", "tabId": "daily", "slot": 1, "displayName": "Gold x5000", "payment": { "type": "free" }, "dailyLimit": 1, "rewards": [{ "kind": "currency", "id": "gold", "amount": 5000 }] },
+    { "id": "daily_pet_food", "tabId": "daily", "slot": 2, "displayName": "Pet Food x20", "payment": { "type": "currency", "currency": "purpleGem", "amount": 50 }, "dailyLimit": 3, "rewards": [{ "kind": "petMaterial", "id": "pet_material_common", "amount": 20 }] },
+    { "id": "daily_pet_egg", "tabId": "daily", "slot": 3, "displayName": "Pet Egg x1", "payment": { "type": "currency", "currency": "purpleGem", "amount": 300 }, "dailyLimit": 1, "rewards": [{ "kind": "item", "id": "item_pet_egg", "amount": 1 }] },
+    { "id": "daily_chest", "tabId": "daily", "slot": 4, "displayName": "Weapon Chest x1", "payment": { "type": "currency", "currency": "blueGem", "amount": 200 }, "dailyLimit": 3, "rewards": [{ "kind": "item", "id": "item_chest", "amount": 1 }] },
+    { "id": "daily_blue_gem", "tabId": "daily", "slot": 5, "displayName": "Blue Gem x100", "payment": { "type": "currency", "currency": "purpleGem", "amount": 60 }, "dailyLimit": 5, "rewards": [{ "kind": "currency", "id": "blueGem", "amount": 100 }] },
+    { "id": "daily_energy", "tabId": "daily", "slot": 6, "displayName": "Energy x20", "payment": { "type": "currency", "currency": "blueGem", "amount": 10 }, "dailyLimit": 2, "rewards": [{ "kind": "currency", "id": "energy", "amount": 20 }] },
+    { "id": "gem_gold_large", "tabId": "gem", "slot": 1, "displayName": "Gold x12000", "payment": { "type": "currency", "currency": "purpleGem", "amount": 100 }, "dailyLimit": 10, "rewards": [{ "kind": "currency", "id": "gold", "amount": 12000 }] },
+    { "id": "gem_blue_small", "tabId": "gem", "slot": 2, "displayName": "Blue Gem x300", "payment": { "type": "currency", "currency": "purpleGem", "amount": 150 }, "dailyLimit": 10, "rewards": [{ "kind": "currency", "id": "blueGem", "amount": 300 }] },
+    { "id": "gem_chest_bundle", "tabId": "gem", "slot": 3, "displayName": "Chest x3", "payment": { "type": "currency", "currency": "purpleGem", "amount": 180 }, "dailyLimit": 5, "rewards": [{ "kind": "item", "id": "item_chest", "amount": 3 }] },
+    { "id": "gem_energy_potion", "tabId": "gem", "slot": 4, "displayName": "Energy Potion x1", "payment": { "type": "currency", "currency": "purpleGem", "amount": 80 }, "dailyLimit": 3, "rewards": [{ "kind": "item", "id": "item_energy_potion", "amount": 1 }] },
+    { "id": "gem_talent_point", "tabId": "gem", "slot": 5, "displayName": "Talent Point x1", "payment": { "type": "currency", "currency": "blueGem", "amount": 500 }, "dailyLimit": 1, "rewards": [{ "kind": "talentPoint", "id": "talentPoint", "amount": 1 }] },
+    { "id": "gem_pet_food_large", "tabId": "gem", "slot": 6, "displayName": "Pet Food x80", "payment": { "type": "currency", "currency": "purpleGem", "amount": 180 }, "dailyLimit": 5, "rewards": [{ "kind": "petMaterial", "id": "pet_material_common", "amount": 80 }] },
+    { "id": "special_placeholder", "tabId": "special", "slot": 1, "displayName": "Coming Soon", "payment": { "type": "unavailable" }, "dailyLimit": 0, "rewards": [] }
+  ]
+}

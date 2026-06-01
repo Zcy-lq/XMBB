@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "designResolution": {
+    "width": 750,
+    "height": 1334
+  },
+  "defaultRoute": "login",
+  "sceneRoutes": {
+    "login": "Login",
+    "home": "Home",
+    "battlePrepare": "BattlePrepare",
+    "battle": "Battle",
+    "merge": "Home",
+    "explore": "Home",
+    "guild": "Home",
+    "backpack": "Home",
+    "shop": "Home",
+    "pet": "Home",
+    "talent": "Home",
+    "dailyTask": "Home",
+    "achievement": "Home",
+    "mail": "Home",
+    "settings": "Home"
+  },
+  "bottomNav": ["home", "battle", "merge", "explore", "guild"]
+}

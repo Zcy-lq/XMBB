@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "coordinate": {
+    "width": 750,
+    "height": 1334
+  },
+  "screens": {
+    "home": {
+      "prefab": "Screen_Home",
+      "children": [
+        { "name": "Panel_PlayerPlate", "position": [-200, 570], "size": [320, 108] },
+        { "name": "P_ResourceBar", "position": [145, 584], "size": [320, 62] },
+        { "name": "Panel_StageCard", "position": [0, 250], "size": [430, 160] },
+        { "name": "Button_StartBattle", "position": [0, -430], "size": [430, 112] },
+        { "name": "P_BottomNav", "position": [0, -590], "size": [720, 142] }
+      ]
+    },
+    "battle": {
+      "prefab": "Screen_Battle",
+      "children": [
+        { "name": "HUD_Top", "position": [0, 522], "size": [690, 170] },
+        { "name": "Battle_Field", "position": [0, 80], "size": [690, 690] },
+        { "name": "HUD_WeaponSlotBar", "position": [0, -565], "size": [720, 164] }
+      ]
+    }
+  }
+}
+

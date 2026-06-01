@@ -1,0 +1,450 @@
+{
+  "project": {
+    "name": "猫猫背包守夜",
+    "codename": "CatBackpackNight",
+    "platform": "微信小游戏",
+    "engine": "Cocos Creator 3.8 LTS / 3.x + TypeScript",
+    "entry": "assets/scenes/Login.scene",
+    "goal": "把多智能体流水线升级为可真实创建项目文件、可交接、可验证、可回归、可构建的商业级工程流水线。",
+    "design_template": "docs/UI_DESIGN_TEMPLATE.md",
+    "architecture_plan": "docs/ARCHITECTURE_PLAN.md",
+    "reference_image_dir": "C:/Users/User/Desktop/XMBB/设计图",
+    "output_root": "CatBackpackNight",
+    "handoff_root": "CatBackpackNight/agent_handoffs",
+    "report_root": "CatBackpackNight/agent_reports",
+    "quality_bar": [
+      "商业级不是口号，每个 Agent 必须创建或修改真实项目文件。",
+      "后续 Agent 必须读取真实 handoff/report/project 文件，不得把 prompt 文件当成前置产物。",
+      "UI 必须优先参考 C:/Users/User/Desktop/XMBB/设计图 中的最新设计图。",
+      "背景、角色、图标等视觉资产必须使用图片资源；不得用代码绘制的低质背景冒充最终素材。",
+      "所有未真实经过 Cocos Editor、微信开发者工具或真机验证的结论必须标记 UNVERIFIED。"
+    ],
+    "documentation_policy": [
+      "Do not create extra documents outside Required Outputs unless a Stop Condition requires a blocker report.",
+      "Prefer code, config, generated assets, screenshots, and validation output over explanatory documents.",
+      "Keep handoff/report concise and delta-focused.",
+      "Update existing docs instead of creating parallel docs with similar meaning."
+    ],
+    "reference_images": [
+      "C:/Users/User/Desktop/XMBB/设计图/a98ca017-1b0e-41cc-9436-fbf4287bbe66.png",
+      "C:/Users/User/Desktop/XMBB/设计图/e70d86be-0ebd-4171-88d6-3cb8efe07522.png"
+    ]
+  },
+  "model_policy": {
+    "principle": "Prompt 中建议使用 GPT-5.5 或当前 Codex 面板可用的最强推理/编码模型；脚本层不得硬编码单一模型名。",
+    "default_best": "strongest-available",
+    "fallback_order": [
+      "GPT-5.5 or strongest available Codex model",
+      "strongest available reasoning/coding model in the Codex panel",
+      "user-specified --model value"
+    ]
+  },
+  "default_required_checks": [
+    "npm run validate:configs",
+    "npm run validate:assets",
+    "npm run asset:review",
+    "npm run audit:design-reference",
+    "npm run validate:handoffs -- --allow-missing",
+    "npm run build:check",
+    "If TypeScript or Cocos checks cannot run, record the exact reason in REPORT_<AgentName>.md"
+  ],
+  "stop_conditions": [
+    "CatBackpackNight missing and this Agent is not responsible for initialization.",
+    "Required config JSON cannot be parsed.",
+    "Core contracts such as assets.json, save schema, economy config, or platform config are invalid.",
+    "Required design images are unavailable but the Agent would need to claim visual slicing or visual verification.",
+    "Cocos scene/prefab references point to paths that clearly do not exist.",
+    "Real AppID, ad unit ID, cloud env ID, or payment credentials are required but not provided.",
+    "A required command fails and the Agent cannot fix it within its Allowed Changes.",
+    "QA finds a P0 issue and docs/QA_BLOCKERS.md is not updated."
+  ],
+  "execution_order": [
+    "ProductAgent",
+    "ClientArchAgent",
+    "UIUXAgent",
+    "AssetAgent",
+    "CoreGameplayAgent",
+    "EconomyRewardAgent",
+    "SaveDataAgent",
+    "PlatformAgent",
+    "BuildAgent",
+    "QAReleaseAgent"
+  ],
+  "agents": [
+    {
+      "name": "ProductAgent",
+      "role": "产品定位、核心循环、MVP 范围和商业化边界",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/docs/ARCHITECTURE_PLAN.md",
+        "CatBackpackNight/docs/UI_DESIGN_TEMPLATE.md",
+        "C:/Users/User/Desktop/XMBB/设计图"
+      ],
+      "fallback_behavior": [
+        "如果设计图目录缺失，必须标记 MISSING，并基于现有项目文件生成最小占位规范。",
+        "不得声称完成视觉验收，除非真实读取并引用设计图。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/docs/PRODUCT_SPEC.md",
+        "CatBackpackNight/docs/CORE_LOOP.md",
+        "CatBackpackNight/docs/MVP_SCOPE.md",
+        "CatBackpackNight/docs/MONETIZATION_PLAN.md",
+        "CatBackpackNight/docs/BLOCKERS.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_ProductAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_ProductAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not modify gameplay code, save schema, platform adapters, Cocos scene files, or economy numbers outside product docs."
+      ],
+      "output": [
+        "CatBackpackNight/docs/PRODUCT_SPEC.md",
+        "CatBackpackNight/docs/CORE_LOOP.md",
+        "CatBackpackNight/docs/MVP_SCOPE.md",
+        "CatBackpackNight/docs/MONETIZATION_PLAN.md"
+      ],
+      "acceptance_criteria": [
+        "明确目标用户、5 分钟核心循环、首日/三日/七日目标、MVP 不做什么、商业化方式和 P0/P1/P2 优先级。"
+      ],
+      "prompt": "根据真实项目文件和设计图，维护商业级产品规格。输出必须能被后续 Agent 直接消费。"
+    },
+    {
+      "name": "ClientArchAgent",
+      "role": "Cocos 客户端架构、工程骨架、配置/资源/存档/平台接口",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/agent_handoffs/HANDOFF_ProductAgent.md",
+        "CatBackpackNight/docs/PRODUCT_SPEC.md",
+        "CatBackpackNight/assets/configs/version.json"
+      ],
+      "fallback_behavior": [
+        "如果 ProductAgent handoff 缺失，必须标记 MISSING，并只做可隔离的最小架构改动。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/assets/scripts/core/**",
+        "CatBackpackNight/assets/scripts/configs/**",
+        "CatBackpackNight/assets/scripts/services/**",
+        "CatBackpackNight/assets/scripts/data/**",
+        "CatBackpackNight/assets/configs/**",
+        "CatBackpackNight/docs/ARCHITECTURE_PLAN.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_ClientArchAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_ClientArchAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not overwrite .scene, .prefab, or .meta files unless explicitly required and documented."
+      ],
+      "output": [
+        "CatBackpackNight/docs/ARCHITECTURE_PLAN.md",
+        "CatBackpackNight/assets/scripts/core",
+        "CatBackpackNight/assets/scripts/configs",
+        "CatBackpackNight/assets/scripts/services",
+        "CatBackpackNight/assets/scripts/data"
+      ],
+      "acceptance_criteria": [
+        "有模块分层、事件总线、配置加载器、资源加载接口、存档接口、平台适配接口，且 TypeScript 可检查。"
+      ],
+      "prompt": "维护 Cocos Creator TypeScript 商业项目骨架，优先遵守现有代码边界。"
+    },
+    {
+      "name": "UIUXAgent",
+      "role": "UI 结构、交互状态、Prefab 规划、设计图还原",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/agent_handoffs/HANDOFF_ProductAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_ClientArchAgent.md",
+        "C:/Users/User/Desktop/XMBB/设计图",
+        "CatBackpackNight/assets/scripts/ui/UISkeletonBuilder.ts",
+        "CatBackpackNight/assets/configs/ui_asset_contract.json"
+      ],
+      "fallback_behavior": [
+        "如果设计图缺失，必须标记 MISSING，不得声称完成视觉还原。",
+        "如果无法确保 prefab 可用，必须写明 Generated as plan only 和 Requires Cocos Editor binding。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/assets/scripts/ui/**",
+        "CatBackpackNight/assets/configs/ui_prefab_layouts.json",
+        "CatBackpackNight/docs/UI_SCREEN_SPEC.md",
+        "CatBackpackNight/docs/UI_COMPONENT_SPEC.md",
+        "CatBackpackNight/docs/UI_STATE_FLOW.md",
+        "CatBackpackNight/docs/UI_PREFAB_PLAN.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_UIUXAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_UIUXAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not change combat formulas, economy rewards, save schema, platform protocol, or resource Bundle strategy."
+      ],
+      "output": [
+        "CatBackpackNight/docs/UI_SCREEN_SPEC.md",
+        "CatBackpackNight/docs/UI_COMPONENT_SPEC.md",
+        "CatBackpackNight/docs/UI_STATE_FLOW.md",
+        "CatBackpackNight/docs/UI_PREFAB_PLAN.md"
+      ],
+      "acceptance_criteria": [
+        "登录页和主页必须参考 C:/Users/User/Desktop/XMBB/设计图 中的设计图；背景必须使用图片资源；动态文本不得烘焙进图片。"
+      ],
+      "prompt": "按最新设计图维护 UI 结构和交互，优先交付真实页面代码、素材接入和验证结果。"
+    },
+    {
+      "name": "AssetAgent",
+      "role": "素材工程、生成资产、资源索引、Bundle 和首包策略",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/agent_handoffs/HANDOFF_UIUXAgent.md",
+        "C:/Users/User/Desktop/XMBB/设计图",
+        "CatBackpackNight/assets/configs/runtime_asset_quality.json",
+        "CatBackpackNight/assets/configs/asset_review_center.json"
+      ],
+      "fallback_behavior": [
+        "如果设计图缺失，必须创建 placeholder 索引和阻断说明，不得声称完成真实切图。",
+        "生成素材必须经过 asset:review 分桶；疑似太假、烘焙文字、复制参考图、透明错误的素材不得晋级。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/assets/configs/assets.json",
+        "CatBackpackNight/assets/configs/assets_runtime.json",
+        "CatBackpackNight/assets/configs/asset_bundles.json",
+        "CatBackpackNight/assets/configs/runtime_asset_quality.json",
+        "CatBackpackNight/assets/textures/runtime/**",
+        "CatBackpackNight/assets/textures/placeholders/**",
+        "CatBackpackNight/tools/**",
+        "CatBackpackNight/agent_handoffs/HANDOFF_AssetAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_AssetAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not put full-page annotated design sheets into runtime bundles.",
+        "Do not delete .meta files."
+      ],
+      "output": [
+        "CatBackpackNight/assets/configs/assets.json",
+        "CatBackpackNight/assets/configs/asset_bundles.json",
+        "CatBackpackNight/assets/configs/runtime_asset_quality.json",
+        "CatBackpackNight/assets/textures/runtime"
+      ],
+      "acceptance_criteria": [
+        "运行时背景、按钮、图标等关键素材是真实 PNG；参考图只作为 dev/reference，不进入 runtime。"
+      ],
+      "prompt": "根据最新设计图生成、筛选、接入和标记素材。背景类资产必须是图片，不能用代码绘制背景冒充最终图。"
+    },
+    {
+      "name": "CoreGameplayAgent",
+      "role": "核心战斗闭环、关卡、怪物、攻击、胜负结算",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/agent_handoffs/HANDOFF_ClientArchAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_UIUXAgent.md",
+        "CatBackpackNight/docs/PRODUCT_SPEC.md"
+      ],
+      "fallback_behavior": [
+        "如果前置 handoff 缺失，必须标记 MISSING，并只做可隔离 combat 模块或阻断报告。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/assets/scripts/game/**",
+        "CatBackpackNight/assets/configs/stages.json",
+        "CatBackpackNight/assets/configs/enemies.json",
+        "CatBackpackNight/assets/configs/combat_formulas.json",
+        "CatBackpackNight/docs/COMBAT_SYSTEM.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_CoreGameplayAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_CoreGameplayAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not modify economy reward pacing, save migrations, platform APIs, or high-level UI information architecture."
+      ],
+      "output": [
+        "CatBackpackNight/assets/scripts/game",
+        "CatBackpackNight/assets/configs/stages.json",
+        "CatBackpackNight/assets/configs/enemies.json",
+        "CatBackpackNight/assets/configs/combat_formulas.json",
+        "CatBackpackNight/docs/COMBAT_SYSTEM.md"
+      ],
+      "acceptance_criteria": [
+        "从主界面进入第一关战斗、怪物生成、基础攻击、生命值变化、胜负条件和结算奖励均配置驱动。"
+      ],
+      "prompt": "只负责核心战斗闭环，不扩展到宠物、经济、存档或平台。"
+    },
+    {
+      "name": "EconomyRewardAgent",
+      "role": "经济、奖励、任务、成就、商店、体力节奏",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/agent_handoffs/HANDOFF_ProductAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_CoreGameplayAgent.md",
+        "CatBackpackNight/assets/configs/economy.json"
+      ],
+      "fallback_behavior": [
+        "如果战斗 handoff 缺失，只定义奖励合同，不得假装已接入结算。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/assets/configs/economy.json",
+        "CatBackpackNight/assets/configs/rewards.json",
+        "CatBackpackNight/assets/configs/shop.json",
+        "CatBackpackNight/assets/configs/quests.json",
+        "CatBackpackNight/assets/scripts/game/**",
+        "CatBackpackNight/docs/ECONOMY_DESIGN.md",
+        "CatBackpackNight/docs/REWARD_BALANCE.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_EconomyRewardAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_EconomyRewardAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not change combat formulas, save schema version, platform adapter protocol, or ad strategy."
+      ],
+      "output": [
+        "CatBackpackNight/assets/configs/economy.json",
+        "CatBackpackNight/assets/configs/rewards.json",
+        "CatBackpackNight/assets/configs/shop.json",
+        "CatBackpackNight/assets/configs/quests.json"
+      ],
+      "acceptance_criteria": [
+        "金币、钻石、体力、奖励、商店、任务均配置化，且无明显无限刷资源漏洞。"
+      ],
+      "prompt": "维护经济奖励配置和逻辑合同，所有数值必须配置化并可校验。"
+    },
+    {
+      "name": "SaveDataAgent",
+      "role": "本地存档、云存档接口、版本迁移、数据校验、异常恢复",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/agent_handoffs/HANDOFF_ClientArchAgent.md",
+        "CatBackpackNight/assets/configs/save_schema.json",
+        "CatBackpackNight/assets/configs/version.json"
+      ],
+      "fallback_behavior": [
+        "如果经济 handoff 缺失，创建通用存档壳和阻断说明，不得假装覆盖全部字段。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/assets/scripts/core/SaveManager.ts",
+        "CatBackpackNight/assets/scripts/data/**",
+        "CatBackpackNight/assets/scripts/save/**",
+        "CatBackpackNight/assets/configs/save_schema.json",
+        "CatBackpackNight/docs/SAVE_SYSTEM.md",
+        "CatBackpackNight/docs/SAVE_MIGRATION.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_SaveDataAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_SaveDataAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not alter economy balance, combat rules, or platform API contracts except through documented save interfaces."
+      ],
+      "output": [
+        "CatBackpackNight/assets/scripts/core/SaveManager.ts",
+        "CatBackpackNight/assets/scripts/data",
+        "CatBackpackNight/assets/configs/save_schema.json"
+      ],
+      "acceptance_criteria": [
+        "有本地存档、版本号、默认存档、损坏恢复、版本迁移入口，云存档不可用时不影响本地游玩。"
+      ],
+      "prompt": "维护存档系统和版本迁移合同，确保本地优先和异常恢复。"
+    },
+    {
+      "name": "PlatformAgent",
+      "role": "微信平台能力、广告、分享、排行榜、隐私、审核模式",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/agent_handoffs/HANDOFF_ClientArchAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_SaveDataAgent.md",
+        "CatBackpackNight/assets/configs/platform.json"
+      ],
+      "fallback_behavior": [
+        "如果真实 AppID、广告位 ID 或云环境 ID 缺失，必须使用配置占位和 mock，不得硬编码真实值。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/assets/scripts/services/**",
+        "CatBackpackNight/assets/configs/platform.json",
+        "CatBackpackNight/docs/WECHAT_PLATFORM.md",
+        "CatBackpackNight/docs/PRIVACY_AND_COMPLIANCE.md",
+        "CatBackpackNight/docs/REVIEW_MODE.md",
+        "CatBackpackNight/docs/WECHAT_RELEASE_COMPLIANCE.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_PlatformAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_PlatformAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not hard-code real AppID, ad unit IDs, cloud env IDs, or payment credentials."
+      ],
+      "output": [
+        "CatBackpackNight/assets/scripts/services",
+        "CatBackpackNight/assets/configs/platform.json",
+        "CatBackpackNight/docs/WECHAT_RELEASE_COMPLIANCE.md"
+      ],
+      "acceptance_criteria": [
+        "所有微信 API 有 wrapper，非微信环境有 mock，登录/分享/广告失败有兜底，审核模式和隐私策略可配置。"
+      ],
+      "prompt": "维护微信平台适配层和合规能力，真实凭据必须通过配置注入。"
+    },
+    {
+      "name": "BuildAgent",
+      "role": "Cocos 构建、微信小游戏构建配置、分包、压缩、构建报告",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "CatBackpackNight/agent_handoffs/HANDOFF_AssetAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_PlatformAgent.md",
+        "CatBackpackNight/docs/COCOS_EDITOR_CHECKLIST.md",
+        "CatBackpackNight/docs/WECHAT_RELEASE_COMPLIANCE.md"
+      ],
+      "fallback_behavior": [
+        "如果 Cocos Editor 未实际打开，必须标记 Editor build verification: UNVERIFIED。",
+        "如果微信开发者工具未实际导入，必须标记 WeChat build verification: UNVERIFIED。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/docs/BUILD_AND_RELEASE.md",
+        "CatBackpackNight/docs/WECHAT_BUILD_CHECKLIST.md",
+        "CatBackpackNight/docs/COCOS_EDITOR_CHECKLIST.md",
+        "CatBackpackNight/tools/build_check.js",
+        "CatBackpackNight/package.json",
+        "CatBackpackNight/agent_handoffs/HANDOFF_BuildAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_BuildAgent.md"
+      ],
+      "forbidden_changes": [
+        "Do not modify gameplay, economy, save migration, platform protocol, or UI information architecture."
+      ],
+      "output": [
+        "CatBackpackNight/docs/BUILD_AND_RELEASE.md",
+        "CatBackpackNight/docs/WECHAT_BUILD_CHECKLIST.md",
+        "CatBackpackNight/tools/build_check.js"
+      ],
+      "acceptance_criteria": [
+        "有 Cocos 构建说明、微信导入说明、分包检查、首包预算检查、资源引用检查和失败处理指南。"
+      ],
+      "prompt": "维护构建发布检查链路，未真实验证必须标记 UNVERIFIED。"
+    },
+    {
+      "name": "QAReleaseAgent",
+      "role": "最终验收、冒烟测试、配置校验、构建检查、缺陷归类",
+      "recommended_model": "GPT-5.5 or strongest available Codex model",
+      "input": [
+        "完整 CatBackpackNight 项目",
+        "CatBackpackNight/agent_handoffs/HANDOFF_ProductAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_ClientArchAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_UIUXAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_AssetAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_CoreGameplayAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_EconomyRewardAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_SaveDataAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_PlatformAgent.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_BuildAgent.md"
+      ],
+      "fallback_behavior": [
+        "如果 handoff/report 缺失，必须标记 MISSING，并写入 QA 报告。",
+        "默认只验收和报告；只能直接修低风险问题。",
+        "中高风险问题必须写入 docs/QA_BLOCKERS.md 并指定 Owner Agent。"
+      ],
+      "allowed_changes": [
+        "CatBackpackNight/docs/QA_REPORT.md",
+        "CatBackpackNight/docs/QA_BLOCKERS.md",
+        "CatBackpackNight/docs/SMOKE_TEST_CHECKLIST.md",
+        "CatBackpackNight/docs/RELEASE_CHECKLIST.md",
+        "CatBackpackNight/agent_handoffs/HANDOFF_QAReleaseAgent.md",
+        "CatBackpackNight/agent_reports/REPORT_QAReleaseAgent.md",
+        "Low-risk fixes only: spelling, JSON formatting, path casing, README/report templates, test-script non-business errors, obvious import path errors, placeholder indexes, wrong document file names."
+      ],
+      "forbidden_changes": [
+        "Do not directly modify battle formulas, economy values, save structure, platform protocols, Cocos scene node architecture, Bundle strategy, ad/payment/review-mode strategy, core UI information architecture, progression, tasks, achievements, or rewards."
+      ],
+      "output": [
+        "CatBackpackNight/docs/QA_REPORT.md",
+        "CatBackpackNight/docs/QA_BLOCKERS.md",
+        "CatBackpackNight/docs/SMOKE_TEST_CHECKLIST.md",
+        "CatBackpackNight/docs/RELEASE_CHECKLIST.md"
+      ],
+      "acceptance_criteria": [
+        "跑完配置校验、类型检查或说明原因、资源路径检查、基础冒烟流程，P0/P1/P2/P3 归类且 QA 不越权。"
+      ],
+      "prompt": "按 QA 权限规范验收完整项目。P0/P1 必须写入 QA_BLOCKERS.md 并指定 Owner Agent。"
+    }
+  ]
+}

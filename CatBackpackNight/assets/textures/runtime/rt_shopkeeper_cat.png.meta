@@ -1,0 +1,42 @@
+{
+  "ver": "1.0.27",
+  "importer": "image",
+  "imported": true,
+  "uuid": "ffd7a14f-09f0-4d21-9a94-c79ab55e425a",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "id": "6c48a",
+      "imported": true,
+      "importer": "texture",
+      "name": "texture",
+      "files": [
+        ".json"
+      ],
+      "ver": "1.0.22",
+      "userData": {
+        "magfilter": "linear",
+        "imageUuidOrDatabaseUri": "ffd7a14f-09f0-4d21-9a94-c79ab55e425a",
+        "anisotropy": 0,
+        "minfilter": "linear",
+        "isUuid": true,
+        "mipfilter": "none",
+        "visible": false,
+        "wrapModeS": "clamp-to-edge",
+        "wrapModeT": "clamp-to-edge"
+      },
+      "uuid": "ffd7a14f-09f0-4d21-9a94-c79ab55e425a@6c48a",
+      "subMetas": {},
+      "displayName": "rt_shopkeeper_cat"
+    }
+  },
+  "userData": {
+    "hasAlpha": true,
+    "fixAlphaTransparencyArtifacts": true,
+    "redirect": "ffd7a14f-09f0-4d21-9a94-c79ab55e425a@6c48a",
+    "type": "texture"
+  }
+}

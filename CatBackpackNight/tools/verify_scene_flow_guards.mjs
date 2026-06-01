@@ -1,0 +1,1020 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import zlib from 'node:zlib';
+
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const facadePath = path.join(projectRoot, 'assets', 'scripts', 'game', 'GameLogicFacade.ts');
+const uiBuilderPath = path.join(projectRoot, 'assets', 'scripts', 'ui', 'UISkeletonBuilder.ts');
+const battleScenePath = path.join(projectRoot, 'assets', 'scripts', 'scenes', 'BattleSceneEntry.ts');
+const baseScenePath = path.join(projectRoot, 'assets', 'scripts', 'scenes', 'BaseSceneEntry.ts');
+const homeScenePath = path.join(projectRoot, 'assets', 'scripts', 'scenes', 'HomeSceneEntry.ts');
+const uiManagerPath = path.join(projectRoot, 'assets', 'scripts', 'ui', 'UIManager.ts');
+const runtimeSpriteLoaderPath = path.join(projectRoot, 'assets', 'scripts', 'ui', 'RuntimeSpriteLoader.ts');
+const homeSceneAssetPath = path.join(projectRoot, 'assets', 'scenes', 'Home.scene');
+const levelsPath = path.join(projectRoot, 'assets', 'configs', 'levels.json');
+const runtimeQualityPath = path.join(projectRoot, 'assets', 'configs', 'runtime_asset_quality.json');
+const assetReviewCenterPath = path.join(projectRoot, 'assets', 'configs', 'asset_review_center.json');
+const assetReviewToolPath = path.join(projectRoot, 'tools', 'asset_review_center.mjs');
+const packagePath = path.join(projectRoot, 'package.json');
+const defaultSavePath = path.join(projectRoot, 'assets', 'scripts', 'data', 'DefaultSave.ts');
+const previewImportMapPath = path.join(projectRoot, 'temp', 'programming', 'packer-driver', 'targets', 'preview', 'import-map.json');
+
+const failures = [];
+
+function fail(message) {
+  failures.push(message);
+}
+
+function read(filePath) {
+  return fs.readFileSync(filePath, 'utf8');
+}
+
+function readPngSize(filePath) {
+  const bytes = fs.readFileSync(filePath);
+  if (bytes.length < 24 || bytes.toString('ascii', 1, 4) !== 'PNG') {
+    fail(`Invalid PNG file: ${path.relative(projectRoot, filePath)}`);
+    return null;
+  }
+  return {
+    width: bytes.readUInt32BE(16),
+    height: bytes.readUInt32BE(20),
+  };
+}
+
+function readPngRgba(filePath) {
+  const bytes = fs.readFileSync(filePath);
+  const width = bytes.readUInt32BE(16);
+  const height = bytes.readUInt32BE(20);
+  let bitDepth = 0;
+  let colorType = 0;
+  const idatChunks = [];
+  let offset = 8;
+
+  while (offset + 12 <= bytes.length) {
+    const length = bytes.readUInt32BE(offset);
+    const type = bytes.toString('ascii', offset + 4, offset + 8);
+    const dataStart = offset + 8;
+    const dataEnd = dataStart + length;
+    if (type === 'IHDR') {
+      bitDepth = bytes[dataStart + 8];
+      colorType = bytes[dataStart + 9];
+    } else if (type === 'IDAT') {
+      idatChunks.push(bytes.subarray(dataStart, dataEnd));
+    } else if (type === 'IEND') {
+      break;
+    }
+    offset = dataEnd + 4;
+  }
+
+  if (bitDepth !== 8 || colorType !== 6) {
+    fail(`Unsupported PNG format for chroma-key transparency check: ${path.relative(projectRoot, filePath)}`);
+    return null;
+  }
+
+  const inflated = zlib.inflateSync(Buffer.concat(idatChunks));
+  const bytesPerPixel = 4;
+  const stride = width * bytesPerPixel;
+  const rgba = Buffer.alloc(height * stride);
+  let sourceOffset = 0;
+
+  for (let y = 0; y < height; y += 1) {
+    const filter = inflated[sourceOffset];
+    sourceOffset += 1;
+    const rowOffset = y * stride;
+    const previousRowOffset = rowOffset - stride;
+    for (let x = 0; x < stride; x += 1) {
+      const raw = inflated[sourceOffset + x];
+      const left = x >= bytesPerPixel ? rgba[rowOffset + x - bytesPerPixel] : 0;
+      const up = y > 0 ? rgba[previousRowOffset + x] : 0;
+      const upLeft = y > 0 && x >= bytesPerPixel ? rgba[previousRowOffset + x - bytesPerPixel] : 0;
+      let value = raw;
+      if (filter === 1) {
+        value = raw + left;
+      } else if (filter === 2) {
+        value = raw + up;
+      } else if (filter === 3) {
+        value = raw + Math.floor((left + up) / 2);
+      } else if (filter === 4) {
+        const p = left + up - upLeft;
+        const pa = Math.abs(p - left);
+        const pb = Math.abs(p - up);
+        const pc = Math.abs(p - upLeft);
+        value = raw + (pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft);
+      } else if (filter !== 0) {
+        fail(`Unsupported PNG filter ${filter} in ${path.relative(projectRoot, filePath)}`);
+        return null;
+      }
+      rgba[rowOffset + x] = value & 0xff;
+    }
+    sourceOffset += stride;
+  }
+
+  return { width, height, rgba };
+}
+
+function countOpaqueChromaGreenPixels(filePath) {
+  const image = readPngRgba(filePath);
+  if (!image) {
+    return 0;
+  }
+
+  let count = 0;
+  for (let index = 0; index < image.rgba.length; index += 4) {
+    const r = image.rgba[index];
+    const g = image.rgba[index + 1];
+    const b = image.rgba[index + 2];
+    const a = image.rgba[index + 3];
+    if (a > 48 && g > 160 && r < 125 && b < 125 && g > r + 55 && g > b + 55) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+function countOpaqueNearBlackPixels(filePath) {
+  const image = readPngRgba(filePath);
+  if (!image) {
+    return 0;
+  }
+
+  let count = 0;
+  for (let index = 0; index < image.rgba.length; index += 4) {
+    const r = image.rgba[index];
+    const g = image.rgba[index + 1];
+    const b = image.rgba[index + 2];
+    const a = image.rgba[index + 3];
+    if (a > 48 && r < 4 && g < 4 && b < 4) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+function readRuntimeSpriteUuid(id) {
+  const metaPath = path.join(projectRoot, 'assets', 'textures', 'runtime', `${id}.png.meta`);
+  if (!fs.existsSync(metaPath)) {
+    fail(`Missing runtime sprite meta: ${path.relative(projectRoot, metaPath)}`);
+    return null;
+  }
+
+  const meta = JSON.parse(read(metaPath));
+  return meta?.subMetas?.['6c48a']?.uuid ?? null;
+}
+
+function findMojibakeTokens(source) {
+  const mojibakeTokens = [
+    '鍟嗗簵',
+    '鑳屽寘',
+    '瀹犵墿',
+    '浣撳姏',
+    '鎺ㄨ崘',
+    '鎴樺姏',
+    '閽荤煶',
+    '钃濋捇',
+    '鐚?',
+    '鉁?',
+    '鈴?',
+    '鈿?',
+    '鈽?',
+    '锛?',
+    '銆',
+    '榛戝',
+    '涓荤晫闈?',
+    '鐜╁鍚嶅瓧',
+    '瀹堝',
+    '钀ュ',
+    '娆㈣',
+    '闅愮',
+    '闃呰',
+    '骞垮',
+    '鏈€',
+    '绱',
+    '娓告',
+    '閫氬',
+    '鏄熺',
+    '鐔婄',
+    '灏忛',
+    '鍏',
+  ];
+  const found = mojibakeTokens.filter((token) => source.includes(token));
+  if (/[\ue000-\uf8ff\ufffd]/u.test(source)) {
+    found.push('private-use-or-replacement-character');
+  }
+  return found;
+}
+
+function readActivePreviewChunkForSource(sourceRelativePath) {
+  if (!fs.existsSync(previewImportMapPath)) {
+    return null;
+  }
+
+  const importMap = JSON.parse(read(previewImportMapPath));
+  const sourceKey = sourceRelativePath.replace(/\\/g, '/');
+  const hit = Object.entries(importMap.imports ?? {}).find(([key]) => key.replace(/\\/g, '/').endsWith(sourceKey));
+  if (!hit) {
+    return null;
+  }
+
+  return path.resolve(path.dirname(previewImportMapPath), hit[1]);
+}
+
+function collectPreviewChunkValues(node, values = new Set()) {
+  if (!node || typeof node !== 'object') {
+    return values;
+  }
+
+  for (const value of Object.values(node)) {
+    if (typeof value === 'string') {
+      if (value.startsWith('./chunks/') && value.endsWith('.js')) {
+        values.add(value);
+      }
+    } else {
+      collectPreviewChunkValues(value, values);
+    }
+  }
+
+  return values;
+}
+
+function readMappedPreviewUiChunks() {
+  if (!fs.existsSync(previewImportMapPath)) {
+    return [];
+  }
+
+  const importMap = JSON.parse(read(previewImportMapPath));
+  return [...collectPreviewChunkValues(importMap)]
+    .map((chunkValue) => path.resolve(path.dirname(previewImportMapPath), chunkValue))
+    .filter((chunkPath) => {
+      if (!fs.existsSync(chunkPath)) {
+        return false;
+      }
+
+      const chunkSource = read(chunkPath);
+      return chunkSource.includes('UISkeletonBuilder') && chunkSource.includes('Battle_HPBar');
+    });
+}
+
+for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath]) {
+  if (!fs.existsSync(filePath)) {
+    fail(`Missing required file: ${path.relative(projectRoot, filePath)}`);
+  }
+}
+
+if (failures.length === 0) {
+  const facade = read(facadePath);
+  const uiBuilder = read(uiBuilderPath);
+  const battleScene = read(battleScenePath);
+  const baseScene = read(baseScenePath);
+  const homeScene = read(homeScenePath);
+  const uiManager = read(uiManagerPath);
+  const runtimeSpriteLoader = read(runtimeSpriteLoaderPath);
+  const runtimeSpriteAssets = read(path.join(projectRoot, 'assets', 'scripts', 'ui', 'RuntimeSpriteAssets.ts'));
+  const homeSceneAsset = read(homeSceneAssetPath);
+  const levels = JSON.parse(read(levelsPath));
+  const runtimeQuality = JSON.parse(read(runtimeQualityPath));
+  const assetReviewCenter = JSON.parse(read(assetReviewCenterPath));
+  const packageJson = JSON.parse(read(packagePath));
+  const defaultSave = read(defaultSavePath);
+
+  for (const [label, source] of Object.entries({
+    'UISkeletonBuilder.ts': uiBuilder,
+    'BattleSceneEntry.ts': battleScene,
+    'DefaultSave.ts': defaultSave,
+    'levels.json': read(levelsPath),
+    'package.json': read(packagePath),
+  })) {
+    const badTokens = findMojibakeTokens(source);
+    if (badTokens.length > 0) {
+      fail(`${label} contains mojibake in visible player-facing text: ${badTokens.join(', ')}`);
+    }
+  }
+
+  const previewUiChunks = new Set(readMappedPreviewUiChunks());
+  const activePreviewUiChunk = readActivePreviewChunkForSource('assets/scripts/ui/UISkeletonBuilder.ts');
+  if (activePreviewUiChunk && fs.existsSync(activePreviewUiChunk)) {
+    previewUiChunks.add(activePreviewUiChunk);
+  }
+
+  for (const activePreviewUiChunk of previewUiChunks) {
+    const sourceMtime = fs.statSync(uiBuilderPath).mtimeMs;
+    const chunkMtime = fs.statSync(activePreviewUiChunk).mtimeMs;
+    const activePreviewUiChunkSource = read(activePreviewUiChunk);
+    const badPreviewTokens = findMojibakeTokens(activePreviewUiChunkSource);
+    const chunkLabel = path.relative(projectRoot, activePreviewUiChunk);
+
+    if (chunkMtime + 1000 < sourceMtime) {
+      fail(`Mapped Cocos preview UISkeletonBuilder chunk is older than source: ${chunkLabel}. Rebuild Browser Preview before judging the home page.`);
+    }
+
+    if (badPreviewTokens.length > 0) {
+      fail(`Mapped Cocos preview UISkeletonBuilder chunk contains mojibake: ${badPreviewTokens.join(', ')}. Rebuild Browser Preview before judging the home page.`);
+    }
+
+    if (!activePreviewUiChunkSource.includes("this.addProgressBar('Battle_HPBar', 30, 487, 300, 32")) {
+      fail(`Mapped Cocos preview UISkeletonBuilder chunk has stale Battle_HPBar placement: ${chunkLabel}. Run npm run refresh:preview-ui.`);
+    }
+
+    if (!activePreviewUiChunkSource.includes("this.replaceProgressFill('Battle_HPBar', 30, 487, 300, 32")) {
+      fail(`Mapped Cocos preview UISkeletonBuilder chunk has stale Battle_HPBar live update placement: ${chunkLabel}. Run npm run refresh:preview-ui.`);
+    }
+
+    if (!activePreviewUiChunkSource.includes("const fillX = name === 'Battle_HPBar' ? x : x - width / 2 + 4 + fillWidth / 2;")) {
+      fail(`Mapped Cocos preview UISkeletonBuilder chunk has stale Battle_HPBar fill centering: ${chunkLabel}. Run npm run refresh:preview-ui.`);
+    }
+  }
+
+  if (!facade.includes('private activeBattleStart: BattleStartResult | null = null;')) {
+    fail('GameLogicFacade must track activeBattleStart.');
+  }
+
+  if (!/public startBattle\([^)]*\)[\s\S]*?if \(this\.activeBattleStart\)[\s\S]*?return success\(this\.activeBattleStart/.test(facade)) {
+    fail('GameLogicFacade.startBattle must return the active battle instead of charging energy twice.');
+  }
+
+  if (!/public createBattleSession\([^)]*\)[\s\S]*?battleId: options\.battleId \?\? this\.activeBattleStart\?\.battleId/.test(facade)) {
+    fail('GameLogicFacade.createBattleSession must reuse the active battleId.');
+  }
+
+  if (!battleScene.includes('const existingBattle = gameLogic.getActiveBattleStart();')) {
+    fail('BattleSceneEntry must inspect active battle state before creating a session.');
+  }
+
+  if (!battleScene.includes('gameLogic.clearActiveBattle(battleId);')) {
+    fail('BattleSceneEntry must clear active battle after successful settlement.');
+  }
+
+  if (!battleScene.includes('this.uiManager?.updateBattleState(this.session.state);')) {
+    fail('BattleSceneEntry must push live BattleSessionState into UI every battle tick.');
+  }
+
+  if (!/protected update\(deltaSec: number\): void[\s\S]*?this\.tickBattle\(deltaSec\)/.test(battleScene)) {
+    fail('BattleSceneEntry must drive battle simulation from Component.update(deltaSec); zero-interval schedule can stall in preview.');
+  }
+
+  if (battleScene.includes('this.schedule(this.battleTick, 0);')) {
+    fail('BattleSceneEntry must not use schedule(..., 0) for the main battle loop.');
+  }
+
+  if (homeSceneAsset.includes('"screenKey": "battlePrepare"') || homeSceneAsset.includes('BattlePrepareSceneEntry')) {
+    fail('Home.scene must not include BattlePrepareSceneEntry; it causes preview battle screens to render without BattleSceneEntry ticking.');
+  }
+
+  if (!baseScene.includes("import { getRouteConfig } from '../configs/RouteConfig';")) {
+    fail('BaseSceneEntry must inspect route configs before honoring ?screen preview overrides.');
+  }
+
+  if (!/requestedScreenKey !== this\.screenKey[\s\S]*?getRouteConfig\(requestedScreenKey\)[\s\S]*?SceneRouter\.instance\.replace\(requestedScreenKey/.test(baseScene)) {
+    fail('BaseSceneEntry must route ?screen=battle to the matching scene instead of drawing battle UI inside the wrong scene.');
+  }
+
+  if (!baseScene.includes('__xmbbPreviewScreenConsumed')) {
+    fail('BaseSceneEntry must consume ?screen preview overrides only once so button navigation is not forced back to the preview route.');
+  }
+
+  if (!uiManager.includes('public updateBattleState(state: BattleSessionState): void')) {
+    fail('UIManager must expose updateBattleState for live battle rendering.');
+  }
+
+  if (!uiManager.includes('this.skeletonBuilder?.setBattleState(state);')) {
+    fail('UIManager.updateBattleState must forward state to UISkeletonBuilder.');
+  }
+
+  if (!/eventBus\.on\(GameEvents\.Toast[\s\S]*?this\.renderToast/.test(uiManager)) {
+    fail('UIManager must render GameEvents.Toast visibly instead of logging only.');
+  }
+
+  if (!/private renderToast\(message: string\): void[\s\S]*?Toast_Message[\s\S]*?Label/.test(uiManager)) {
+    fail('UIManager must create a visible toast label for blocked actions such as insufficient energy.');
+  }
+
+  if (/openBattlePrepare\(\)[\s\S]*?currencies\.energy <[\s\S]*?return;[\s\S]*?SceneRouter\.instance\.go\('battlePrepare'\)/.test(homeScene)) {
+    fail('HomeSceneEntry.openBattlePrepare must always open the prepare page; energy is checked when starting battle.');
+  }
+
+  for (const battleUiToken of [
+    'private battleState: BattleSessionState | null = null;',
+    'private battleLiveLayer: Node | null = null;',
+    'public setBattleState(state: BattleSessionState): void',
+    'private updateBattleLiveState(): void',
+    'private getBattleLiveLayer(): Node',
+    'const battleState = this.battleState',
+    'battleState.secondsLeft',
+    'battleState.campHp',
+    'battleState.monsters',
+    'battleState.damageNumbers',
+    'battleState.attackVisuals',
+    'battleState.weaponSlots',
+    'this.syncBattleMonster',
+    'this.syncBattleAttackVisual',
+    'this.syncBattleDamageNumber',
+    'monster.deathAgeSec',
+  ]) {
+    if (!uiBuilder.includes(battleUiToken)) {
+      fail(`Battle UI must render live session data instead of static art: ${battleUiToken}`);
+    }
+  }
+
+  for (const staleBattleLiteral of ["label: '第10波'", "value: '132'", "value: '339'", "label: '⏱ 00:45'", "label: '10 / 10'"]) {
+    if (uiBuilder.includes(staleBattleLiteral)) {
+      fail(`Battle UI still contains stale static combat literal: ${staleBattleLiteral}`);
+    }
+  }
+
+  if (!uiBuilder.includes("this.addRect({ name: 'Battle_HPHeart', width: 58, height: 58, x: -160, y: 487")) {
+    fail('Battle_HPHeart must stay inside the compact battle HUD instead of sitting in the left safe-area gutter.');
+  }
+
+  if (!uiBuilder.includes("this.addProgressBar('Battle_HPBar', 30, 487, 300, 32")) {
+    fail('Battle_HPBar must be a compact centered HUD bar; a full-width bar spills into the battle side gutter.');
+  }
+
+  if (!uiBuilder.includes("this.replaceProgressFill('Battle_HPBar', 30, 487, 300, 32")) {
+    fail('Battle_HPBar live fill updates must use the same compact HUD position as the static bar.');
+  }
+
+  if (!uiBuilder.includes("const fillX = name === 'Battle_HPBar' ? x : x - width / 2 + 4 + fillWidth / 2;")) {
+    fail('Battle_HPBar fill must stay centered so low HP values do not render a loose bar in the left battle gutter.');
+  }
+
+  const setBattleStateStart = uiBuilder.indexOf('public setBattleState(state: BattleSessionState): void');
+  const setBattleStateEnd = uiBuilder.indexOf('\n\n  private buildLogin', setBattleStateStart);
+  const setBattleStateBody = setBattleStateStart >= 0 && setBattleStateEnd > setBattleStateStart
+    ? uiBuilder.slice(setBattleStateStart, setBattleStateEnd)
+    : '';
+  if (setBattleStateBody.includes('this.rebuild();')) {
+    fail('UISkeletonBuilder.setBattleState must not rebuild the whole battle screen; it must update a live layer to prevent flashing.');
+  }
+
+  const updateBattleLiveStart = uiBuilder.indexOf('private updateBattleLiveState(): void');
+  const updateBattleLiveEnd = uiBuilder.indexOf('\n\n  private getBattleLiveLayer', updateBattleLiveStart);
+  const updateBattleLiveBody = updateBattleLiveStart >= 0 && updateBattleLiveEnd > updateBattleLiveStart
+    ? uiBuilder.slice(updateBattleLiveStart, updateBattleLiveEnd)
+    : '';
+  if (updateBattleLiveBody.includes('removeAllChildren')) {
+    fail('UISkeletonBuilder.updateBattleLiveState must not clear and recreate the whole live layer every tick; that causes visible flashing.');
+  }
+
+  for (const liveSyncToken of [
+    'private syncBattleHero',
+    'private syncBattleMonster',
+    'private syncBattleAttackVisual',
+    'private syncBattleDamageNumber',
+    'private syncLiveRect',
+    'private pruneBattleLiveLayer',
+  ]) {
+    if (!uiBuilder.includes(liveSyncToken)) {
+      fail(`Battle live UI must update persistent moving nodes: ${liveSyncToken}`);
+    }
+  }
+
+  for (const battleEffectToken of [
+    'BattleAttackVisualState',
+    'attackVisuals: BattleAttackVisualState[]',
+    "type: 'spawn' | 'attack' | 'damage'",
+    'weaponType: BattleWeaponType',
+    'private pushAttackVisual',
+    'private updateAttackVisuals',
+    'Battle_Attack_Slash',
+    'Battle_Attack_Arrow',
+    'Battle_Attack_Staff',
+    'Battle_Attack_Pierce',
+    'Battle_Attack_Random',
+    '_MuzzleFlash',
+    '_FlightTrail',
+    'hitProgress',
+    'getBattleHeroAttackImpulse',
+    'getBattleMonsterHitImpulse',
+    'rt_fx_bullet',
+    'rt_fx_hit',
+    'rt_monster_ghost',
+    'rt_monster_skeleton',
+    'rt_monster_goblin',
+  ]) {
+    if (!uiBuilder.includes(battleEffectToken) && !read(path.join(projectRoot, 'assets', 'scripts', 'game', 'BattleSessionModel.ts')).includes(battleEffectToken)) {
+      fail(`Battle runtime must include independent weapon and monster effects: ${battleEffectToken}`);
+    }
+  }
+
+  for (const runtimeLoaderToken of [
+    "import runtimeAssetIndex from '../../configs/assets_runtime.json';",
+    'finalPath?: string',
+    'runtimeAssetPathById',
+    'loadRuntimeSpriteFrameFromPath',
+    'assetManager.loadRemote<ImageAsset>',
+  ]) {
+    if (!runtimeSpriteLoader.includes(runtimeLoaderToken)) {
+      fail(`RuntimeSpriteLoader must fall back to PNG finalPath for freshly generated runtime battle assets: ${runtimeLoaderToken}`);
+    }
+  }
+
+  for (const id of [
+    'rt_bg_battle_forest_safe',
+    'rt_bg_battle_prepare_safe',
+    'rt_cat_hero_battle',
+    'rt_monster_ghost',
+    'rt_monster_skeleton',
+    'rt_monster_goblin',
+    'rt_fx_bullet',
+    'rt_fx_slash',
+    'rt_fx_pierce',
+    'rt_fx_magic_orb',
+    'rt_fx_hit',
+    'rt_fx_fire',
+  ]) {
+    const uuid = readRuntimeSpriteUuid(id);
+    if (uuid && !runtimeSpriteAssets.includes(`"${id}": "${uuid}"`)) {
+      fail(`RuntimeSpriteAssets must match current .meta UUID for ${id}: ${uuid}`);
+    }
+  }
+
+  for (const id of [
+    'rt_monster_ghost',
+    'rt_monster_skeleton',
+    'rt_monster_goblin',
+    'rt_fx_bullet',
+    'rt_fx_slash',
+    'rt_fx_pierce',
+    'rt_fx_magic_orb',
+    'rt_fx_hit',
+    'rt_fx_fire',
+  ]) {
+    const filePath = path.join(projectRoot, 'assets', 'textures', 'runtime', `${id}.png`);
+    const chromaPixels = countOpaqueChromaGreenPixels(filePath);
+    if (chromaPixels > 32) {
+      fail(`Battle runtime asset still contains opaque chroma-key green pixels: ${id} (${chromaPixels})`);
+    }
+    const blackPixels = countOpaqueNearBlackPixels(filePath);
+    if (blackPixels > 4096) {
+      fail(`Battle runtime asset still contains opaque keyed-out black background pixels: ${id} (${blackPixels})`);
+    }
+  }
+
+  if (battleScene.includes('uiRefreshTimer')) {
+    fail('BattleSceneEntry must push live UI state every Component.update instead of throttling movement into visible jumps.');
+  }
+
+  if (!battleScene.includes('this.uiManager?.updateBattleState(this.session.state);')) {
+    fail('BattleSceneEntry must push each battle tick to UIManager for continuous movement.');
+  }
+
+  if (!facade.includes('this.repo.getBattleEnergyCost()')) {
+    fail('GameLogicFacade battle preparation must expose development unlimited-energy cost.');
+  }
+
+  if (!read(path.join(projectRoot, 'assets', 'configs', 'levels.json')).includes('"unlimitedEnergyInDevelopment": true')) {
+    fail('levels.json must keep development unlimited energy enabled until production balancing is restored.');
+  }
+
+  for (const dynamicBattleName of [
+    "name.includes('Battle_Monster')",
+    "name.includes('Battle_MonsterHp')",
+    "name.includes('Battle_Damage')",
+    "name.includes('Battle_HPBar_Fill')",
+    "name.includes('BattleWeapon_Live') && !name.includes('rt_battle_weapon_')",
+  ]) {
+    if (!uiBuilder.includes(dynamicBattleName)) {
+      fail(`UISkeletonBuilder runtime sprite resolver must exempt live battle primitives: ${dynamicBattleName}`);
+    }
+  }
+
+  if (!uiBuilder.includes("if (name.includes('Pet_SelectedCat_Sprite')) return 'rt_avatar_cat';")) {
+    fail('Pet screen selected character must resolve to a production runtime cat sprite instead of an empty placeholder card.');
+  }
+
+  if (!uiBuilder.includes("if (name.includes('Pet_Icon_')) return 'rt_avatar_cat';")) {
+    fail('Pet list cards must use a runtime pet/avatar sprite so the page is not text-only.');
+  }
+
+  for (const petScreenSnippet of ['Pet_SelectedPortraitFrame', 'Pet_ListTitle', 'Pet_CardState_', '出战中']) {
+    if (!uiBuilder.includes(petScreenSnippet)) {
+      fail(`Pet screen must include readable polished card/list state: ${petScreenSnippet}`);
+    }
+  }
+
+  for (const routePanelMapping of [
+    "name.includes('DailyTask_Row_')",
+    "name.includes('Mail_Row_')",
+    "name.includes('Settings_Row_')",
+    "name.includes('Merge_MainPanel')",
+    "name.includes('Explore_Card_')",
+    "name.includes('Guild_MainPanel')",
+    "name.includes('Achievement_Row_')",
+    "name.includes('Reward_TitleBanner')",
+    "name.includes('SkillCard_')",
+  ]) {
+    if (!uiBuilder.includes(routePanelMapping)) {
+      fail(`Core route panel/card must resolve to a runtime panel asset for visual completeness: ${routePanelMapping}`);
+    }
+  }
+
+  if (!uiBuilder.includes("if (name.includes('Guild_MascotCat_Sprite')) return 'rt_avatar_cat';")) {
+    fail('Guild screen mascot must resolve to a visible runtime avatar sprite.');
+  }
+
+  if (uiBuilder.includes("color: card[5] ? UIColors.textBrown : UIColors.whiteText")) {
+    fail('Explore locked-card titles must stay dark on parchment runtime cards.');
+  }
+
+  if (uiBuilder.includes("card[5] ? new Color(94, 61, 38, 255) : new Color(232, 222, 198, 230)")) {
+    fail('Explore locked-card descriptions must stay dark on parchment runtime cards.');
+  }
+
+  if (!uiBuilder.includes('RouteBackdrop_${key}_Canopy')) {
+    fail('Commercial route polish helper must create a named canopy layer for screenshot/debug inspection.');
+  }
+
+  for (const commercialBackdropSnippet of [
+    "this.addCommercialRouteBackdrop('Talent')",
+    "this.addCommercialRouteBackdrop('DailyTask')",
+    "this.addCommercialRouteBackdrop('Mail')",
+    "this.addCommercialRouteBackdrop('Settings')",
+    "this.addCommercialRouteBackdrop('Merge')",
+    "this.addCommercialRouteBackdrop('Explore')",
+    "this.addCommercialRouteBackdrop('Guild')",
+    "this.addCommercialRouteBackdrop('Achievement')",
+    "this.addCommercialRouteBackdrop('Reward')",
+    "this.addCommercialRouteBackdrop('SkillChoice')",
+  ]) {
+    if (!uiBuilder.includes(commercialBackdropSnippet)) {
+      fail(`Commercial route polish must include a staged backdrop layer: ${commercialBackdropSnippet}`);
+    }
+  }
+
+  for (const talentPolishSnippet of [
+    'Talent_TreePanel',
+    'Talent_PathLine_',
+    'Talent_DetailPanel',
+    'Talent_NodeDesc_',
+    'Button_TalentReset',
+  ]) {
+    if (!uiBuilder.includes(talentPolishSnippet)) {
+      fail(`Talent page must read as a finished talent tree, not scattered labels: ${talentPolishSnippet}`);
+    }
+  }
+
+  for (const rewardPolishSnippet of [
+    'Reward_SummaryPanel',
+    'Reward_Card_Gold',
+    'Reward_Card_Diamond',
+    'Reward_Card_Equip',
+    'Reward_DoubleBadge',
+  ]) {
+    if (!uiBuilder.includes(rewardPolishSnippet)) {
+      fail(`Reward page must show concrete reward cards and summary polish: ${rewardPolishSnippet}`);
+    }
+  }
+
+  for (const skillChoicePolishSnippet of [
+    'SkillChoice_Subtitle',
+    'SkillChoice_RerollChip',
+    '${name}_Rarity',
+    '${name}_IconFrame',
+    '${name}_Type',
+  ]) {
+    if (!uiBuilder.includes(skillChoicePolishSnippet)) {
+      fail(`Skill-choice page must show polished card hierarchy and reroll state: ${skillChoicePolishSnippet}`);
+    }
+  }
+
+  const battleFieldIndex = uiBuilder.indexOf("name.includes('Battle_FieldArt')");
+  const battlePreviewIndex = uiBuilder.indexOf("name.includes('BattlePrepare_PreviewArt')");
+  const panelDarkIndex = uiBuilder.indexOf("name.includes('Battle_') || name.includes('BattlePrepare_')");
+  const battleMonsterIndex = uiBuilder.indexOf("name.includes('Battle_Monster')");
+  if (battleFieldIndex < 0 || battlePreviewIndex < 0 || battleMonsterIndex < 0) {
+    fail('UISkeletonBuilder must contain explicit battle art and live primitive exceptions.');
+  } else if (panelDarkIndex >= 0 && !(battleFieldIndex < panelDarkIndex && battlePreviewIndex < panelDarkIndex && battleMonsterIndex < panelDarkIndex)) {
+    fail('UISkeletonBuilder battle art and live primitive exceptions must appear before broad battle panel fallback.');
+  }
+
+  if (!uiBuilder.includes("import { SceneRouter } from '../core/SceneRouter';")) {
+    fail('UISkeletonBuilder must route homepage buttons through SceneRouter.');
+  }
+
+  if (!uiBuilder.includes("import { SaveManager } from '../core/SaveManager';")) {
+    fail('UISkeletonBuilder login screen must read and persist agreement state through SaveManager.');
+  }
+
+  if (!uiBuilder.includes('this.designRoot.setScale(1, 1, 1);')) {
+    fail('UISkeletonBuilder must not shrink the design root after Cocos design resolution is applied.');
+  }
+
+  if (!uiBuilder.includes('private handleButtonAction(name: string): boolean')) {
+    fail('UISkeletonBuilder must keep core homepage actions out of the generic local route fallback.');
+  }
+
+  if (/if \(name\.includes\('Button_StartGame'\)\) return 'home';/.test(uiBuilder)) {
+    fail('Login start button must not bypass the agreement gate through the generic route fallback.');
+  }
+
+  if (!/handleButtonAction\(name: string\)[\s\S]*?Button_StartGame[\s\S]*?acceptedAgreement[\s\S]*?SaveManager\.instance\.setAgreementAccepted\(true\)[\s\S]*?SceneRouter\.instance\.go\('home'\)/.test(uiBuilder)) {
+    fail('Login start must enforce agreement acceptance, persist it, and route home only through handleButtonAction.');
+  }
+
+  for (const loginNode of [
+    'Login_TitleArt',
+    'Button_StartGame',
+    'Login_AgreementPlate',
+    'Button_ToggleAgreement',
+    'AgeBadge_16',
+    'Login_HealthNotice',
+  ]) {
+    if (!uiBuilder.includes(loginNode)) {
+      fail(`Login screen is missing LOGIN_01 reference node: ${loginNode}`);
+    }
+  }
+
+  for (const forbiddenLoginNode of [
+    'Login_LoadPanel',
+    'Login_LoadProgress',
+    'Login_LoadStep_',
+    'Login_ActionPanel',
+    'Button_WechatLogin',
+  ]) {
+    if (uiBuilder.includes(forbiddenLoginNode)) {
+      fail(`Login screen contains non-reference loading or secondary CTA node: ${forbiddenLoginNode}`);
+    }
+  }
+
+  for (const homeNode of [
+    'Home_TopFunctionBar',
+    'TopEntry_CheckIn',
+    'TopEntry_DailyTask',
+    'TopEntry_Mail',
+    'TopEntry_Event',
+    'TopEntry_FirstGift',
+    'Home_LeftFeatureRail',
+    'LeftEntry_Shop',
+    'LeftEntry_Backpack',
+    'LeftEntry_Pet',
+    'LeftEntry_Talent',
+    'Home_RightFeatureRail',
+    'RightEntry_Achievement',
+    'RightEntry_Illustration',
+    'RightEntry_Settings',
+    'Home_StageSelector',
+    'Button_StagePrev',
+    'Button_StageNext',
+    'Home_CurrentStage',
+    'Home_CurrentWave',
+  ]) {
+    if (!uiBuilder.includes(homeNode)) {
+      fail(`Homepage is missing HOME_01 reference node: ${homeNode}`);
+    }
+  }
+
+  if (!uiBuilder.includes("if (name.includes('Login_TitleArt')) return 'rt_logo_title';")) {
+    fail('Login title art must use the generated rt_logo_title runtime sprite instead of plain text only.');
+  }
+
+  for (const bakedBackgroundDuplicate of [
+    "this.addStars();\n    this.addRect({ name: 'Home_MoonAccent'",
+    "this.addCampCabin('Login_Cabin'",
+    "this.addCampfire('Login_Fire'",
+    "this.addCampCabin('Home_Cabin'",
+    "this.addCampfire('Home_Fire'",
+  ]) {
+    if (uiBuilder.includes(bakedBackgroundDuplicate)) {
+      fail(`Login/home must use image backgrounds instead of duplicate code-drawn scenery: ${bakedBackgroundDuplicate}`);
+    }
+  }
+
+  if (!/Home_StageSelector[\s\S]*?UIAssetKeys\.panels\.darkGlass/.test(uiBuilder)) {
+    fail('Homepage stage selector must use the generated dark glass panel contract.');
+  }
+
+  if (!/handleButtonAction\(name: string\)[\s\S]*?gameLogic\.startBattle\(\)[\s\S]*?SceneRouter\.instance\.go\('battle'\)/.test(uiBuilder)) {
+    fail('Battle prepare start button must call gameLogic.startBattle before routing to battle.');
+  }
+
+  const startBattleAction = /handleButtonAction\(name: string\)([\s\S]*?)private claimDailyTaskFromButton/.exec(uiBuilder)?.[1] ?? '';
+  if (!/AnalyticsService\.instance\.track\(GameEvents\.BattlePrepareOpen\)[\s\S]*?SceneRouter\.instance\.go\('battlePrepare'\)/.test(startBattleAction)) {
+    fail('Home start battle button must route to battlePrepare so the click visibly advances.');
+  }
+
+  if (/snapshot\.save\.currencies\.energy < snapshot\.battlePreparation\.energyCost[\s\S]*?SceneRouter\.instance\.go\('battlePrepare'\)/.test(startBattleAction)) {
+    fail('Home start battle button must not block battlePrepare navigation on insufficient energy.');
+  }
+
+  if (uiBuilder.includes('this.screenKey = route;') || uiBuilder.includes('this.rebuild();\n    });\n  }\n\n  private addButtonBehavior')) {
+    fail('UISkeletonBuilder route buttons must not only mutate screenKey and rebuild locally.');
+  }
+
+  for (const expectedRoute of ["'settings'", "'dailyTask'", "'mail'", "'achievement'"]) {
+    if (!uiBuilder.includes(`return ${expectedRoute};`)) {
+      fail(`Homepage route mapping is missing ${expectedRoute}.`);
+    }
+  }
+
+  if (!uiBuilder.includes("if (name.includes('NavButton_battle')) return 'battlePrepare';")) {
+    fail('Homepage bottom battle nav must route to battlePrepare instead of returning to home.');
+  }
+
+  for (const expectedBottomRoute of [
+    "if (name.includes('NavButton_merge')) return 'merge';",
+    "if (name.includes('NavButton_explore')) return 'explore';",
+    "if (name.includes('NavButton_guild')) return 'guild';",
+    "if (name.includes('NavIcon_home')) return UIAssetKeys.icons.home;",
+    "if (name.includes('NavIcon_home')) return 'rt_cabin';",
+  ]) {
+    if (!uiBuilder.includes(expectedBottomRoute)) {
+      fail(`HOME_01 bottom nav mapping is missing design-specific behavior: ${expectedBottomRoute}`);
+    }
+  }
+
+  if (!uiBuilder.includes('RedDotManager.instance.recalculate(save)')) {
+    fail('Homepage red dots must be derived from RedDotManager instead of hard-coded booleans.');
+  }
+
+  if (uiBuilder.includes("this.addSideEntry('Rank', '成就', 308, -220, true)") || !uiBuilder.includes("!!redDots.achievement")) {
+    fail('Homepage achievement entry must use RedDotManager state instead of a hard-coded red dot.');
+  }
+
+  for (const hardCodedEconomyText of ['体力 x5', '钻石 x5', '推荐战力：12345', '我的战力：12500']) {
+    if (uiBuilder.includes(hardCodedEconomyText)) {
+      fail(`Homepage and battle-prepare economy text must come from battlePreparation, not hard-coded "${hardCodedEconomyText}".`);
+    }
+  }
+
+  for (const requiredDynamicText of ['battleInfo.energyCost', 'battleInfo.energyMax', 'battleInfo.chapterTitle', 'battleInfo.myPower']) {
+    if (!uiBuilder.includes(requiredDynamicText)) {
+      fail(`Homepage/battle-prepare UI is missing dynamic battlePreparation field: ${requiredDynamicText}.`);
+    }
+  }
+
+  const firstChapterName = levels?.chapters?.[0]?.displayName;
+  if (firstChapterName === 'Night Forest' || !String(firstChapterName ?? '').includes('黑夜森林')) {
+    fail('Home chapter title must use the localized commercial chapter name, not the old English placeholder.');
+  }
+
+  if (!uiBuilder.includes("value.includes('玩家名字')")) {
+    fail('Homepage must normalize persisted placeholder player names before rendering.');
+  }
+
+  for (const homeAction of [
+    "this.addTopEntry('CheckIn'",
+    "this.addTopEntry('DailyTask'",
+    "this.addTopEntry('Mail'",
+    "this.addTopEntry('Event'",
+    "this.addTopEntry('FirstGift'",
+    "this.addFeatureEntry('Left', 'Shop'",
+    "this.addFeatureEntry('Left', 'Backpack'",
+    "this.addFeatureEntry('Left', 'Pet'",
+    "this.addFeatureEntry('Left', 'Talent'",
+    "this.addFeatureEntry('Right', 'Achievement'",
+    "this.addFeatureEntry('Right', 'Illustration'",
+    "this.addFeatureEntry('Right', 'Settings'",
+  ]) {
+    if (!uiBuilder.includes(homeAction)) {
+      fail(`Homepage is missing required HOME_01 entry: ${homeAction}`);
+    }
+  }
+
+  for (const pageToken of [
+    'private buildDailyTask()',
+    'private buildMail()',
+    'private buildAchievement()',
+    'private buildPet()',
+    'private buildTalent()',
+    'private buildSettings()',
+  ]) {
+    if (!uiBuilder.includes(pageToken)) {
+      fail(`Design-backed secondary route is missing a dedicated page builder: ${pageToken}`);
+    }
+  }
+
+  for (const placeholderRoute of [
+    "pet: () => this.buildPlaceholder",
+    "talent: () => this.buildPlaceholder",
+    "dailyTask: () => this.buildPlaceholder",
+    "achievement: () => this.buildPlaceholder",
+    "mail: () => this.buildPlaceholder",
+    "settings: () => this.buildPlaceholder",
+  ]) {
+    if (uiBuilder.includes(placeholderRoute)) {
+      fail(`Design-backed secondary route must not use generic placeholder UI: ${placeholderRoute}`);
+    }
+  }
+
+  if (uiBuilder.includes('后续由对应系统 Agent 接入真实数据')) {
+    fail('MVP UI action buttons must not use deferred fake-data toast copy.');
+  }
+
+  for (const requiredAction of [
+    'gameLogic.claimDailyTask',
+    'gameLogic.claimActivityChest',
+    'gameLogic.claimMail',
+    'gameLogic.claimAllMails',
+    'gameLogic.claimAchievement',
+    'gameLogic.upgradePet',
+    'gameLogic.deployPet',
+    'gameLogic.upgradeTalent',
+    'gameLogic.autoMergeAll',
+    'gameLogic.openChest',
+    'gameLogic.buyShopGoods',
+    'gameLogic.refreshShop',
+    'SaveManager.instance.update',
+    'SaveManager.instance.reset',
+  ]) {
+    if (!uiBuilder.includes(requiredAction)) {
+      fail(`MVP UI action buttons must call real gameplay/save behavior: ${requiredAction}`);
+    }
+  }
+
+  for (const requiredHandler of [
+    'private claimDailyTaskFromButton',
+    'private claimAchievementFromButton',
+    'private claimMailFromButton',
+    'private buyShopGoodsFromButton',
+    'private toggleSettingFromButton',
+    'private reportActionResult',
+  ]) {
+    if (!uiBuilder.includes(requiredHandler)) {
+      fail(`UISkeletonBuilder is missing dedicated MVP action handler: ${requiredHandler}`);
+    }
+  }
+
+  const placeholderIds = new Set(runtimeQuality?.statuses?.runtimePlaceholder ?? []);
+  const firstDeliveryRuntimeIds = [
+    'rt_bg_login_night_safe',
+    'rt_bg_home_camp_safe',
+    'rt_btn_yellow',
+    'rt_btn_green',
+    'rt_panel_bottom_nav',
+    'rt_panel_resource_pill',
+    'rt_panel_wood_header',
+    'rt_btn_nav_active',
+    'rt_btn_nav_inactive',
+    'rt_icon_energy',
+  ];
+  for (const id of firstDeliveryRuntimeIds) {
+    if (placeholderIds.has(id)) {
+      fail(`First-delivery login/home runtime asset must not remain runtimePlaceholder: ${id}`);
+    }
+  }
+
+  for (const id of [
+    'rt_icon_side_checkin',
+    'rt_icon_side_task',
+    'rt_icon_side_mail',
+    'rt_icon_side_rank',
+    'rt_icon_nav_battle',
+    'rt_cabin',
+    'rt_item_weapon_chest',
+    'rt_item_lantern',
+    'rt_avatar_cat',
+  ]) {
+    if (placeholderIds.has(id)) {
+      fail(`Homepage P0 icon must be independently generated and cannot remain runtimePlaceholder: ${id}`);
+    }
+  }
+
+  for (const [id, expected] of Object.entries({
+    rt_bg_login_night_safe: { width: 720, height: 1280 },
+    rt_bg_home_camp_safe: { width: 720, height: 1280 },
+    rt_btn_yellow: { width: 320, height: 112 },
+    rt_panel_bottom_nav: { width: 720, height: 160 },
+  })) {
+    const assetPath = path.join(projectRoot, 'assets', 'textures', 'runtime', `${id}.png`);
+    if (!fs.existsSync(assetPath)) {
+      fail(`First-delivery runtime PNG missing: ${path.relative(projectRoot, assetPath)}`);
+      continue;
+    }
+    const size = readPngSize(assetPath);
+    if (size && (size.width !== expected.width || size.height !== expected.height)) {
+      fail(`First-delivery runtime PNG has wrong size: ${id} expected ${expected.width}x${expected.height}, got ${size.width}x${size.height}`);
+    }
+  }
+
+  if (packageJson.scripts?.['asset:review'] !== 'node tools/asset_review_center.mjs') {
+    fail('package.json must expose npm run asset:review for the central asset acceptance queue.');
+  }
+
+  if (!Array.isArray(assetReviewCenter.reviewBuckets?.usable) || !assetReviewCenter.reviewBuckets.usable.includes('productionCandidate')) {
+    fail('asset_review_center.json must define usable asset statuses.');
+  }
+
+  if (!Array.isArray(assetReviewCenter.reviewBuckets?.needsReview) || !assetReviewCenter.reviewBuckets.needsReview.includes('temporaryAlias')) {
+    fail('asset_review_center.json must route temporary aliases through human/QA review.');
+  }
+
+  if (!Array.isArray(assetReviewCenter.rejectReasons) || !assetReviewCenter.rejectReasons.includes('too_fake')) {
+    fail('asset_review_center.json must support rejecting fake-looking generated assets.');
+  }
+
+  const assetReviewTool = read(assetReviewToolPath);
+  for (const requiredToken of ['asset_review_center.json', 'runtime_asset_quality.json', 'asset_pipeline_state.json', 'usable', 'needsReview', 'queuedForGeneration']) {
+    if (!assetReviewTool.includes(requiredToken)) {
+      fail(`asset_review_center.mjs is missing required review-center behavior token: ${requiredToken}`);
+    }
+  }
+}
+
+if (failures.length > 0) {
+  for (const failure of failures) {
+    console.error(`[scene-flow-guards] FAIL ${failure}`);
+  }
+  process.exit(1);
+}
+
+console.log('[scene-flow-guards] battle start, settlement, and battle art guard checks passed.');

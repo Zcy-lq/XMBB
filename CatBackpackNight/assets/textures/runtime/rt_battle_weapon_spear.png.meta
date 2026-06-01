@@ -1,0 +1,42 @@
+{
+  "ver": "1.0.27",
+  "importer": "image",
+  "imported": true,
+  "uuid": "990772a5-3175-4355-bfb2-4b839276d688",
+  "files": [
+    ".json",
+    ".png"
+  ],
+  "subMetas": {
+    "6c48a": {
+      "id": "6c48a",
+      "imported": true,
+      "importer": "texture",
+      "name": "texture",
+      "files": [
+        ".json"
+      ],
+      "ver": "1.0.22",
+      "userData": {
+        "magfilter": "linear",
+        "imageUuidOrDatabaseUri": "990772a5-3175-4355-bfb2-4b839276d688",
+        "anisotropy": 0,
+        "minfilter": "linear",
+        "isUuid": true,
+        "mipfilter": "none",
+        "visible": false,
+        "wrapModeS": "clamp-to-edge",
+        "wrapModeT": "clamp-to-edge"
+      },
+      "uuid": "990772a5-3175-4355-bfb2-4b839276d688@6c48a",
+      "subMetas": {},
+      "displayName": "rt_battle_weapon_spear"
+    }
+  },
+  "userData": {
+    "hasAlpha": true,
+    "fixAlphaTransparencyArtifacts": true,
+    "redirect": "990772a5-3175-4355-bfb2-4b839276d688@6c48a",
+    "type": "texture"
+  }
+}

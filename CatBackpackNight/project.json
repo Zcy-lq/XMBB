@@ -1,0 +1,32 @@
+{
+  "name": "CatBackpackNight",
+  "title": "猫猫背包守夜",
+  "version": "0.1.0",
+  "engine": "Cocos Creator",
+  "engineVersion": "3.8.0",
+  "language": "TypeScript",
+  "targetPlatform": "WeChat Mini Game",
+  "designResolution": {
+    "width": 750,
+    "height": 1334,
+    "fitWidth": false,
+    "fitHeight": true
+  },
+  "mainScenes": [
+    "assets/scenes/Login.scene",
+    "assets/scenes/Home.scene",
+    "assets/scenes/BattlePrepare.scene",
+    "assets/scenes/Battle.scene"
+  ],
+  "entryScripts": {
+    "Login": "assets/scripts/scenes/LoginSceneEntry.ts",
+    "Home": "assets/scripts/scenes/HomeSceneEntry.ts",
+    "BattlePrepare": "assets/scripts/scenes/BattlePrepareSceneEntry.ts",
+    "Battle": "assets/scripts/scenes/BattleSceneEntry.ts"
+  },
+  "notes": [
+    "Scene files are light placeholders. Attach the matching entry script if Cocos regenerates scene serialization.",
+    "Entry scripts create Canvas, UIManager, and runtime UI skeleton automatically."
+  ]
+}
+

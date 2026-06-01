@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 1,
+  "inventoryCapacity": 25,
+  "maxWeaponLevel": 5,
+  "defaultChestId": "item_chest",
+  "weapons": [
+    {
+      "id": "weapon_sword",
+      "displayName": "Sword",
+      "iconId": "weapon_sword",
+      "weaponType": "melee",
+      "targetRule": "front",
+      "dropWeight": 26,
+      "mergeable": true,
+      "levels": [
+        { "level": 1, "damage": 22, "cooldownSec": 1.2, "power": 40, "targets": 1, "critRateBonus": 0 },
+        { "level": 2, "damage": 36, "cooldownSec": 1.15, "power": 72, "targets": 1, "critRateBonus": 0.01 },
+        { "level": 3, "damage": 58, "cooldownSec": 1.1, "power": 118, "targets": 2, "critRateBonus": 0.02 },
+        { "level": 4, "damage": 92, "cooldownSec": 1.05, "power": 188, "targets": 2, "critRateBonus": 0.03 },
+        { "level": 5, "damage": 145, "cooldownSec": 1, "power": 300, "targets": 3, "critRateBonus": 0.04 }
+      ]
+    },
+    {
+      "id": "weapon_bow",
+      "displayName": "Bow",
+      "iconId": "weapon_bow",
+      "weaponType": "ranged",
+      "targetRule": "lowestHp",
+      "dropWeight": 24,
+      "mergeable": true,
+      "levels": [
+        { "level": 1, "damage": 18, "cooldownSec": 0.95, "power": 38, "targets": 1, "critRateBonus": 0.02 },
+        { "level": 2, "damage": 30, "cooldownSec": 0.9, "power": 70, "targets": 1, "critRateBonus": 0.03 },
+        { "level": 3, "damage": 48, "cooldownSec": 0.85, "power": 116, "targets": 1, "critRateBonus": 0.05 },
+        { "level": 4, "damage": 78, "cooldownSec": 0.8, "power": 186, "targets": 2, "critRateBonus": 0.06 },
+        { "level": 5, "damage": 124, "cooldownSec": 0.75, "power": 295, "targets": 2, "critRateBonus": 0.08 }
+      ]
+    },
+    {
+      "id": "weapon_staff",
+      "displayName": "Staff",
+      "iconId": "weapon_staff",
+      "weaponType": "magic",
+      "targetRule": "highestHp",
+      "dropWeight": 20,
+      "mergeable": true,
+      "levels": [
+        { "level": 1, "damage": 30, "cooldownSec": 1.65, "power": 44, "targets": 1, "critRateBonus": 0 },
+        { "level": 2, "damage": 49, "cooldownSec": 1.58, "power": 80, "targets": 1, "critRateBonus": 0.01 },
+        { "level": 3, "damage": 80, "cooldownSec": 1.5, "power": 132, "targets": 2, "critRateBonus": 0.02 },
+        { "level": 4, "damage": 128, "cooldownSec": 1.42, "power": 210, "targets": 2, "critRateBonus": 0.03 },
+        { "level": 5, "damage": 205, "cooldownSec": 1.35, "power": 335, "targets": 3, "critRateBonus": 0.04 }
+      ]
+    },
+    {
+      "id": "weapon_spear",
+      "displayName": "Spear",
+      "iconId": "weapon_spear",
+      "weaponType": "pierce",
+      "targetRule": "front",
+      "dropWeight": 16,
+      "mergeable": true,
+      "levels": [
+        { "level": 1, "damage": 24, "cooldownSec": 1.35, "power": 42, "targets": 2, "critRateBonus": 0 },
+        { "level": 2, "damage": 39, "cooldownSec": 1.3, "power": 76, "targets": 2, "critRateBonus": 0.01 },
+        { "level": 3, "damage": 63, "cooldownSec": 1.25, "power": 124, "targets": 2, "critRateBonus": 0.02 },
+        { "level": 4, "damage": 100, "cooldownSec": 1.2, "power": 198, "targets": 3, "critRateBonus": 0.03 },
+        { "level": 5, "damage": 158, "cooldownSec": 1.15, "power": 315, "targets": 3, "critRateBonus": 0.04 }
+      ]
+    },
+    {
+      "id": "weapon_fishbone_bow",
+      "displayName": "Fishbone Bow",
+      "iconId": "weapon_fishbone_bow",
+      "weaponType": "ranged",
+      "targetRule": "random",
+      "dropWeight": 14,
+      "mergeable": true,
+      "levels": [
+        { "level": 1, "damage": 16, "cooldownSec": 0.8, "power": 36, "targets": 1, "critRateBonus": 0.03 },
+        { "level": 2, "damage": 27, "cooldownSec": 0.76, "power": 66, "targets": 1, "critRateBonus": 0.04 },
+        { "level": 3, "damage": 44, "cooldownSec": 0.72, "power": 110, "targets": 2, "critRateBonus": 0.06 },
+        { "level": 4, "damage": 70, "cooldownSec": 0.68, "power": 176, "targets": 2, "critRateBonus": 0.08 },
+        { "level": 5, "damage": 112, "cooldownSec": 0.64, "power": 282, "targets": 3, "critRateBonus": 0.1 }
+      ]
+    }
+  ],
+  "materials": [
+    { "id": "pet_material_common", "displayName": "Pet Food", "itemType": "material", "stackLimit": 999 },
+    { "id": "blue_crystal_chunk", "displayName": "Blue Crystal Chunk", "itemType": "material", "stackLimit": 999 }
+  ],
+  "chests": [
+    {
+      "id": "item_chest",
+      "displayName": "Weapon Chest",
+      "itemType": "chest",
+      "stackLimit": 99,
+      "openCost": { "currency": "gold", "amount": 180 },
+      "loot": [
+        { "weight": 28, "reward": { "kind": "weapon", "id": "weapon_sword", "amount": 1, "level": 1 } },
+        { "weight": 25, "reward": { "kind": "weapon", "id": "weapon_bow", "amount": 1, "level": 1 } },
+        { "weight": 20, "reward": { "kind": "weapon", "id": "weapon_staff", "amount": 1, "level": 1 } },
+        { "weight": 15, "reward": { "kind": "weapon", "id": "weapon_spear", "amount": 1, "level": 1 } },
+        { "weight": 12, "reward": { "kind": "weapon", "id": "weapon_fishbone_bow", "amount": 1, "level": 1 } },
+        { "weight": 16, "reward": { "kind": "petMaterial", "id": "pet_material_common", "amount": 12 } }
+      ]
+    }
+  ],
+  "consumables": [
+    {
+      "id": "item_energy_potion",
+      "displayName": "Energy Potion",
+      "itemType": "consumable",
+      "stackLimit": 99,
+      "useRewards": [{ "kind": "currency", "id": "energy", "amount": 20 }]
+    },
+    {
+      "id": "item_pet_egg",
+      "displayName": "Pet Egg",
+      "itemType": "consumable",
+      "stackLimit": 99,
+      "useRewards": [{ "kind": "petMaterial", "id": "pet_material_common", "amount": 60 }]
+    }
+  ]
+}

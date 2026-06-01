@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "policy": {
+    "allowFullScreenReferenceImagesAtRuntime": false,
+    "description": "Runtime UI assets are component-level resources. Full design reference images stay in textures/references for development only."
+  },
+  "login": [
+    "bg_login_night",
+    "cat_hero_idle",
+    "btn_yellow",
+    "icon_paw"
+  ],
+  "home": [
+    "bg_home_camp",
+    "panel_dark_glass",
+    "panel_bottom_nav",
+    "btn_yellow",
+    "icon_gold",
+    "icon_purple_gem",
+    "icon_energy",
+    "icon_nav_home",
+    "icon_nav_shop",
+    "icon_nav_backpack",
+    "icon_nav_battle",
+    "icon_nav_talent",
+    "icon_nav_pet"
+  ],
+  "shop": [
+    "bg_shop_village",
+    "panel_wood_header",
+    "panel_dark",
+    "panel_parchment_card",
+    "btn_green",
+    "btn_blue",
+    "icon_gold",
+    "icon_purple_gem",
+    "icon_blue_gem",
+    "item_weapon_chest",
+    "item_pet_egg",
+    "item_energy_potion",
+    "item_enhance_stone"
+  ],
+  "backpack": [
+    "bg_inventory_parchment",
+    "panel_wood_header",
+    "panel_parchment",
+    "panel_parchment_card",
+    "btn_yellow",
+    "btn_brown",
+    "weapon_sword_01",
+    "weapon_bow_01",
+    "weapon_staff_01",
+    "weapon_spear_01",
+    "weapon_fishbone_bow"
+  ]
+}

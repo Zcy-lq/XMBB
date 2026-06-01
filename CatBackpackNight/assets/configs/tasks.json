@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "dailyTasks": [
+    { "id": "daily_login", "displayName": "Login", "event": "login", "target": 1, "mode": "max", "activity": 10, "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 50 }] },
+    { "id": "daily_battle_3", "displayName": "Complete 3 Battles", "event": "battleComplete", "target": 3, "mode": "increment", "activity": 20, "rewards": [{ "kind": "currency", "id": "gold", "amount": 1000 }] },
+    { "id": "daily_merge_5", "displayName": "Merge 5 Weapons", "event": "weaponMerge", "target": 5, "mode": "increment", "activity": 20, "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 100 }] },
+    { "id": "daily_kill_100", "displayName": "Defeat 100 Monsters", "event": "monsterKill", "target": 100, "mode": "increment", "activity": 30, "rewards": [{ "kind": "petMaterial", "id": "pet_material_common", "amount": 30 }] },
+    { "id": "daily_ad_1", "displayName": "Watch 1 Ad", "event": "adWatch", "target": 1, "mode": "increment", "activity": 20, "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 50 }] }
+  ],
+  "activityChests": [
+    { "id": "activity_30", "activity": 30, "rewards": [{ "kind": "currency", "id": "gold", "amount": 1000 }, { "kind": "petMaterial", "id": "pet_material_common", "amount": 10 }] },
+    { "id": "activity_60", "activity": 60, "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 50 }, { "kind": "item", "id": "item_chest", "amount": 1 }] },
+    { "id": "activity_90", "activity": 90, "rewards": [{ "kind": "currency", "id": "blueGem", "amount": 80 }, { "kind": "currency", "id": "gold", "amount": 2000 }] },
+    { "id": "activity_120", "activity": 120, "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 100 }, { "kind": "talentPoint", "id": "talentPoint", "amount": 1 }] }
+  ],
+  "achievements": [
+    { "id": "wave_5", "displayName": "First Campfire", "event": "highestWave", "target": 5, "mode": "max", "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 100 }] },
+    { "id": "wave_20", "displayName": "Steady Guardian", "event": "highestWave", "target": 20, "mode": "max", "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 200 }] },
+    { "id": "merge_100", "displayName": "Merge Master", "event": "weaponMerge", "target": 100, "mode": "increment", "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 300 }] },
+    { "id": "kill_1000", "displayName": "Monster Hunter", "event": "monsterKill", "target": 1000, "mode": "increment", "rewards": [{ "kind": "currency", "id": "purpleGem", "amount": 500 }] },
+    { "id": "pet_level_10", "displayName": "Pet Partner", "event": "petLevel", "target": 10, "mode": "max", "rewards": [{ "kind": "currency", "id": "blueGem", "amount": 100 }] }
+  ]
+}

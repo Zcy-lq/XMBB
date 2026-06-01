@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "db://assets/*": ["assets/*"],
+      "*": ["./*", "./temp/declarations/*"]
+    }
+  },
+  "include": [
+    "assets/**/*.ts"
+  ],
+  "exclude": [
+    "temp",
+    "library",
+    "build",
+    "node_modules"
+  ]
+}
+

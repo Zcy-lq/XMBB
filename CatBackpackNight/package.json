@@ -1,0 +1,34 @@
+{
+  "name": "cat-backpack-night",
+  "version": "0.1.0",
+  "description": "猫猫背包守夜 Cocos Creator 3.8 微信小游戏客户端",
+  "private": true,
+  "creator": {
+    "version": "3.8.8"
+  },
+  "scripts": {
+    "typecheck": "npm exec --yes --package typescript@5.3.3 -- tsc --noEmit -p tsconfig.json",
+    "verify:game-logic": "npm exec --yes --package tsx -- tsx tools/verify_game_logic_self_check.ts",
+    "verify:scene-flow": "node tools/verify_scene_flow_guards.mjs",
+    "refresh:preview-ui": "node tools/refresh_cocos_preview_ui_chunk.mjs",
+    "generate:runtime-assets": "node tools/generate_runtime_asset_index.mjs",
+    "verify:runtime-assets": "node tools/verify_runtime_asset_index.mjs",
+    "audit:runtime-asset-quality": "node tools/audit_runtime_asset_quality.mjs",
+    "verify:ui-asset-contract": "node tools/verify_ui_asset_contract.mjs",
+    "verify:asset-generation-batch": "node tools/verify_asset_generation_batch.mjs",
+    "verify:asset-candidates": "node tools/verify_asset_candidates.mjs",
+    "verify:asset-candidate-similarity": "python tools/verify_asset_candidate_similarity.py",
+    "verify:asset-pipeline-state": "node tools/verify_asset_pipeline_state.mjs",
+    "asset:review": "node tools/asset_review_center.mjs",
+    "audit:design-reference": "node tools/audit_design_reference.mjs",
+    "validate:configs": "node tools/validate_configs.js",
+    "validate:assets": "node tools/validate_assets.js",
+    "validate:handoffs": "node tools/validate_handoffs.js",
+    "build:check": "node tools/build_check.js",
+    "workflow:check": "npm run validate:configs && npm run validate:assets && npm run audit:design-reference && npm run validate:handoffs -- --allow-missing && npm run build:check"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  },
+  "uuid": "fb90103b-24ac-4858-86bb-49d91e33b080"
+}

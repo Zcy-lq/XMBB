@@ -1,0 +1,75 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-24",
+  "purpose": "Central gate for generated runtime assets before they are promoted into commercial UI or gameplay flows.",
+  "sourceFiles": {
+    "runtimeQuality": "assets/configs/runtime_asset_quality.json",
+    "pipelineState": "assets/configs/asset_pipeline_state.json",
+    "generationBatch": "assets/configs/asset_generation_batch_p0.json",
+    "runtimeRoot": "assets/textures/runtime",
+    "candidateRoot": "tmp/asset_candidates"
+  },
+  "reviewBuckets": {
+    "usable": [
+      "productionCandidate",
+      "promoted",
+      "accepted"
+    ],
+    "needsReview": [
+      "candidate_generated",
+      "asset_audit_passed",
+      "static_checks_passed",
+      "screenshot_passed",
+      "visual_compare_passed",
+      "temporaryAlias",
+      "needsDecomposition"
+    ],
+    "mustRegenerate": [
+      "runtimePlaceholder",
+      "asset_audit_failed",
+      "static_checks_failed",
+      "screenshot_failed",
+      "visual_compare_failed"
+    ],
+    "queuedForGeneration": [
+      "pending",
+      "candidate_spec_prepared"
+    ],
+    "blocked": [
+      "blocked"
+    ]
+  },
+  "rejectReasons": [
+    "too_fake",
+    "wrong_style",
+    "baked_text",
+    "baked_ui",
+    "reference_copy",
+    "bad_alpha",
+    "wrong_size",
+    "not_readable_mobile",
+    "bundle_risk"
+  ],
+  "humanConfirmationPolicy": {
+    "requiresConfirmationBeforePromotion": true,
+    "confirmableStatuses": [
+      "candidate_generated",
+      "asset_audit_passed",
+      "visual_compare_passed"
+    ],
+    "doNotBlockCodeAgentsOn": [
+      "queuedForGeneration",
+      "needsReview"
+    ],
+    "blockReleaseOn": [
+      "runtimePlaceholder",
+      "too_fake",
+      "reference_copy",
+      "bad_alpha"
+    ]
+  },
+  "outputPolicy": {
+    "defaultConsoleReport": true,
+    "optionalWritePath": "agent_reports/ASSET_REVIEW_CENTER.json"
+  }
+}

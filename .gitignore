@@ -1,0 +1,29 @@
+# Local installers and tool caches
+/node-v*.msi
+/.tools/
+/.superpowers/
+
+# Browser automation profiles
+/MasterCenter-test-profile/
+/CatBackpackNight/tmp/.edge-cdp-*/
+/CatBackpackNight/tmp/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Cocos/Tuanjie generated local state
+/CatBackpackNight/library/
+/CatBackpackNight/temp/
+/CatBackpackNight/Logs/
+/CatBackpackNight/UserSettings/
+/CatBackpackNight/local/
+/CatBackpackNight/build/
+
+# Ephemeral QA captures and probes
+/CatBackpackNight/tmp/qa_*.png
+/CatBackpackNight/tmp/cdp_*.png
+/CatBackpackNight/tmp/current_*.png
+/CatBackpackNight/tmp/pass*.png
+/CatBackpackNight/tmp/resume*.png
+/CatBackpackNight/tmp/*probe*.png

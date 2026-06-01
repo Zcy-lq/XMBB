@@ -1,0 +1,453 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-29",
+  "authoringAgent": "ClientArchAgent",
+  "purpose": "Bridge product-level UI keys to current runtime sprites and final commercial runtime targets.",
+  "sources": {
+    "productKeys": "assets/scripts/ui/UIAssetKeys.ts",
+    "screenDeclarations": "assets/configs/ui_runtime_assets.json",
+    "runtimeIndex": "assets/configs/assets_runtime.json",
+    "qualityIndex": "assets/configs/runtime_asset_quality.json"
+  },
+  "entries": [
+    {
+      "productKey": "bg_login_night",
+      "group": "backgrounds",
+      "role": "screenBackground",
+      "screens": [
+        "login"
+      ],
+      "currentRuntimeId": "rt_bg_login_night_safe",
+      "finalRuntimeId": "rt_bg_login_night_safe"
+    },
+    {
+      "productKey": "bg_home_camp",
+      "group": "backgrounds",
+      "role": "screenBackground",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_bg_home_camp_safe",
+      "finalRuntimeId": "rt_bg_home_camp_safe"
+    },
+    {
+      "productKey": "bg_shop_village",
+      "group": "backgrounds",
+      "role": "screenBackground",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_bg_shop_village_safe",
+      "finalRuntimeId": "rt_bg_shop_village_safe",
+      "notes": "Promoted as P1 final runtime art on 2026-05-29; current and final mapping now use the same asset."
+    },
+    {
+      "productKey": "bg_inventory_parchment",
+      "group": "backgrounds",
+      "role": "screenBackground",
+      "screens": [
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_bg_inventory_parchment_safe",
+      "finalRuntimeId": "rt_bg_inventory_parchment_safe"
+    },
+    {
+      "productKey": "panel_wood_header",
+      "group": "panels",
+      "role": "nineSlicePanel",
+      "screens": [
+        "shop",
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_panel_wood_header",
+      "finalRuntimeId": "rt_panel_wood_header"
+    },
+    {
+      "productKey": "panel_parchment",
+      "group": "panels",
+      "role": "nineSlicePanel",
+      "screens": [
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_panel_parchment",
+      "finalRuntimeId": "rt_panel_parchment"
+    },
+    {
+      "productKey": "panel_parchment_card",
+      "group": "panels",
+      "role": "nineSliceCard",
+      "screens": [
+        "shop",
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_panel_parchment_card",
+      "finalRuntimeId": "rt_panel_parchment_card",
+      "notes": "Promoted runtime parchment card is now the current and final product-level card surface."
+    },
+    {
+      "productKey": "panel_dark",
+      "group": "panels",
+      "role": "nineSlicePanel",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_panel_dark",
+      "finalRuntimeId": "rt_panel_dark"
+    },
+    {
+      "productKey": "panel_dark_glass",
+      "group": "panels",
+      "role": "nineSlicePanel",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_panel_dark_glass",
+      "finalRuntimeId": "rt_panel_dark_glass",
+      "notes": "Promoted runtime dark glass panel is now the current and final product-level home information panel."
+    },
+    {
+      "productKey": "panel_bottom_nav",
+      "group": "panels",
+      "role": "nineSlicePanel",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_panel_bottom_nav",
+      "finalRuntimeId": "rt_panel_bottom_nav"
+    },
+    {
+      "productKey": "btn_yellow",
+      "group": "buttons",
+      "role": "nineSliceButton",
+      "screens": [
+        "login",
+        "home",
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_btn_yellow",
+      "finalRuntimeId": "rt_btn_yellow"
+    },
+    {
+      "productKey": "btn_green",
+      "group": "buttons",
+      "role": "nineSliceButton",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_btn_green",
+      "finalRuntimeId": "rt_btn_green"
+    },
+    {
+      "productKey": "btn_blue",
+      "group": "buttons",
+      "role": "nineSliceButton",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_btn_blue",
+      "finalRuntimeId": "rt_btn_blue"
+    },
+    {
+      "productKey": "btn_brown",
+      "group": "buttons",
+      "role": "nineSliceButton",
+      "screens": [
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_btn_brown",
+      "finalRuntimeId": "rt_btn_brown"
+    },
+    {
+      "productKey": "btn_red",
+      "group": "buttons",
+      "role": "nineSliceButton",
+      "screens": [],
+      "currentRuntimeId": "rt_btn_red",
+      "finalRuntimeId": "rt_btn_red",
+      "notes": "Promoted as P0 final runtime art on 2026-05-29; current and final mapping now use the same asset."
+    },
+    {
+      "productKey": "btn_icon_round",
+      "group": "buttons",
+      "role": "iconButtonBase",
+      "screens": [],
+      "currentRuntimeId": "rt_btn_icon_round",
+      "finalRuntimeId": "rt_btn_icon_round",
+      "notes": "Promoted as P0 final runtime art on 2026-05-29; current and final mapping now use the same asset."
+    },
+    {
+      "productKey": "icon_gold",
+      "group": "icons",
+      "role": "currencyIcon",
+      "screens": [
+        "home",
+        "shop"
+      ],
+      "currentRuntimeId": "rt_icon_gold",
+      "finalRuntimeId": "rt_icon_gold"
+    },
+    {
+      "productKey": "icon_purple_gem",
+      "group": "icons",
+      "role": "currencyIcon",
+      "screens": [
+        "home",
+        "shop"
+      ],
+      "currentRuntimeId": "rt_icon_purple_gem",
+      "finalRuntimeId": "rt_icon_purple_gem"
+    },
+    {
+      "productKey": "icon_blue_gem",
+      "group": "icons",
+      "role": "currencyIcon",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_icon_blue_gem",
+      "finalRuntimeId": "rt_icon_blue_gem"
+    },
+    {
+      "productKey": "icon_energy",
+      "group": "icons",
+      "role": "currencyIcon",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_icon_energy",
+      "finalRuntimeId": "rt_icon_energy"
+    },
+    {
+      "productKey": "icon_paw",
+      "group": "icons",
+      "role": "themeIcon",
+      "screens": [
+        "login"
+      ],
+      "currentRuntimeId": "rt_icon_paw",
+      "finalRuntimeId": "rt_icon_paw",
+      "notes": "Promoted as P0 final runtime art on 2026-05-29; current and final mapping now use the same asset."
+    },
+    {
+      "productKey": "icon_back",
+      "group": "icons",
+      "role": "navigationIcon",
+      "screens": [],
+      "currentRuntimeId": "rt_icon_back",
+      "finalRuntimeId": "rt_icon_back"
+    },
+    {
+      "productKey": "icon_close",
+      "group": "icons",
+      "role": "navigationIcon",
+      "screens": [],
+      "currentRuntimeId": "rt_icon_close",
+      "finalRuntimeId": "rt_icon_close"
+    },
+    {
+      "productKey": "icon_settings",
+      "group": "icons",
+      "role": "navigationIcon",
+      "screens": [],
+      "currentRuntimeId": "rt_icon_settings",
+      "finalRuntimeId": "rt_icon_settings"
+    },
+    {
+      "productKey": "icon_lock",
+      "group": "icons",
+      "role": "stateIcon",
+      "screens": [],
+      "currentRuntimeId": "rt_icon_lock",
+      "finalRuntimeId": "rt_icon_lock"
+    },
+    {
+      "productKey": "icon_red_dot",
+      "group": "icons",
+      "role": "stateIcon",
+      "screens": [],
+      "currentRuntimeId": "rt_icon_reddot",
+      "finalRuntimeId": "rt_icon_reddot"
+    },
+    {
+      "productKey": "icon_nav_home",
+      "group": "icons",
+      "role": "bottomNavIcon",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_cabin",
+      "finalRuntimeId": "rt_cabin",
+      "notes": "HOME_01 bottom nav main-page icon uses a small cabin/house icon, not the full home background."
+    },
+    {
+      "productKey": "icon_nav_shop",
+      "group": "icons",
+      "role": "bottomNavIcon",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_icon_nav_shop",
+      "finalRuntimeId": "rt_icon_nav_shop"
+    },
+    {
+      "productKey": "icon_nav_backpack",
+      "group": "icons",
+      "role": "bottomNavIcon",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_icon_nav_backpack",
+      "finalRuntimeId": "rt_icon_nav_backpack",
+      "notes": "Promoted as P0 final runtime art on 2026-05-29; current and final mapping now use the same asset."
+    },
+    {
+      "productKey": "icon_nav_battle",
+      "group": "icons",
+      "role": "bottomNavIcon",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_icon_nav_battle",
+      "finalRuntimeId": "rt_icon_nav_battle"
+    },
+    {
+      "productKey": "icon_nav_talent",
+      "group": "icons",
+      "role": "bottomNavIcon",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_icon_nav_talent",
+      "finalRuntimeId": "rt_icon_nav_talent"
+    },
+    {
+      "productKey": "icon_nav_pet",
+      "group": "icons",
+      "role": "bottomNavIcon",
+      "screens": [
+        "home"
+      ],
+      "currentRuntimeId": "rt_icon_nav_pet",
+      "finalRuntimeId": "rt_icon_nav_pet"
+    },
+    {
+      "productKey": "weapon_sword_01",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_item_weapon_sword",
+      "finalRuntimeId": "rt_item_weapon_sword"
+    },
+    {
+      "productKey": "weapon_bow_01",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_item_weapon_bow",
+      "finalRuntimeId": "rt_item_weapon_bow"
+    },
+    {
+      "productKey": "weapon_staff_01",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_item_weapon_staff",
+      "finalRuntimeId": "rt_item_weapon_staff"
+    },
+    {
+      "productKey": "weapon_spear_01",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_item_weapon_spear",
+      "finalRuntimeId": "rt_item_weapon_spear"
+    },
+    {
+      "productKey": "weapon_fishbone_bow",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "backpack"
+      ],
+      "currentRuntimeId": "rt_item_weapon_fishbone_bow",
+      "finalRuntimeId": "rt_item_weapon_fishbone_bow",
+      "notes": "Promoted as P0 final runtime art on 2026-05-29; current and final mapping now use the same asset."
+    },
+    {
+      "productKey": "item_weapon_chest",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_item_weapon_chest",
+      "finalRuntimeId": "rt_item_weapon_chest"
+    },
+    {
+      "productKey": "item_pet_egg",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_item_pet_egg",
+      "finalRuntimeId": "rt_item_pet_egg"
+    },
+    {
+      "productKey": "item_energy_potion",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_item_energy_potion",
+      "finalRuntimeId": "rt_item_energy_potion"
+    },
+    {
+      "productKey": "item_enhance_stone",
+      "group": "items",
+      "role": "itemIcon",
+      "screens": [
+        "shop"
+      ],
+      "currentRuntimeId": "rt_item_enhance_stone",
+      "finalRuntimeId": "rt_item_enhance_stone"
+    },
+    {
+      "productKey": "cat_hero_idle",
+      "group": "characters",
+      "role": "characterSprite",
+      "screens": [
+        "login"
+      ],
+      "currentRuntimeId": "rt_cat_hero_idle",
+      "finalRuntimeId": "rt_cat_hero_idle",
+      "notes": "Promoted as P1 final runtime art on 2026-05-29; current and final mapping now use the same asset."
+    },
+    {
+      "productKey": "cat_hero_battle",
+      "group": "characters",
+      "role": "characterSprite",
+      "screens": [],
+      "currentRuntimeId": "rt_cat_hero_battle",
+      "finalRuntimeId": "rt_cat_hero_battle"
+    },
+    {
+      "productKey": "cat_shop_hood",
+      "group": "characters",
+      "role": "characterSprite",
+      "screens": [],
+      "currentRuntimeId": "rt_cat_shop_hood",
+      "finalRuntimeId": "rt_cat_shop_hood",
+      "notes": "Promoted as P1 final runtime art on 2026-05-29; current and final mapping now use the same asset."
+    }
+  ]
+}

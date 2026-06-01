@@ -1,0 +1,316 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-29",
+  "controller": "CodexMultiAgentLoop",
+  "activeBatch": "assetagent_p0_runtime_gap_20260524",
+  "mode": "continuous",
+  "loop": {
+    "cycle": 1,
+    "currentPhase": "static_checks",
+    "activeTask": "p0_shared_asset_promotion",
+    "phaseOrder": [
+      "generate_candidates",
+      "asset_audit",
+      "static_checks",
+      "browser_screenshots",
+      "visual_compare",
+      "promote_or_reject",
+      "select_next_batch"
+    ],
+    "lastCompletedPhase": "promote_or_reject",
+    "nextAction": "Active P0 batch is promoted. P1 final visual assets were promoted outside the active batch and recorded in history/docs; run screenshot and platform verification next."
+  },
+  "agentSchedule": {
+    "sourceOfTruth": "C:/Users/User/Desktop/XMBB/cat_game_agents_prompts.json",
+    "phaseAgents": {
+      "generate_candidates": [
+        "AssetAgent"
+      ],
+      "asset_audit": [
+        "AssetAgent",
+        "UIUXAgent"
+      ],
+      "static_checks": [
+        "ClientArchAgent",
+        "QAReleaseAgent"
+      ],
+      "browser_screenshots": [
+        "QAReleaseAgent"
+      ],
+      "visual_compare": [
+        "UIUXAgent",
+        "QAReleaseAgent"
+      ],
+      "promote_or_reject": [
+        "AssetAgent",
+        "ClientArchAgent",
+        "QAReleaseAgent"
+      ],
+      "select_next_batch": [
+        "ProductAgent",
+        "UIUXAgent",
+        "AssetAgent",
+        "ClientArchAgent",
+        "CoreGameplayAgent",
+        "EconomyRewardAgent",
+        "SaveDataAgent",
+        "PlatformAgent",
+        "BuildAgent",
+        "QAReleaseAgent"
+      ]
+    },
+    "conditionalAgents": [
+      {
+        "agent": "ProductAgent",
+        "when": "Run when a generated asset changes product scope, monetization visibility, compliance copy, economy surfaces, or MVP acceptance criteria."
+      },
+      {
+        "agent": "UIUXAgent",
+        "when": "Run before accepting visual changes, after screenshot comparison fails, or when layout/key/screen usage changes."
+      },
+      {
+        "agent": "AssetAgent",
+        "when": "Run for every candidate generation, crop, naming, alpha/nine-slice, atlas, bundle, or replacement decision."
+      },
+      {
+        "agent": "ClientArchAgent",
+        "when": "Run when final assets are promoted, runtime ids change, loaders/configs/scripts change, or Cocos preview fails to resolve sprites."
+      },
+      {
+        "agent": "CoreGameplayAgent",
+        "when": "Run when battle sprites/effects/backgrounds change gameplay readability, combat feedback, rewards, inventory items, or config-driven item behavior."
+      },
+      {
+        "agent": "EconomyRewardAgent",
+        "when": "Run when generated assets affect rewards, shop offers, task surfaces, currency displays, or resource pacing."
+      },
+      {
+        "agent": "SaveDataAgent",
+        "when": "Run when new resources or UI states require persisted unlocks, migration fields, inventory entries, or recovery behavior."
+      },
+      {
+        "agent": "PlatformAgent",
+        "when": "Run when asset/package changes affect WeChat package size, remote resources, cache/version strategy, ads, privacy, age prompts, or share/platform flows."
+      },
+      {
+        "agent": "BuildAgent",
+        "when": "Run when promoted assets, bundle strategy, package size, Cocos build settings, or WeChat build checks change."
+      },
+      {
+        "agent": "QAReleaseAgent",
+        "when": "Run every cycle for verification commands, screenshots, visual diff notes, release checklist updates, and known issue tracking."
+      }
+    ]
+  },
+  "statuses": {
+    "rt_panel_dark_glass": "promoted",
+    "rt_panel_parchment_card": "promoted",
+    "rt_btn_icon_round": "promoted",
+    "rt_btn_red": "promoted",
+    "rt_icon_paw": "promoted",
+    "rt_icon_nav_backpack": "promoted",
+    "rt_item_weapon_fishbone_bow": "promoted",
+    "rt_bg_battle_forest_safe": "promoted",
+    "rt_bg_battle_prepare_safe": "promoted",
+    "rt_monster_ghost": "promoted",
+    "rt_monster_skeleton": "promoted",
+    "rt_monster_goblin": "promoted",
+    "rt_fx_bullet": "promoted",
+    "rt_fx_hit": "promoted",
+    "rt_fx_fire": "promoted"
+  },
+  "allowedStatuses": [
+    "pending",
+    "candidate_spec_prepared",
+    "candidate_generated",
+    "asset_audit_failed",
+    "asset_audit_passed",
+    "static_checks_failed",
+    "static_checks_passed",
+    "screenshot_failed",
+    "screenshot_passed",
+    "visual_compare_failed",
+    "visual_compare_passed",
+    "accepted",
+    "promoted",
+    "blocked"
+  ],
+  "artifacts": {
+    "rt_panel_dark_glass": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-24",
+      "type": "candidate_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_panel_dark_glass.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_panel_dark_glass.png",
+      "sourcePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_panel_dark_glass.source.png",
+      "alphaWorkPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_panel_dark_glass.alpha_full.png",
+      "finalPath": "assets/textures/runtime/rt_panel_dark_glass.png",
+      "notes": "Candidate PNG generated with built-in image generation, chroma-key removed locally, resized to 512x256. Asset audit 2026-05-24: passed; candidate is 512x256 PNG with alpha and transparent corners, matches configured path/name and prompt intent, has nine-slice-safe corners/edges, clean center, no text/icon/watermark/test background/screenshot artifacts. Promoted to assets/textures/runtime/rt_panel_dark_glass.png; Cocos import/meta generation still required before UUID-based preview loading."
+    },
+    "rt_panel_parchment_card": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-24",
+      "type": "candidate_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_panel_parchment_card.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_panel_parchment_card.png",
+      "sourcePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_panel_parchment_card.source.png",
+      "alphaWorkPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_panel_parchment_card.alpha_full.png",
+      "finalPath": "assets/textures/runtime/rt_panel_parchment_card.png",
+      "notes": "Candidate PNG generated with built-in image generation, chroma-key removed locally, resized to 320x420. Pre-audit checks passed: RGBA PNG, transparent corners, alpha bbox within bounds, no visible chroma-key residue, and no screenshot/reference-image similarity warnings. Asset audit 2026-05-24: passed; candidate path/name match spec, PNG is 320x420 RGBA with transparent corners, clean readable parchment center, acceptable nine-slice/card edges, and no text/icon/watermark/test background/full-screen UI artifacts. UIUXAgent approved for high-weight parchment card use, with post-promotion screenshot focus on shop, inventory detail, and reward cards. QA gate screenshot saved at tmp/qa_cocos_preview_asset_gate_parchment_card_20260524.png. Promoted to assets/textures/runtime/rt_panel_parchment_card.png; Cocos import/meta generation still required before UUID-based preview loading."
+    },
+    "rt_btn_icon_round": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-29",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_btn_icon_round.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_btn_icon_round.png",
+      "sourcePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_btn_icon_round.source.png",
+      "alphaWorkPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_btn_icon_round.alpha_full.png",
+      "finalPath": "assets/textures/runtime/rt_btn_icon_round.png",
+      "notes": "Round icon-button base generated with built-in image generation, green-screen alpha removal, resized to 160x160, and promoted to runtime."
+    },
+    "rt_btn_red": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-29",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_btn_red.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_btn_red.png",
+      "sourcePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_btn_red.source.png",
+      "alphaWorkPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_btn_red.alpha_full.png",
+      "finalPath": "assets/textures/runtime/rt_btn_red.png",
+      "notes": "Red danger/cancel button generated with built-in image generation, green-screen alpha removal, resized to 320x112, and promoted to runtime."
+    },
+    "rt_icon_paw": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-29",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_icon_paw.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_icon_paw.png",
+      "sourcePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_icon_paw.source.png",
+      "alphaWorkPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_icon_paw.alpha_full.png",
+      "finalPath": "assets/textures/runtime/rt_icon_paw.png",
+      "notes": "Generic non-currency paw icon generated with built-in image generation, green-screen alpha removal, resized to 256x256, and promoted to runtime."
+    },
+    "rt_icon_nav_backpack": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-29",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_icon_nav_backpack.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_icon_nav_backpack.png",
+      "sourcePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_icon_nav_backpack.source.png",
+      "alphaWorkPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_icon_nav_backpack.alpha_full.png",
+      "finalPath": "assets/textures/runtime/rt_icon_nav_backpack.png",
+      "notes": "Bottom navigation backpack icon generated with built-in image generation, green-screen alpha removal, resized to 256x256, and promoted to runtime."
+    },
+    "rt_item_weapon_fishbone_bow": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-29",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_item_weapon_fishbone_bow.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_item_weapon_fishbone_bow.png",
+      "sourcePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_item_weapon_fishbone_bow.source.png",
+      "alphaWorkPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/_sources/rt_item_weapon_fishbone_bow.alpha_full.png",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_fishbone_bow.png",
+      "notes": "Fishbone bow weapon icon generated with built-in image generation, green-screen alpha removal, resized to 256x256, and promoted to runtime."
+    },
+    "rt_bg_battle_forest_safe": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-28",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_bg_battle_forest_safe.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_bg_battle_forest_safe.png",
+      "finalPath": "assets/textures/runtime/rt_bg_battle_forest_safe.png",
+      "notes": "Runtime battle background exists under assets/textures/runtime and is used by the battle scene. Scene-flow guard verifies it is an independent background with no opaque chroma-key residue or keyed-out black block."
+    },
+    "rt_bg_battle_prepare_safe": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-28",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_bg_battle_prepare_safe.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_bg_battle_prepare_safe.png",
+      "finalPath": "assets/textures/runtime/rt_bg_battle_prepare_safe.png",
+      "notes": "Runtime battle-prepare background exists under assets/textures/runtime and is used separately from baked preview art. Scene-flow guard verifies it remains a safe independent background."
+    },
+    "rt_monster_ghost": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-28",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_monster_ghost.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_monster_ghost.png",
+      "finalPath": "assets/textures/runtime/rt_monster_ghost.png",
+      "notes": "Runtime transparent ghost enemy sprite exists and is mapped into live battle monster rendering."
+    },
+    "rt_monster_skeleton": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-28",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_monster_skeleton.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_monster_skeleton.png",
+      "finalPath": "assets/textures/runtime/rt_monster_skeleton.png",
+      "notes": "Runtime transparent skeleton enemy sprite exists and is mapped into live battle monster rendering."
+    },
+    "rt_monster_goblin": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-28",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_monster_goblin.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_monster_goblin.png",
+      "finalPath": "assets/textures/runtime/rt_monster_goblin.png",
+      "notes": "Runtime transparent goblin enemy sprite exists and is mapped into live battle monster rendering."
+    },
+    "rt_fx_bullet": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-28",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_fx_bullet.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_fx_bullet.png",
+      "finalPath": "assets/textures/runtime/rt_fx_bullet.png",
+      "notes": "Runtime projectile sprite exists and is mapped into live weapon attack visuals."
+    },
+    "rt_fx_hit": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-28",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_fx_hit.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_fx_hit.png",
+      "finalPath": "assets/textures/runtime/rt_fx_hit.png",
+      "notes": "Runtime hit-impact sprite exists and is mapped into live weapon attack visuals."
+    },
+    "rt_fx_fire": {
+      "phase": "promote_or_reject",
+      "preparedBy": "AssetAgent",
+      "preparedAt": "2026-05-28",
+      "type": "runtime_png",
+      "specPath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_fx_fire.prompt.md",
+      "candidatePath": "tmp/asset_candidates/assetagent_p0_runtime_gap_20260524/rt_fx_fire.png",
+      "finalPath": "assets/textures/runtime/rt_fx_fire.png",
+      "notes": "Runtime fire/glow sprite exists and is available for battle and camp UI overlays."
+    }
+  },
+  "history": [
+    {
+      "date": "2026-05-29",
+      "phase": "promote_or_reject",
+      "summary": "Promoted five P0 shared runtime assets: rt_btn_icon_round, rt_btn_red, rt_icon_paw, rt_icon_nav_backpack, rt_item_weapon_fishbone_bow."
+    },
+    {
+      "date": "2026-05-29",
+      "phase": "promote_or_reject",
+      "summary": "Promoted three P1 final visual runtime assets: rt_bg_shop_village_safe, rt_cat_hero_idle, rt_cat_shop_hood."
+    }
+  ]
+}

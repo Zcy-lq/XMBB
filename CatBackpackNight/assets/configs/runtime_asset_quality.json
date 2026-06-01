@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-29",
+  "authoringAgent": "AssetAgent",
+  "purpose": "Classify runtime PNGs so test screenshots, reference images, and temporary placeholders are not treated as final commercial art.",
+  "pathPolicy": {
+    "productionRuntimeRoot": "assets/textures/runtime",
+    "developmentOnlyPathPatterns": [
+      "assets/textures/references/",
+      "tmp/",
+      "temp/",
+      "library/",
+      "_cocos_cache_backup_"
+    ],
+    "testFileNamePatterns": [
+      "qa_",
+      "test",
+      "screenshot",
+      "contact_sheet",
+      "cocos_window",
+      "os_screenshot"
+    ]
+  },
+  "defaultStatus": "productionCandidate",
+  "statuses": {
+    "runtimePlaceholder": [
+      "rt_bg_inventory_parchment_safe",
+      "rt_bg_shop_night_safe",
+      "rt_card_inventory_detail",
+      "rt_card_shop_product",
+      "rt_icon_back",
+      "rt_icon_check",
+      "rt_icon_close",
+      "rt_icon_gold",
+      "rt_icon_lock",
+      "rt_icon_paw_coin",
+      "rt_icon_plus",
+      "rt_icon_reddot",
+      "rt_icon_settings",
+      "rt_item_gem_generic",
+      "rt_item_prop_generic",
+      "rt_item_weapon_generic",
+      "rt_panel_dark",
+      "rt_panel_parchment",
+      "rt_panel_tab_active",
+      "rt_panel_tab_inactive",
+      "rt_slot_inventory",
+      "rt_slot_inventory_empty",
+      "rt_slot_inventory_selected"
+    ],
+    "temporaryAlias": [],
+    "needsDecomposition": [
+      "rt_battle_field_art",
+      "rt_battle_prepare_preview"
+    ]
+  },
+  "plannedMissing": [],
+  "notes": [
+    "Files under tmp/ are QA screenshots, intermediate crops, contact sheets, or visual comparison artifacts. They must never be referenced by runtime code.",
+    "Files under assets/textures/references/ are full-page design references. They are development-only and must never be packaged as runtime art.",
+    "runtimePlaceholder assets are allowed to keep the preview playable, but they are not final commercial UI art.",
+    "temporaryAlias assets, if present, are valid files temporarily reused for a different product-level key and should be replaced before release.",
+    "2026-05-29: Five P0 shared assets were promoted to runtime and removed from plannedMissing.",
+    "2026-05-29: Three P1 final visual assets were promoted to runtime and removed from plannedMissing."
+  ]
+}

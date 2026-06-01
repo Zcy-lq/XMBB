@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "powerPerLevel": 25,
+  "resetCost": { "currency": "gold", "amount": 0 },
+  "nodes": [
+    { "id": "attack_power_01", "branch": "attack", "displayName": "Sharp Claws I", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [], "effects": [{ "type": "attackPercent", "valuePerLevel": 0.05 }] },
+    { "id": "attack_speed_01", "branch": "attack", "displayName": "Quick Paw I", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [{ "id": "attack_power_01", "level": 1 }], "effects": [{ "type": "cooldownPercent", "valuePerLevel": 0.035 }] },
+    { "id": "crit_rate_01", "branch": "attack", "displayName": "Lucky Strike I", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [{ "id": "attack_speed_01", "level": 1 }], "effects": [{ "type": "critRate", "valuePerLevel": 0.025 }] },
+    { "id": "crit_damage_01", "branch": "attack", "displayName": "Moon Fang I", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [{ "id": "crit_rate_01", "level": 1 }], "effects": [{ "type": "critDamage", "valuePerLevel": 0.1 }] },
+    { "id": "pierce_01", "branch": "attack", "displayName": "Piercing Night", "maxLevel": 3, "costPerLevel": [1, 1, 2], "requires": [{ "id": "attack_power_01", "level": 2 }], "effects": [{ "type": "extraTargets", "valuePerLevel": 0.34 }] },
+    { "id": "attack_power_02", "branch": "attack", "displayName": "Sharp Claws II", "maxLevel": 3, "costPerLevel": [1, 2, 2], "requires": [{ "id": "crit_damage_01", "level": 2 }], "effects": [{ "type": "attackPercent", "valuePerLevel": 0.08 }] },
+    { "id": "camp_hp_01", "branch": "defense", "displayName": "Warm Camp I", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [], "effects": [{ "type": "campHpPercent", "valuePerLevel": 0.06 }] },
+    { "id": "camp_defense_01", "branch": "defense", "displayName": "Paw Shield I", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [{ "id": "camp_hp_01", "level": 1 }], "effects": [{ "type": "defenseFlat", "valuePerLevel": 1.5 }] },
+    { "id": "camp_heal_01", "branch": "defense", "displayName": "Lantern Heal", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [{ "id": "camp_defense_01", "level": 1 }], "effects": [{ "type": "campRegen", "valuePerLevel": 0.25 }] },
+    { "id": "camp_hp_02", "branch": "defense", "displayName": "Warm Camp II", "maxLevel": 3, "costPerLevel": [1, 2, 2], "requires": [{ "id": "camp_hp_01", "level": 2 }], "effects": [{ "type": "campHpPercent", "valuePerLevel": 0.08 }] },
+    { "id": "damage_reduce_01", "branch": "defense", "displayName": "Thick Cloak", "maxLevel": 3, "costPerLevel": [1, 2, 2], "requires": [{ "id": "camp_defense_01", "level": 2 }], "effects": [{ "type": "damageReductionPercent", "valuePerLevel": 0.03 }] },
+    { "id": "last_stand_01", "branch": "defense", "displayName": "Last Ember", "maxLevel": 1, "costPerLevel": [2], "requires": [{ "id": "damage_reduce_01", "level": 2 }], "effects": [{ "type": "campHpPercent", "valuePerLevel": 0.15 }] },
+    { "id": "gold_bonus_01", "branch": "utility", "displayName": "Gold Pouch I", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [], "effects": [{ "type": "goldPercent", "valuePerLevel": 0.05 }] },
+    { "id": "exp_bonus_01", "branch": "utility", "displayName": "Night Notes I", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [{ "id": "gold_bonus_01", "level": 1 }], "effects": [{ "type": "expPercent", "valuePerLevel": 0.05 }] },
+    { "id": "pet_food_bonus_01", "branch": "utility", "displayName": "Snack Bag", "maxLevel": 3, "costPerLevel": [1, 1, 1], "requires": [{ "id": "exp_bonus_01", "level": 1 }], "effects": [{ "type": "petMaterialPercent", "valuePerLevel": 0.06 }] },
+    { "id": "chest_discount_01", "branch": "utility", "displayName": "Chest Coupon", "maxLevel": 3, "costPerLevel": [1, 2, 2], "requires": [{ "id": "gold_bonus_01", "level": 2 }], "effects": [{ "type": "chestDiscountPercent", "valuePerLevel": 0.04 }] },
+    { "id": "shop_discount_01", "branch": "utility", "displayName": "Shop Wink", "maxLevel": 3, "costPerLevel": [1, 2, 2], "requires": [{ "id": "chest_discount_01", "level": 1 }], "effects": [{ "type": "shopDiscountPercent", "valuePerLevel": 0.03 }] },
+    { "id": "energy_bonus_01", "branch": "utility", "displayName": "Tireless Paws", "maxLevel": 1, "costPerLevel": [2], "requires": [{ "id": "pet_food_bonus_01", "level": 2 }], "effects": [{ "type": "energyCapFlat", "valuePerLevel": 5 }] }
+  ]
+}

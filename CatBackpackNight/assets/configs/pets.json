@@ -1,0 +1,97 @@
+{
+  "schemaVersion": 1,
+  "maxDeployedPets": 1,
+  "materialItemId": "pet_material_common",
+  "pets": [
+    {
+      "id": "pet_black_cat",
+      "displayName": "Black Cat",
+      "quality": "rare",
+      "iconId": "cat_pet_black",
+      "defaultOwned": true,
+      "unlock": { "type": "default", "wave": 1 },
+      "maxLevel": 30,
+      "basePower": 50,
+      "powerPerLevel": 8,
+      "effect": { "type": "attackPercent", "base": 0.06, "perLevel": 0.008 },
+      "levelCost": [
+        { "from": 1, "to": 10, "petMaterialBase": 8, "petMaterialPerLevel": 2, "goldBase": 0, "goldPerLevel": 0, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 11, "to": 20, "petMaterialBase": 32, "petMaterialPerLevel": 4, "goldBase": 400, "goldPerLevel": 60, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 21, "to": 30, "petMaterialBase": 80, "petMaterialPerLevel": 8, "goldBase": 1200, "goldPerLevel": 120, "blueGemBase": 8, "blueGemPerLevel": 2 }
+      ]
+    },
+    {
+      "id": "pet_shadow_cat",
+      "displayName": "Shadow Cat",
+      "quality": "rare",
+      "iconId": "pet_shadow_cat",
+      "defaultOwned": true,
+      "unlock": { "type": "wave", "wave": 5 },
+      "maxLevel": 30,
+      "basePower": 48,
+      "powerPerLevel": 8,
+      "effect": { "type": "critRate", "base": 0.03, "perLevel": 0.003 },
+      "levelCost": [
+        { "from": 1, "to": 10, "petMaterialBase": 8, "petMaterialPerLevel": 2, "goldBase": 0, "goldPerLevel": 0, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 11, "to": 20, "petMaterialBase": 32, "petMaterialPerLevel": 4, "goldBase": 400, "goldPerLevel": 60, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 21, "to": 30, "petMaterialBase": 80, "petMaterialPerLevel": 8, "goldBase": 1200, "goldPerLevel": 120, "blueGemBase": 8, "blueGemPerLevel": 2 }
+      ]
+    },
+    {
+      "id": "pet_husky",
+      "displayName": "Husky Knight",
+      "quality": "rare",
+      "iconId": "pet_husky",
+      "defaultOwned": true,
+      "unlock": { "type": "wave", "wave": 10 },
+      "maxLevel": 30,
+      "basePower": 52,
+      "powerPerLevel": 9,
+      "effect": { "type": "campHpPercent", "base": 0.08, "perLevel": 0.01 },
+      "levelCost": [
+        { "from": 1, "to": 10, "petMaterialBase": 9, "petMaterialPerLevel": 2, "goldBase": 0, "goldPerLevel": 0, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 11, "to": 20, "petMaterialBase": 36, "petMaterialPerLevel": 4, "goldBase": 450, "goldPerLevel": 60, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 21, "to": 30, "petMaterialBase": 88, "petMaterialPerLevel": 8, "goldBase": 1300, "goldPerLevel": 130, "blueGemBase": 10, "blueGemPerLevel": 2 }
+      ]
+    },
+    {
+      "id": "pet_panda",
+      "displayName": "Panda Guard",
+      "quality": "epic",
+      "iconId": "pet_panda",
+      "defaultOwned": true,
+      "unlock": { "type": "wave", "wave": 15 },
+      "maxLevel": 30,
+      "basePower": 56,
+      "powerPerLevel": 10,
+      "effect": { "type": "defenseFlat", "base": 2, "perLevel": 0.6 },
+      "levelCost": [
+        { "from": 1, "to": 10, "petMaterialBase": 10, "petMaterialPerLevel": 2, "goldBase": 0, "goldPerLevel": 0, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 11, "to": 20, "petMaterialBase": 40, "petMaterialPerLevel": 5, "goldBase": 500, "goldPerLevel": 70, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 21, "to": 30, "petMaterialBase": 96, "petMaterialPerLevel": 9, "goldBase": 1400, "goldPerLevel": 140, "blueGemBase": 12, "blueGemPerLevel": 2 }
+      ]
+    },
+    {
+      "id": "pet_dog_general",
+      "displayName": "Dog General",
+      "quality": "epic",
+      "iconId": "pet_dog",
+      "defaultOwned": true,
+      "unlock": { "type": "wave", "wave": 20 },
+      "maxLevel": 30,
+      "basePower": 54,
+      "powerPerLevel": 9,
+      "effect": { "type": "goldPercent", "base": 0.08, "perLevel": 0.008 },
+      "levelCost": [
+        { "from": 1, "to": 10, "petMaterialBase": 10, "petMaterialPerLevel": 2, "goldBase": 0, "goldPerLevel": 0, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 11, "to": 20, "petMaterialBase": 40, "petMaterialPerLevel": 5, "goldBase": 500, "goldPerLevel": 70, "blueGemBase": 0, "blueGemPerLevel": 0 },
+        { "from": 21, "to": 30, "petMaterialBase": 96, "petMaterialPerLevel": 9, "goldBase": 1400, "goldPerLevel": 140, "blueGemBase": 12, "blueGemPerLevel": 2 }
+      ]
+    },
+    { "id": "pet_moon_fox", "displayName": "Moon Fox", "quality": "epic", "iconId": "pet_shadow_cat", "defaultOwned": false, "unlock": { "type": "future", "wave": 31 }, "maxLevel": 30, "basePower": 70, "powerPerLevel": 11, "effect": { "type": "attackPercent", "base": 0.1, "perLevel": 0.01 }, "levelCost": [] },
+    { "id": "pet_bell_cat", "displayName": "Bell Cat", "quality": "rare", "iconId": "cat_pet_black", "defaultOwned": false, "unlock": { "type": "future", "wave": 31 }, "maxLevel": 30, "basePower": 65, "powerPerLevel": 10, "effect": { "type": "critDamage", "base": 0.12, "perLevel": 0.01 }, "levelCost": [] },
+    { "id": "pet_lantern_spirit", "displayName": "Lantern Spirit", "quality": "epic", "iconId": "pet_shadow_cat", "defaultOwned": false, "unlock": { "type": "future", "wave": 31 }, "maxLevel": 30, "basePower": 68, "powerPerLevel": 11, "effect": { "type": "cooldownPercent", "base": 0.05, "perLevel": 0.006 }, "levelCost": [] },
+    { "id": "pet_leaf_panda", "displayName": "Leaf Panda", "quality": "rare", "iconId": "pet_panda", "defaultOwned": false, "unlock": { "type": "future", "wave": 31 }, "maxLevel": 30, "basePower": 62, "powerPerLevel": 10, "effect": { "type": "campHpPercent", "base": 0.12, "perLevel": 0.01 }, "levelCost": [] },
+    { "id": "pet_star_dog", "displayName": "Star Dog", "quality": "legend", "iconId": "pet_dog", "defaultOwned": false, "unlock": { "type": "future", "wave": 31 }, "maxLevel": 30, "basePower": 80, "powerPerLevel": 13, "effect": { "type": "goldPercent", "base": 0.15, "perLevel": 0.012 }, "levelCost": [] }
+  ]
+}

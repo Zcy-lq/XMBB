@@ -1,0 +1,26 @@
+{
+  "version": "0.1.0",
+  "schemaVersion": 1,
+  "reviewMode": true,
+  "wechat": {
+    "appid": "__CONFIGURE_IN_PRIVATE_BUILD_SETTINGS__",
+    "cloudEnv": "__OPTIONAL_CLOUD_ENV__",
+    "privacyPolicyUrl": "__CONFIGURE_BEFORE_RELEASE__",
+    "userAgreementUrl": "__CONFIGURE_BEFORE_RELEASE__"
+  },
+  "ads": {
+    "enabled": false,
+    "rewardedVideoUnitId": "__CONFIGURE_BEFORE_RELEASE__",
+    "interstitialUnitId": "__CONFIGURE_BEFORE_RELEASE__",
+    "bannerUnitId": "__CONFIGURE_BEFORE_RELEASE__",
+    "frequencyCaps": {
+      "interstitialMinSeconds": 180,
+      "bannerRefreshSeconds": 60
+    }
+  },
+  "fallbacks": {
+    "useMockOutsideWechat": true,
+    "allowLocalSaveWhenCloudFails": true,
+    "grantRewardOnlyOnCompletedRewardedVideo": true
+  }
+}

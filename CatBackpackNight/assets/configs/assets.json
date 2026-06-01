@@ -1,0 +1,1747 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-23",
+  "authoringAgent": "AssetAgent",
+  "project": {
+    "name": "CatBackpackNight",
+    "title": "猫猫背包守夜",
+    "engine": "Cocos Creator 3.8 LTS/3.x",
+    "targetPlatform": "WeChat Mini Game"
+  },
+  "designBaseline": {
+    "gameCoordinates": {
+      "width": 750,
+      "height": 1334
+    },
+    "templatePixels": {
+      "width": 1080,
+      "height": 1920
+    },
+    "referenceExportPixels": {
+      "width": 941,
+      "height": 1672
+    },
+    "notes": [
+      "The 16 current reference PNGs are exported at 941x1672. Use proportional comparison against the 750x1334 game coordinate system.",
+      "Keep reference PNGs for authoring only. Runtime should load final cut sprites from assets/textures or assets/atlases."
+    ]
+  },
+  "roots": {
+    "sourceReferenceDir": "C:/Users/User/Desktop/ima",
+    "projectReferenceDir": "assets/textures/references",
+    "finalTextureDir": "assets/textures",
+    "atlasDir": "assets/atlases",
+    "configPath": "assets/configs/assets.json"
+  },
+  "bundlePolicy": {
+    "mainPackageHardLimitMB": 4,
+    "mainPackageTargetMB": 3.5,
+    "localSubpackagesSoftTargetMB": 20,
+    "cocosCreator38DocumentedLocalSubpackageTotalMB": 30,
+    "referenceImageTotalMB": 31.54,
+    "runtimeRule": "Do not load assets/textures/references in production runtime. These PNGs exceed the conservative local package budget by themselves.",
+    "releaseRule": "Before release, verify package limits in WeChat Developer Tools and the platform backend, then move non-core HD resources to remote CDN if needed."
+  },
+  "references": [
+    {
+      "id": "ref_login",
+      "page": "login",
+      "displayName": "登录页",
+      "originalName": "登陆页面.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/登陆页面.png",
+      "projectPath": "assets/textures/references/ref_login.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 1984262,
+      "sha256": "288810d5c2cfaa8206cecd11b1ef8b4ec67f15aad2123342c44244a49346156c",
+      "use": "Reference for login background, logo placement, cat, campfire, agreement and age notice."
+    },
+    {
+      "id": "ref_home",
+      "page": "home",
+      "displayName": "主页面",
+      "originalName": "主页面.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/主页面.png",
+      "projectPath": "assets/textures/references/ref_home.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2159281,
+      "sha256": "433c2fd17796b552b87781dd2004a162ad7341c690b26b763261ba12ba91c0bf",
+      "use": "Reference for home camp, player/resource bars, side entries, start battle CTA and bottom nav."
+    },
+    {
+      "id": "ref_battle_prepare",
+      "page": "battlePrepare",
+      "displayName": "准备战斗",
+      "originalName": "准备开始战斗.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/准备开始战斗.png",
+      "projectPath": "assets/textures/references/ref_battle_prepare.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2014055,
+      "sha256": "677e7f562dfd32863ff37404d9bb1b6646d5fa0b8ea24777abd488c05c731508",
+      "use": "Reference for stage info, recommended power, battle preview and weapon confirmation grid."
+    },
+    {
+      "id": "ref_battle",
+      "page": "battle",
+      "displayName": "战斗页",
+      "originalName": "战斗.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/战斗.png",
+      "projectPath": "assets/textures/references/ref_battle.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2173737,
+      "sha256": "fed0239a3085f10bfe1faa939367b935a2496b4e8b05a40b09916dc27ca505e8",
+      "use": "Reference for core battle layout, cat and monsters, campfire, HP/progress bars and weapon slots."
+    },
+    {
+      "id": "ref_inventory",
+      "page": "inventory",
+      "displayName": "背包",
+      "originalName": "背包.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/背包.png",
+      "projectPath": "assets/textures/references/ref_inventory.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2276199,
+      "sha256": "43437e8def47d07ec4614570bb4f271368d432ae4acb1a385483c2b03e179893",
+      "use": "Reference for item grid, selected state, item detail panel, merge and open chest buttons."
+    },
+    {
+      "id": "ref_merge_tutorial",
+      "page": "mergeTutorial",
+      "displayName": "合成提示",
+      "originalName": "合成提示.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/合成提示.png",
+      "projectPath": "assets/textures/references/ref_merge_tutorial.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2062769,
+      "sha256": "312cecffd2a8f53e79b29c2c8e11e070671018bfb92b73698f2b567a44acee21",
+      "use": "Reference for merge tutorial overlay, glowing duplicate items, arrows and merge success modal."
+    },
+    {
+      "id": "ref_pet",
+      "page": "pet",
+      "displayName": "宠物",
+      "originalName": "宠物.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/宠物.png",
+      "projectPath": "assets/textures/references/ref_pet.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2113024,
+      "sha256": "7a75b7b10b40b9198d3df4eb23f9b7179f401ab7be064c4a8b28470338e922b8",
+      "use": "Reference for pet list, deployed state, upgrade controls and locked conditions."
+    },
+    {
+      "id": "ref_pet_detail",
+      "page": "petDetail",
+      "displayName": "宠物详情",
+      "originalName": "宠物详情.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/宠物详情.png",
+      "projectPath": "assets/textures/references/ref_pet_detail.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 1988122,
+      "sha256": "5f49d5ca9985757d234cbaf43952ed0b649507cf5811c96f95d455917d2e228d",
+      "use": "Reference for large pet portrait, stats, stars and upgrade material progress."
+    },
+    {
+      "id": "ref_shop",
+      "page": "shop",
+      "displayName": "商店",
+      "originalName": "商店.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/商店.png",
+      "projectPath": "assets/textures/references/ref_shop.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2074258,
+      "sha256": "bf29aecc522b62b490c6c4896f1e15992a2c0a1b19f04f60fff68ccb48d1a5dc",
+      "use": "Reference for shop tabs, resource bar, three-column goods cards and refresh timer."
+    },
+    {
+      "id": "ref_skill_select",
+      "page": "skillSelect",
+      "displayName": "技能",
+      "originalName": "技能.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/技能.png",
+      "projectPath": "assets/textures/references/ref_skill_select.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 1885279,
+      "sha256": "d58c9e9536ab88f147c8bdac7839d5117391cb80f368629ca65a886e9be52ab1",
+      "use": "Reference for in-battle three-choice skill cards and refresh affordance."
+    },
+    {
+      "id": "ref_talent",
+      "page": "talent",
+      "displayName": "天赋",
+      "originalName": "天赋.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/天赋.png",
+      "projectPath": "assets/textures/references/ref_talent.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 1997574,
+      "sha256": "562be8bfe38c5794a163ab2ef97c000eb9e01d88d5f064add6580f6f74268c79",
+      "use": "Reference for talent tabs, node tree, upgraded glow, disabled state and connection lines."
+    },
+    {
+      "id": "ref_daily_task",
+      "page": "dailyTask",
+      "displayName": "每日任务",
+      "originalName": "每日任务.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/每日任务.png",
+      "projectPath": "assets/textures/references/ref_daily_task.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 1848379,
+      "sha256": "ef024bc3e31fdba0a24b9b39dac6a5d56f5576b8500cb5e118e08769928623df",
+      "use": "Reference for activity progress, chest nodes, task cards and claim/go buttons."
+    },
+    {
+      "id": "ref_achievement",
+      "page": "achievement",
+      "displayName": "成就",
+      "originalName": "成就.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/成就.png",
+      "projectPath": "assets/textures/references/ref_achievement.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2181098,
+      "sha256": "692f8f91c9f4bfceb57e0be28955b53d5284d7ad5fcb7e4635fe2facd7b719fa",
+      "use": "Reference for achievement cards, total progress and claim-all action."
+    },
+    {
+      "id": "ref_mail",
+      "page": "mail",
+      "displayName": "邮件",
+      "originalName": "邮件.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/邮件.png",
+      "projectPath": "assets/textures/references/ref_mail.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2162814,
+      "sha256": "377df17a193262d43123d59d0493f9eb19b4624465639fb1befef78ddd5b69ac",
+      "use": "Reference for mail list, detail panel, attachments and batch actions."
+    },
+    {
+      "id": "ref_settings",
+      "page": "settings",
+      "displayName": "设置",
+      "originalName": "设置.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/设置.png",
+      "projectPath": "assets/textures/references/ref_settings.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2038526,
+      "sha256": "04c7af9b87a5ef9e2b048c23fc67568a69bdba6ce8aa7c3180dbdab0ac60a9fe",
+      "use": "Reference for toggle rows, utility buttons, policies and version label."
+    },
+    {
+      "id": "ref_victory",
+      "page": "victory",
+      "displayName": "胜利",
+      "originalName": "胜利.png",
+      "sourcePath": "C:/Users/User/Desktop/ima/胜利.png",
+      "projectPath": "assets/textures/references/ref_victory.png",
+      "width": 941,
+      "height": 1672,
+      "bytes": 2107567,
+      "sha256": "c7f0e7a2a04ffa39c07ce6058a40a7776f7dc3f107f9e7136a392e3eb60f4f1f",
+      "use": "Reference for victory banner, stars, reward cards, double claim and confirm buttons."
+    }
+  ],
+  "assetGroups": [
+    {
+      "group": "backgrounds",
+      "assetIds": [
+        "bg_login_night",
+        "bg_home_camp",
+        "bg_battle_forest",
+        "bg_panel_dark",
+        "bg_panel_parchment"
+      ]
+    },
+    {
+      "group": "characters",
+      "assetIds": [
+        "cat_main_idle",
+        "cat_battle_weapon",
+        "cat_pet_black",
+        "pet_shadow_cat",
+        "pet_husky",
+        "pet_panda",
+        "pet_dog"
+      ]
+    },
+    {
+      "group": "ui_common",
+      "assetIds": [
+        "panel_wood_header",
+        "panel_parchment",
+        "panel_dark",
+        "btn_yellow",
+        "btn_green",
+        "btn_blue",
+        "btn_brown",
+        "icon_back",
+        "icon_close",
+        "icon_help",
+        "icon_settings",
+        "icon_lock",
+        "icon_reddot"
+      ]
+    },
+    {
+      "group": "currencies",
+      "assetIds": [
+        "icon_gold",
+        "icon_purple_gem",
+        "icon_blue_gem",
+        "icon_energy",
+        "icon_paw_coin"
+      ]
+    },
+    {
+      "group": "items_and_weapons",
+      "assetIds": [
+        "weapon_sword",
+        "weapon_bow",
+        "weapon_staff",
+        "weapon_spear",
+        "weapon_fishbone_bow",
+        "item_shield",
+        "item_bomb",
+        "item_key",
+        "item_chest",
+        "item_pet_egg",
+        "item_energy_potion"
+      ]
+    },
+    {
+      "group": "battle",
+      "assetIds": [
+        "monster_ghost",
+        "monster_skeleton",
+        "monster_goblin",
+        "monster_dark_mage",
+        "monster_orc",
+        "fx_bullet",
+        "fx_spark",
+        "fx_damage_number",
+        "fx_starlight",
+        "fx_merge_glow",
+        "fx_reward_glow",
+        "fx_hit",
+        "fx_fire"
+      ]
+    }
+  ],
+  "assets": [
+    {
+      "id": "bg_login_night",
+      "displayName": "登录夜晚营地背景",
+      "category": "background",
+      "assetType": "texture2d",
+      "status": "placeholderFromReference",
+      "sourceReferenceIds": [
+        "ref_login"
+      ],
+      "placeholderPath": "assets/textures/references/ref_login.png",
+      "finalPath": "assets/textures/backgrounds/bg_login_night.png",
+      "atlas": null,
+      "bundle": "boot",
+      "loadPolicy": "preloadBeforeLogin",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          1080,
+          1920
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "bg_home_camp",
+      "displayName": "主页营地背景",
+      "category": "background",
+      "assetType": "texture2d",
+      "status": "placeholderFromReference",
+      "sourceReferenceIds": [
+        "ref_home"
+      ],
+      "placeholderPath": "assets/textures/references/ref_home.png",
+      "finalPath": "assets/textures/backgrounds/bg_home_camp.png",
+      "atlas": null,
+      "bundle": "home",
+      "loadPolicy": "preloadHome",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          1080,
+          1920
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "bg_battle_forest",
+      "displayName": "战斗森林背景",
+      "category": "background",
+      "assetType": "texture2d",
+      "status": "placeholderFromReference",
+      "sourceReferenceIds": [
+        "ref_battle",
+        "ref_skill_select"
+      ],
+      "placeholderPath": "assets/textures/references/ref_battle.png",
+      "finalPath": "assets/textures/backgrounds/bg_battle_forest.png",
+      "atlas": null,
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          1080,
+          1920
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "bg_panel_dark",
+      "displayName": "深色面板底",
+      "category": "background",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_battle",
+        "ref_battle_prepare",
+        "ref_pet"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/panels/bg_panel_dark.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": [
+          20,
+          20,
+          20,
+          20
+        ]
+      }
+    },
+    {
+      "id": "bg_panel_parchment",
+      "displayName": "羊皮纸面板底",
+      "category": "background",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_daily_task",
+        "ref_achievement",
+        "ref_mail"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/panels/bg_panel_parchment.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": [
+          22,
+          22,
+          22,
+          22
+        ]
+      }
+    },
+    {
+      "id": "cat_main_idle",
+      "displayName": "主角猫待机",
+      "category": "character",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_login",
+        "ref_home"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/cats/cat_main_idle.png",
+      "atlas": "atlas_characters_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadBeforeLogin",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          360,
+          360
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "cat_battle_weapon",
+      "displayName": "战斗猫持武器",
+      "category": "character",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_battle",
+        "ref_battle_prepare"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/cats/cat_battle_weapon.png",
+      "atlas": "atlas_battle_units",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          300,
+          300
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "cat_pet_black",
+      "displayName": "黑猫宠物",
+      "category": "character",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_pet",
+        "ref_pet_detail"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/pets/cat_pet_black.png",
+      "atlas": "atlas_pet_units",
+      "bundle": "pet",
+      "loadPolicy": "loadOnPetScreen",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          360,
+          360
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "pet_shadow_cat",
+      "displayName": "影猫宠物",
+      "category": "character",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_pet",
+        "ref_pet_detail"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/pets/pet_shadow_cat.png",
+      "atlas": "atlas_pet_units",
+      "bundle": "pet",
+      "loadPolicy": "loadOnPetScreen",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          360,
+          360
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "pet_husky",
+      "displayName": "哈士奇宠物",
+      "category": "character",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_pet"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/pets/pet_husky.png",
+      "atlas": "atlas_pet_units",
+      "bundle": "pet",
+      "loadPolicy": "loadOnPetScreen",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          320,
+          320
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "pet_panda",
+      "displayName": "熊猫宠物",
+      "category": "character",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_pet"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/pets/pet_panda.png",
+      "atlas": "atlas_pet_units",
+      "bundle": "pet",
+      "loadPolicy": "loadOnPetScreen",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          320,
+          320
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "pet_dog",
+      "displayName": "狗狗宠物",
+      "category": "character",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_pet"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/pets/pet_dog.png",
+      "atlas": "atlas_pet_units",
+      "bundle": "pet",
+      "loadPolicy": "loadOnPetScreen",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          320,
+          320
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "panel_wood_header",
+      "displayName": "木牌标题栏",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_shop",
+        "ref_talent",
+        "ref_settings"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/panels/panel_wood_header.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          420,
+          104
+        ],
+        "nineSlice": [
+          46,
+          38,
+          46,
+          38
+        ]
+      }
+    },
+    {
+      "id": "panel_parchment",
+      "displayName": "羊皮纸内容面板",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_daily_task",
+        "ref_achievement",
+        "ref_mail"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/panels/panel_parchment.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          96,
+          96
+        ],
+        "nineSlice": [
+          28,
+          28,
+          28,
+          28
+        ]
+      }
+    },
+    {
+      "id": "panel_dark",
+      "displayName": "深色内容面板",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_battle",
+        "ref_pet",
+        "ref_battle_prepare"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/panels/panel_dark.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          96,
+          96
+        ],
+        "nineSlice": [
+          28,
+          28,
+          28,
+          28
+        ]
+      }
+    },
+    {
+      "id": "btn_yellow",
+      "displayName": "金色主按钮",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_login",
+        "ref_home",
+        "ref_victory"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/buttons/btn_yellow.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          320,
+          96
+        ],
+        "nineSlice": [
+          42,
+          30,
+          42,
+          30
+        ]
+      }
+    },
+    {
+      "id": "btn_green",
+      "displayName": "绿色领取按钮",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_daily_task",
+        "ref_achievement",
+        "ref_shop"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/buttons/btn_green.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          240,
+          78
+        ],
+        "nineSlice": [
+          34,
+          24,
+          34,
+          24
+        ]
+      }
+    },
+    {
+      "id": "btn_blue",
+      "displayName": "蓝色功能按钮",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_shop",
+        "ref_skill_select",
+        "ref_mail"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/buttons/btn_blue.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          240,
+          78
+        ],
+        "nineSlice": [
+          34,
+          24,
+          34,
+          24
+        ]
+      }
+    },
+    {
+      "id": "btn_brown",
+      "displayName": "棕色次级按钮",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_settings",
+        "ref_inventory"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/buttons/btn_brown.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          240,
+          78
+        ],
+        "nineSlice": [
+          34,
+          24,
+          34,
+          24
+        ]
+      }
+    },
+    {
+      "id": "icon_back",
+      "displayName": "返回图标",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_battle_prepare",
+        "ref_inventory",
+        "ref_settings"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/icons/icon_back.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          72,
+          72
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_close",
+      "displayName": "关闭图标",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_merge_tutorial",
+        "ref_settings"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/icons/icon_close.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          72,
+          72
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_help",
+      "displayName": "帮助图标",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_merge_tutorial",
+        "ref_settings"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/icons/icon_help.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          72,
+          72
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_settings",
+      "displayName": "设置图标",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_home",
+        "ref_settings"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/icons/icon_settings.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          72,
+          72
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_lock",
+      "displayName": "锁定图标",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_pet",
+        "ref_talent"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/icons/icon_lock.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_reddot",
+      "displayName": "红点提醒",
+      "category": "ui",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_home",
+        "ref_daily_task",
+        "ref_mail"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/ui/icons/icon_reddot.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          42,
+          42
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_gold",
+      "displayName": "金币",
+      "category": "currency",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_home",
+        "ref_shop",
+        "ref_victory"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/currency/icon_gold.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_purple_gem",
+      "displayName": "紫钻",
+      "category": "currency",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_home",
+        "ref_shop"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/currency/icon_purple_gem.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_blue_gem",
+      "displayName": "蓝钻",
+      "category": "currency",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_shop",
+        "ref_skill_select"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/currency/icon_blue_gem.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_energy",
+      "displayName": "体力闪电",
+      "category": "currency",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_home",
+        "ref_battle_prepare"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/currency/icon_energy.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "icon_paw_coin",
+      "displayName": "猫爪币",
+      "category": "currency",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_pet",
+        "ref_shop"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/currency/icon_paw_coin.png",
+      "atlas": "atlas_ui_common",
+      "bundle": "boot",
+      "loadPolicy": "preloadCommonUI",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "weapon_sword",
+      "displayName": "剑",
+      "category": "weapon",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/weapons/weapon_sword.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrBattle",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "weapon_bow",
+      "displayName": "弓",
+      "category": "weapon",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/weapons/weapon_bow.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrBattle",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "weapon_staff",
+      "displayName": "法杖",
+      "category": "weapon",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_skill_select"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/weapons/weapon_staff.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrBattle",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "weapon_spear",
+      "displayName": "长矛",
+      "category": "weapon",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/weapons/weapon_spear.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrBattle",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "weapon_fishbone_bow",
+      "displayName": "鱼骨弓",
+      "category": "weapon",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/weapons/weapon_fishbone_bow.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrBattle",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "item_shield",
+      "displayName": "盾",
+      "category": "item",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_talent"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/props/item_shield.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrShop",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "item_bomb",
+      "displayName": "炸弹",
+      "category": "item",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_inventory",
+        "ref_skill_select"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/props/item_bomb.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrBattle",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "item_key",
+      "displayName": "钥匙",
+      "category": "item",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_shop",
+        "ref_mail",
+        "ref_victory"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/props/item_key.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrReward",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "item_chest",
+      "displayName": "宝箱",
+      "category": "item",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_home",
+        "ref_battle_prepare",
+        "ref_victory"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/props/item_chest.png",
+      "atlas": "atlas_items_core",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventoryOrReward",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          160,
+          160
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "item_pet_egg",
+      "displayName": "宠物蛋",
+      "category": "item",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_pet",
+        "ref_shop"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/props/item_pet_egg.png",
+      "atlas": "atlas_items_core",
+      "bundle": "pet",
+      "loadPolicy": "loadOnPetOrShop",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "item_energy_potion",
+      "displayName": "体力药水",
+      "category": "item",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_shop",
+        "ref_daily_task"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/items/props/item_energy_potion.png",
+      "atlas": "atlas_items_core",
+      "bundle": "shop",
+      "loadPolicy": "loadOnShopOrReward",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "monster_ghost",
+      "displayName": "幽灵",
+      "category": "monster",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_battle",
+        "ref_battle_prepare"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/monsters/monster_ghost.png",
+      "atlas": "atlas_battle_units",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          220,
+          220
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "monster_skeleton",
+      "displayName": "骷髅",
+      "category": "monster",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/monsters/monster_skeleton.png",
+      "atlas": "atlas_battle_units",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          220,
+          220
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "monster_goblin",
+      "displayName": "哥布林",
+      "category": "monster",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/monsters/monster_goblin.png",
+      "atlas": "atlas_battle_units",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          220,
+          220
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "monster_dark_mage",
+      "displayName": "黑袍怪",
+      "category": "monster",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/monsters/monster_dark_mage.png",
+      "atlas": "atlas_battle_units",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          240,
+          240
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "monster_orc",
+      "displayName": "兽人",
+      "category": "monster",
+      "assetType": "spriteFrame",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/characters/monsters/monster_orc.png",
+      "atlas": "atlas_battle_units",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p2",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          260,
+          260
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "fx_bullet",
+      "displayName": "子弹",
+      "category": "effect",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/effects/fx_bullet.png",
+      "atlas": "atlas_battle_effects",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          64,
+          64
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "fx_spark",
+      "displayName": "火花",
+      "category": "effect",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_battle",
+        "ref_merge_tutorial"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/effects/fx_spark.png",
+      "atlas": "atlas_battle_effects",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          96,
+          96
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "fx_damage_number",
+      "displayName": "伤害数字样式",
+      "category": "effect",
+      "assetType": "bitmapFontOrLabelStyle",
+      "status": "needsArt",
+      "sourceReferenceIds": [
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/fonts/fx_damage_number.png",
+      "atlas": "atlas_battle_effects",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          512,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "fx_starlight",
+      "displayName": "星光",
+      "category": "effect",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_victory",
+        "ref_merge_tutorial",
+        "ref_talent"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/effects/fx_starlight.png",
+      "atlas": "atlas_battle_effects",
+      "bundle": "boot",
+      "loadPolicy": "loadOnRewardOrTalent",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          96,
+          96
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "fx_merge_glow",
+      "displayName": "合成光效",
+      "category": "effect",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_merge_tutorial",
+        "ref_inventory"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/effects/fx_merge_glow.png",
+      "atlas": "atlas_battle_effects",
+      "bundle": "inventory",
+      "loadPolicy": "loadOnInventory",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          180,
+          180
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "fx_reward_glow",
+      "displayName": "奖励金色光效",
+      "category": "effect",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_victory",
+        "ref_daily_task",
+        "ref_achievement"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/effects/fx_reward_glow.png",
+      "atlas": "atlas_battle_effects",
+      "bundle": "boot",
+      "loadPolicy": "loadOnReward",
+      "priority": "p1",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          220,
+          220
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "fx_hit",
+      "displayName": "命中特效",
+      "category": "effect",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/effects/fx_hit.png",
+      "atlas": "atlas_battle_effects",
+      "bundle": "battle",
+      "loadPolicy": "preloadBeforeBattle",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          128,
+          128
+        ],
+        "nineSlice": null
+      }
+    },
+    {
+      "id": "fx_fire",
+      "displayName": "火堆火光",
+      "category": "effect",
+      "assetType": "spriteFrame",
+      "status": "needsSlice",
+      "sourceReferenceIds": [
+        "ref_login",
+        "ref_home",
+        "ref_battle"
+      ],
+      "placeholderPath": null,
+      "finalPath": "assets/textures/effects/fx_fire.png",
+      "atlas": "atlas_battle_effects",
+      "bundle": "boot",
+      "loadPolicy": "preloadBeforeLogin",
+      "priority": "p0",
+      "cut": {
+        "sourceRect": null,
+        "targetPx": [
+          160,
+          160
+        ],
+        "nineSlice": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,918 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-05-24",
+  "authoringAgent": "QAReleaseAgent",
+  "runtimeOnly": true,
+  "sourceIndex": "assets/textures/runtime",
+  "policy": {
+    "excludeDevelopmentReferences": true,
+    "referencePathPattern": "assets/textures/references",
+    "generatedBy": "tools/generate_runtime_asset_index.mjs"
+  },
+  "assets": [
+    {
+      "id": "rt_avatar_cat",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_avatar_cat.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_badge_age_16",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_badge_age_16.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_badge_count",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_badge_count.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_battle_field_art",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_battle_field_art.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_battle_prepare_preview",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_battle_prepare_preview.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_battle_weapon_bow",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_battle_weapon_bow.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_battle_weapon_gold_sword",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_battle_weapon_gold_sword.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_battle_weapon_orb",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_battle_weapon_orb.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_battle_weapon_shield",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_battle_weapon_shield.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_battle_weapon_spear",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_battle_weapon_spear.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_battle_weapon_sword",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_battle_weapon_sword.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_bg_battle_forest_safe",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_bg_battle_forest_safe.png",
+      "bundle": "runtime",
+      "loadPolicy": "preloadScreen",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_bg_battle_prepare_safe",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_bg_battle_prepare_safe.png",
+      "bundle": "runtime",
+      "loadPolicy": "preloadScreen",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_bg_home_camp_safe",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_bg_home_camp_safe.png",
+      "bundle": "runtime",
+      "loadPolicy": "preloadScreen",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_bg_inventory_parchment_safe",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_bg_inventory_parchment_safe.png",
+      "bundle": "runtime",
+      "loadPolicy": "preloadScreen",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_bg_login_night_safe",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_bg_login_night_safe.png",
+      "bundle": "runtime",
+      "loadPolicy": "preloadScreen",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_bg_shop_night_safe",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_bg_shop_night_safe.png",
+      "bundle": "runtime",
+      "loadPolicy": "preloadScreen",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_bg_shop_village_safe",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_bg_shop_village_safe.png",
+      "bundle": "runtime",
+      "loadPolicy": "preloadScreen",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_btn_blue",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_btn_blue.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_btn_brown",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_btn_brown.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_btn_green",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_btn_green.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_btn_icon_round",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_btn_icon_round.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_btn_nav_active",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_btn_nav_active.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_btn_nav_inactive",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_btn_nav_inactive.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_btn_red",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_btn_red.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_btn_yellow",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_btn_yellow.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_cabin",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_cabin.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_campfire",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_campfire.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_card_inventory_detail",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_card_inventory_detail.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_card_shop_product",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_card_shop_product.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_cat_hero_battle",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_cat_hero_battle.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_cat_hero_idle",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_cat_hero_idle.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_cat_shop_hood",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_cat_shop_hood.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_fx_bullet",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_fx_bullet.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_fx_fire",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_fx_fire.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_fx_hit",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_fx_hit.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_fx_magic_orb",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_fx_magic_orb.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_fx_pierce",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_fx_pierce.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_fx_reward_glow",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_fx_reward_glow.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_fx_selected_glow",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_fx_selected_glow.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_fx_slash",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_fx_slash.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_hero_cat",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_hero_cat.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_icon_back",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_back.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_blue_gem",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_blue_gem.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_check",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_check.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_close",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_close.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_energy",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_energy.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_gold",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_gold.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_lock",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_lock.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_nav_backpack",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_nav_backpack.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_nav_battle",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_nav_battle.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_nav_inventory",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_nav_inventory.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_nav_pet",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_nav_pet.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_nav_shop",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_nav_shop.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_nav_talent",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_nav_talent.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_paw_coin",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_paw_coin.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_paw",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_paw.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_plus",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_plus.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_purple_gem",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_purple_gem.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_reddot",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_reddot.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_settings",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_settings.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_side_checkin",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_side_checkin.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_side_mail",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_side_mail.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_side_rank",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_side_rank.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_icon_side_task",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_icon_side_task.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p0"
+    },
+    {
+      "id": "rt_item_bomb",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_bomb.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_chest",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_chest.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_crystal_blue",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_crystal_blue.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_drum",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_drum.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_energy_potion",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_energy_potion.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_enhance_stone",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_enhance_stone.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_gem_generic",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_gem_generic.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_key_gold",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_key_gold.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_key_paw",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_key_paw.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_key_small",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_key_small.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_lantern",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_lantern.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_lucky_tag",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_lucky_tag.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_moon_bag",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_moon_bag.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_orb_paw",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_orb_paw.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_paw_token",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_paw_token.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_pet_egg",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_pet_egg.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_potion_blue",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_potion_blue.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_prop_generic",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_prop_generic.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_scroll",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_scroll.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_axe",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_axe.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_bow",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_bow.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_chest",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_chest.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_fishbone_bow",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_fishbone_bow.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_generic",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_generic.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_spear",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_spear.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_staff",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_staff.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_sword",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_sword.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_weapon_wand",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_weapon_wand.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_item_yarn",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_item_yarn.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_logo_title",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_logo_title.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_monster_ghost",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_monster_ghost.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_monster_goblin",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_monster_goblin.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_monster_skeleton",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_monster_skeleton.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_bottom_nav",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_bottom_nav.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_dark_glass",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_dark_glass.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_dark",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_dark.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_parchment_card",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_parchment_card.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_parchment",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_parchment.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_resource_pill",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_resource_pill.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_tab_active",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_tab_active.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_tab_inactive",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_tab_inactive.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_panel_wood_header",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_panel_wood_header.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_shop_diamond_pack",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_shop_diamond_pack.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_shop_gold_stack",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_shop_gold_stack.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_shopkeeper_cat",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_shopkeeper_cat.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_slot_inventory_empty",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_slot_inventory_empty.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_slot_inventory_selected",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_slot_inventory_selected.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    },
+    {
+      "id": "rt_slot_inventory",
+      "assetType": "spriteFrame",
+      "finalPath": "assets/textures/runtime/rt_slot_inventory.png",
+      "bundle": "runtime",
+      "loadPolicy": "lazy",
+      "priority": "p1"
+    }
+  ]
+}
