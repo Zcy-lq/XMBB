@@ -77,6 +77,22 @@ const duplicateSettlement = battleRewards.settle(save, {
 });
 check('duplicate_reward_blocked', !duplicateSettlement.ok && duplicateSettlement.reason === 'already_claimed', duplicateSettlement.message);
 
+const defeatSave = cloneSave(save);
+const defeatWaveBefore = defeatSave.progress.currentWave;
+const defeatEnergyBefore = defeatSave.currencies.energy;
+const defeatStart = battleRewards.startBattle(defeatSave, defeatWaveBefore);
+const defeatSettlement = battleRewards.settle(defeatSave, {
+  battleId: defeatStart.data?.battleId ?? 'full_loop_defeat_battle',
+  wave: defeatWaveBefore,
+  status: 'defeat',
+  defeatedMonsters: 1,
+});
+check(
+  'defeat_settlement_no_wave_advance',
+  defeatStart.ok && defeatSettlement.ok && defeatSettlement.data?.victory === false && defeatSave.progress.currentWave === defeatWaveBefore,
+  `wave=${defeatSave.progress.currentWave}, energy=${defeatEnergyBefore}->${defeatSave.currencies.energy}, ${defeatSettlement.message}`,
+);
+
 const merge = inventory.mergeWeapon(save, 'weapon_sword', 1);
 if (merge.ok) {
   progression.recordEvent(save, 'weaponMerge', 1);
@@ -132,6 +148,20 @@ const taskClaim = progression.claimDailyTask(save, 'daily_login');
 check('task_claim', taskClaim.ok && save.currencies.purpleGem > taskGemBefore, taskClaim.message);
 const taskClaimAgain = progression.claimDailyTask(save, 'daily_login');
 check('task_duplicate_blocked', !taskClaimAgain.ok && taskClaimAgain.reason === 'already_claimed', taskClaimAgain.message);
+progression.recordEvent(save, 'battleComplete', 2);
+progression.recordEvent(save, 'weaponMerge', 4);
+const battleTaskClaim = progression.claimDailyTask(save, 'daily_battle_3');
+const mergeTaskClaim = progression.claimDailyTask(save, 'daily_merge_5');
+check('task_multi_claim_progression', battleTaskClaim.ok && mergeTaskClaim.ok, `${battleTaskClaim.message}; ${mergeTaskClaim.message}`);
+const activityGoldBefore = save.currencies.gold;
+const activityChestClaim = progression.claimActivityChest(save, 'activity_30');
+check(
+  'activity_chest_claim',
+  activityChestClaim.ok && save.daily.activityClaimedIds.includes('activity_30') && save.currencies.gold > activityGoldBefore,
+  activityChestClaim.message,
+);
+const activityChestAgain = progression.claimActivityChest(save, 'activity_30');
+check('activity_chest_duplicate_blocked', !activityChestAgain.ok && activityChestAgain.reason === 'already_claimed', activityChestAgain.message);
 
 progression.recordEvent(save, 'highestWave', 5);
 const achievementGemBefore = save.currencies.purpleGem;
@@ -154,12 +184,38 @@ const mailClaimAgain = mail.claimMail(save, 'mail_login_gift', 1710000000000);
 check('mail_duplicate_blocked', !mailClaimAgain.ok && mailClaimAgain.reason === 'already_claimed', mailClaimAgain.message);
 const mailDelete = mail.deleteMail(save, 'mail_login_gift');
 check('mail_delete_after_claim', mailDelete.ok && !save.mails.some((row) => row.id === 'mail_login_gift'), mailDelete.message);
+const mailGemBefore = save.currencies.purpleGem;
+const mailClaimAll = mail.claimAllMails(save, 1710000000000);
+check(
+  'mail_claim_all',
+  mailClaimAll.ok && mailClaimAll.data?.claimed.includes('mail_maintenance') && save.currencies.purpleGem > mailGemBefore,
+  mailClaimAll.message,
+);
+const mailClaimAllAgain = mail.claimAllMails(save, 1710000000000);
+check('mail_claim_all_duplicate_blocked', !mailClaimAllAgain.ok && mailClaimAllAgain.reason === 'not_ready', mailClaimAllAgain.message);
+const mailDeleteAll = mail.deleteClaimedAndEmptyMails(save);
+check(
+  'mail_delete_all_safe',
+  mailDeleteAll.ok && !save.mails.some((row) => row.claimed || row.attachments.length === 0),
+  mailDeleteAll.message,
+);
 
 const shopGoldBefore = save.currencies.gold;
 const shopBuy = shop.buy(save, 'daily_free_gold');
 check('shop_free_good_once', shopBuy.ok && save.currencies.gold > shopGoldBefore, shopBuy.message);
 const shopBuyAgain = shop.buy(save, 'daily_free_gold');
 check('shop_duplicate_limit_blocked', !shopBuyAgain.ok && ['already_claimed', 'daily_limit_reached'].includes(shopBuyAgain.reason ?? ''), shopBuyAgain.message);
+const paidShopGemBefore = save.currencies.purpleGem;
+const paidShopMaterialBefore =
+  save.inventory.find((item) => item.itemId === 'pet_material_common' && item.itemType === 'material' && item.level === 1)?.count ?? 0;
+const paidShopBuy = shop.buy(save, 'daily_pet_food');
+const paidShopMaterialAfter =
+  save.inventory.find((item) => item.itemId === 'pet_material_common' && item.itemType === 'material' && item.level === 1)?.count ?? 0;
+check(
+  'shop_paid_purchase_deducts_and_grants',
+  paidShopBuy.ok && save.currencies.purpleGem < paidShopGemBefore && paidShopMaterialAfter > paidShopMaterialBefore,
+  paidShopBuy.message,
+);
 
 const shopFailureSave = cloneSave(save);
 shopFailureSave.currencies.purpleGem = 0;

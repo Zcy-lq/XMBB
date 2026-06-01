@@ -332,6 +332,10 @@ if (failures.length === 0) {
     fail('GameLogicFacade must track activeBattleStart.');
   }
 
+  if (!/private commit<T>\([^)]*\)[\s\S]*?const draft = cloneSave\(this\.getPreparedSnapshot\(\)\);[\s\S]*?const result = updater\(draft\);[\s\S]*?if \(!result\.ok\) \{[\s\S]*?return result;[\s\S]*?this\.saveManager\.replace\(draft, reason\);/.test(facade)) {
+    fail('GameLogicFacade.commit must clone the save, return failed results before replace, and replace only after success.');
+  }
+
   if (!/public startBattle\([^)]*\)[\s\S]*?if \(this\.activeBattleStart\)[\s\S]*?return success\(this\.activeBattleStart/.test(facade)) {
     fail('GameLogicFacade.startBattle must return the active battle instead of charging energy twice.');
   }
@@ -1070,6 +1074,7 @@ if (failures.length === 0) {
     'start_first_battle',
     'first_battle_reaches_settlement',
     'duplicate_reward_blocked',
+    'defeat_settlement_no_wave_advance',
     'backpack_merge',
     'merge_failure_no_mutation',
     'selected_pet_upgrade',
@@ -1079,12 +1084,19 @@ if (failures.length === 0) {
     'task_progress_updates',
     'task_claim',
     'task_duplicate_blocked',
+    'task_multi_claim_progression',
+    'activity_chest_claim',
+    'activity_chest_duplicate_blocked',
     'achievement_claim',
     'achievement_duplicate_blocked',
     'mail_unclaimed_delete_blocked',
     'mail_claim',
+    'mail_claim_all',
+    'mail_claim_all_duplicate_blocked',
+    'mail_delete_all_safe',
     'shop_free_good_once',
     'shop_insufficient_resource_no_mutation',
+    'shop_paid_purchase_deducts_and_grants',
     'start_second_battle_after_growth',
     'restart_restore_save',
     'settings_persist_after_restart',

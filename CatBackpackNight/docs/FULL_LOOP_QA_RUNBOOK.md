@@ -29,7 +29,7 @@ cd CatBackpackNight
 & $node '..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs' tools/verify_full_loop_acceptance.ts
 ```
 
-Expected: `[full-loop-acceptance] {"passed":true,"checks":30,"failed":0}`.
+Expected: `[full-loop-acceptance] {"passed":true,"checks":38,"failed":0}`.
 
 This automated gate is required, but it does not replace Cocos/WeChat screenshots, storage restart evidence, or real-device performance evidence.
 

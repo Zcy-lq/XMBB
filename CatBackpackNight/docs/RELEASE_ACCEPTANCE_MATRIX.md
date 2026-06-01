@@ -31,7 +31,7 @@ Status values:
 | AC-034 | P1 | Prepare return | UNVERIFIED | Route buttons exist | QAReleaseAgent | Verify back/close returns home without state loss |
 | AC-040 | P0 | Auto attack | PARTIAL | `verify_full_loop_acceptance` covers `first_battle_reaches_settlement`; `GameLogicSelfCheck` covers battle session finishing and attack visuals | CoreGameplayAgent | Run runtime battle and observe monster damage |
 | AC-041 | P0 | Victory settlement | PARTIAL | `verify_full_loop_acceptance` covers `first_battle_reaches_settlement` and `claim_reward_once`; self-check covers one settlement | CoreGameplayAgent | Verify UI reaches victory and claim path |
-| AC-042 | P0 | Defeat settlement | PARTIAL | Defeat route exists; runtime defeat path not recorded | CoreGameplayAgent | Force camp HP to zero and verify rewards |
+| AC-042 | P0 | Defeat settlement | PARTIAL | `verify_full_loop_acceptance` covers `defeat_settlement_no_wave_advance`; defeat route exists | CoreGameplayAgent | Force camp HP to zero in runtime and verify rewards |
 | AC-043 | P1 | Pause/continue | UNVERIFIED | Pause modal route exists | QAReleaseAgent | Verify countdown/attack pause and resume |
 | AC-044 | P1 | Auto-merge switch | PARTIAL | Button currently triggers auto merge; per-battle toggle state not proven | CoreGameplayAgent | Implement/verify toggle state if required by MVP |
 | AC-045 | P1 | Skill choice | PARTIAL | Skill choice modal exists; selection effect needs runtime proof | CoreGameplayAgent | Verify one skill choice applies and returns to battle |
@@ -47,7 +47,7 @@ Status values:
 | AC-063 | P0 | Merge failure safety | PARTIAL | `verify_full_loop_acceptance` covers `merge_failure_no_mutation`; merge result failures exist | CoreGameplayAgent | Verify insufficient materials do not mutate save through UI |
 | AC-064 | P1 | First merge tutorial | UNVERIFIED | Merge guide route exists | UIUXAgent/QAReleaseAgent | Verify first-time trigger and no repeated annoyance |
 | AC-065 | P1 | Open chest | PARTIAL | `openChest` action exists | CoreGameplayAgent | Verify cost/reward and insufficient-resource path |
-| AC-070 | P0 | Shop purchase | PARTIAL | Shop buy system exists | CoreGameplayAgent | Verify each goods card deducts/grants correctly |
+| AC-070 | P0 | Shop purchase | PARTIAL | `verify_full_loop_acceptance` covers `shop_paid_purchase_deducts_and_grants`; shop buy system exists | CoreGameplayAgent | Verify each goods card deducts/grants correctly through UI |
 | AC-071 | P0 | Shop insufficient resource | PARTIAL | `verify_full_loop_acceptance` covers `shop_insufficient_resource_no_mutation`; economy failure result exists | CoreGameplayAgent | Verify no deduction and clear toast |
 | AC-072 | P1 | Free daily goods | PARTIAL | `verify_full_loop_acceptance` covers `shop_free_good_once`; self-check covers free gold once | QAReleaseAgent | Verify visible claimed state after claim |
 | AC-073 | P1 | Refresh countdown | PARTIAL | Shop UI has countdown text | UIUXAgent | Verify countdown updates and fits |
@@ -68,24 +68,24 @@ Status values:
 | AC-100 | P0 | Task progress | PARTIAL | `verify_full_loop_acceptance` covers `task_progress_updates`; progression records events | CoreGameplayAgent | Verify battle/merge/kill progress increments in UI |
 | AC-101 | P0 | Task claim | PARTIAL | `verify_full_loop_acceptance` covers `task_claim`; claim system and UI handlers exist | QAReleaseAgent | Verify completed task reward and claimed state |
 | AC-102 | P0 | Task duplicate prevention | PARTIAL | `verify_full_loop_acceptance` covers `task_duplicate_blocked`; self-check covers daily task idempotency | CoreGameplayAgent | Verify fast-click claim path |
-| AC-103 | P1 | Activity chests | PARTIAL | Activity claim method exists | QAReleaseAgent | Verify 30/60/90/120 thresholds |
+| AC-103 | P1 | Activity chests | PARTIAL | `verify_full_loop_acceptance` covers `activity_chest_claim` and duplicate blocking; activity claim method exists | QAReleaseAgent | Verify 30/60/90/120 thresholds in UI |
 | AC-104 | P1 | Daily refresh | UNVERIFIED | Time manager/save fields exist | CoreGameplayAgent | Simulate cross-day reset |
 | AC-105 | P0 | Achievement claim | PARTIAL | `verify_full_loop_acceptance` covers `achievement_claim` and `achievement_duplicate_blocked`; achievement claim system exists | QAReleaseAgent | Verify one achievement reward in UI |
 | AC-106 | P1 | Claim all achievements | PARTIAL | `claimAllAchievements` exists | QAReleaseAgent | Verify multi-claim idempotency |
 | AC-110 | P0 | Mail opens | PARTIAL | Mail list/detail selected-state binding added; detail renders selected mail data | QAReleaseAgent | Verify list and detail drawer in Cocos/WeChat |
 | AC-111 | P0 | Mail attachment claim | PARTIAL | `verify_full_loop_acceptance` covers `mail_claim`; mail list/detail claim buttons use selected mail id | QAReleaseAgent | Verify single attachment grant and read-only mail path |
 | AC-112 | P0 | Mail duplicate prevention | PARTIAL | `verify_full_loop_acceptance` covers `mail_duplicate_blocked`; claimed mail blocks repeat | QAReleaseAgent | Verify fast-click path |
-| AC-113 | P1 | Claim all mails | PARTIAL | `claimAllMails` exists | QAReleaseAgent | Verify multiple attachments grant once |
-| AC-114 | P1 | Delete all mails | PARTIAL | `verify_full_loop_acceptance` covers `mail_delete_after_claim`; delete-all and selected detail delete are bound; unclaimed attachments block delete | QAReleaseAgent | Verify only safe mails delete |
+| AC-113 | P1 | Claim all mails | PARTIAL | `verify_full_loop_acceptance` covers `mail_claim_all` and duplicate blocking; `claimAllMails` exists | QAReleaseAgent | Verify multiple attachments grant once |
+| AC-114 | P1 | Delete all mails | PARTIAL | `verify_full_loop_acceptance` covers `mail_delete_after_claim`, `mail_delete_all_safe`, and unclaimed delete blocking; delete-all and selected detail delete are bound | QAReleaseAgent | Verify only safe mails delete |
 | AC-115 | P1 | Mail red dot | UNVERIFIED | Red-dot system exists | UIUXAgent | Verify red dot before/after claim |
 | AC-120 | P0 | Settings save | PARTIAL | `verify_full_loop_acceptance` covers `settings_persist_after_restart`; settings toggle updates save | QAReleaseAgent | Restart after toggles in Cocos/WeChat |
 | AC-121 | P1 | Policy entry | PARTIAL | Settings privacy route exists | ComplianceService | Verify agreement/privacy content and access |
 | AC-122 | P1 | Version display | PARTIAL | Settings version node exists | QAReleaseAgent | Verify version matches config |
 | AC-123 | P0 | Save restore | PARTIAL | `verify_full_loop_acceptance` covers `restart_restore_save`; real Cocos/WeChat storage restart evidence missing | QAReleaseAgent | Restart after reward/merge/pet/talent changes |
-| AC-124 | P0 | Crash/restart safety | UNVERIFIED | Atomic commit pattern exists | QAReleaseAgent/CoreGameplayAgent | Force restart during battle/claim and inspect save |
+| AC-124 | P0 | Crash/restart safety | PARTIAL | `verify_scene_flow_guards` now enforces clone-before-update and replace-only-after-success in `GameLogicFacade.commit`; real crash/restart proof is missing | QAReleaseAgent/CoreGameplayAgent | Force restart during battle/claim and inspect save |
 | AC-130 | P0 | Non-negative currency | PARTIAL | `verify_full_loop_acceptance` covers `economy_non_negative`; self-check covers no negative currency | CoreGameplayAgent | Stress purchase/upgrade/open chest through UI |
 | AC-131 | P0 | Atomic transaction | PARTIAL | `verify_full_loop_acceptance` covers failure no-mutation checks for merge, pet upgrade, and shop purchase; commit pattern clones and replaces on success | CoreGameplayAgent | Simulate UI failures and verify no partial mutation |
-| AC-132 | P0 | Reward idempotency | PARTIAL | `verify_full_loop_acceptance` covers duplicate battle, mail, and shop claims; claimed reward IDs exist for battle | CoreGameplayAgent | Verify all reward sources are idempotent |
+| AC-132 | P0 | Reward idempotency | PARTIAL | `verify_full_loop_acceptance` covers duplicate battle, task, achievement, activity chest, mail, and shop claims; claimed reward IDs exist for battle | CoreGameplayAgent | Verify all reward sources are idempotent through UI |
 | AC-133 | P1 | Energy recovery | PARTIAL | `recoverEnergy` exists | CoreGameplayAgent | Verify cap and time behavior |
 | AC-134 | P1 | Daily limits | PARTIAL | Daily limits exist for shop/ad paths | QAReleaseAgent | Verify buttons disable or toast after limit |
 | AC-140 | P1 | Portrait safe-area | UNVERIFIED | Browser screenshots exist only | UIUXAgent/QAReleaseAgent | Test common phones and aspect ratios |
@@ -106,5 +106,5 @@ Status values:
 - `AC-033`, `AC-040`, `AC-041`, `AC-050`: the full battle loop has automated acceptance evidence, but no fresh Cocos/WeChat UI proof.
 - `AC-081`, `AC-083`, `AC-091`: pet/talent selected-state bindings now have static guard coverage; Cocos/WeChat runtime proof is still required.
 - `AC-123`: restart restore has automated clone-save evidence, but real Cocos/WeChat storage restart evidence is missing.
-- `AC-124`: crash recovery evidence is missing.
+- `AC-124`: atomic commit has static guard coverage, but real crash recovery evidence is missing.
 - `AC-130` through `AC-132`: economy integrity has automated system evidence but needs UI stress evidence.

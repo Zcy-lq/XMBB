@@ -18,7 +18,7 @@
   - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
   - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.
 - Full launch gameplay loop is not proven through UI and WeChat runtime.
-  - Evidence: `tools/verify_full_loop_acceptance.ts` covers 30 logic checks across agreement, first battle, settlement, duplicate reward blocking, backpack merge, failure no-mutation paths, selected pet/talent upgrades, task/achievement claims, mail claim/delete, shop free-good and insufficient-resource paths, second battle, restart clone, settings persistence, and non-negative economy. Cocos/WeChat UI screenshots, device logs, and real storage restart proof are still missing.
+  - Evidence: `tools/verify_full_loop_acceptance.ts` covers 38 logic checks across agreement, first battle, victory/defeat settlement, duplicate reward blocking, backpack merge, failure no-mutation paths, selected pet/talent upgrades, task/activity/achievement claims, mail single/all claim/delete, shop free-good/paid/insufficient-resource paths, second battle, restart clone, settings persistence, and non-negative economy. Cocos/WeChat UI screenshots, device logs, and real storage restart proof are still missing.
   - Owner Agent: CoreGameplayAgent/QAReleaseAgent
   - Suggested Fix: Record a complete first-session loop from login agreement through home, battle prepare, battle, settlement claim, growth spend, task/mail claim, settings persistence, restart, and recovery.
   - Do Not Modify By QA: balancing constants unless a reproducible launch-blocking defect requires it.
