@@ -67,7 +67,7 @@ export class BaseSceneEntry extends Component {
     const transform = canvas.getComponent(UITransform) ?? canvas.addComponent(UITransform);
     transform.setContentSize(DESIGN_WIDTH, DESIGN_HEIGHT);
     canvasComponent.cameraComponent = this.ensureUICamera();
-    view.setDesignResolutionSize(DESIGN_WIDTH, DESIGN_HEIGHT, ResolutionPolicy.FIXED_HEIGHT);
+    view.setDesignResolutionSize(DESIGN_WIDTH, DESIGN_HEIGHT, ResolutionPolicy.FIXED_WIDTH);
     console.log(`[BaseSceneEntry] Canvas ready ${DESIGN_WIDTH}x${DESIGN_HEIGHT}`);
     return canvas;
   }

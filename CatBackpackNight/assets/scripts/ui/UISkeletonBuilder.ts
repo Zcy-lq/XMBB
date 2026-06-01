@@ -5,7 +5,9 @@
   Color,
   Label,
   Layers,
+  Mask,
   Node,
+  ScrollView,
   Sprite,
   SpriteFrame,
   UITransform,
@@ -787,39 +789,43 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addRect({ name: 'Talent_DetailPanel', width: 690, height: 132, x: 0, y: -360, fill: new Color(239, 205, 157, 246), border: UIColors.woodStroke, borderSize: 7 });
     this.addText({ name: 'Talent_DetailTitle', value: selectedTalentConfig ? `${this.getTalentDisplayName(selectedTalentConfig.id)}  Lv.${selectedTalentLevel}/${selectedTalentConfig.maxLevel}` : '选择一个天赋节点', x: 0, y: -334, width: 594, height: 34, fontSize: 23, color: UIColors.textBrown });
     this.addText({ name: 'Talent_DetailHint', value: selectedTalentConfig ? `消耗：${nextTalentCost ?? 0} 天赋点。${selectedTalentConfig.requires.length > 0 ? '需要先点亮前置节点。' : '可作为前期开局强化。'}` : '点击天赋树节点后再学习或重置。', x: 0, y: -380, width: 594, height: 32, fontSize: 21, color: new Color(94, 61, 38, 255) });
-    const nodes = [
-      ['attack_power_01', '利爪', '攻击 +8%', 0, 208],
-      ['attack_speed_01', '迅捷', '攻速 +6%', -188, 44],
-      ['crit_rate_01', '暴击', '暴击 +4%', 188, 44],
-      ['gold_bonus_01', '招财', '金币 +8%', -188, -136],
-      ['camp_hp_01', '守护', '营地生命 +1', 188, -136],
-      ['attack_power_02', '夜巡大师', '攻击再提升', 0, -238],
-    ] as const;
-    [
-      [0, 136, 18, 118],
-      [0, 126, 392, 18],
-      [-188, -46, 18, 136],
-      [188, -46, 18, 136],
-      [0, -206, 392, 18],
-      [0, -204, 18, 70],
-    ].forEach(([x, y, width, height], index) => {
-      this.addRect({ name: `Talent_PathLine_${index + 1}`, width, height, x, y, fill: new Color(255, 211, 109, 230), border: new Color(80, 46, 24, 210), borderSize: 2 });
+    const talentNodes = gameLogic.repo.configs.talents.nodes;
+    const branchOrder = ['attack', 'defense', 'utility'] as const;
+    const branchLabels = { attack: '攻击', defense: '防御', utility: '通用' } as const;
+    const branchColumns = { attack: -218, defense: 0, utility: 218 } as const;
+    const maxBranchCount = Math.max(...branchOrder.map((branch) => talentNodes.filter((node) => node.branch === branch).length));
+    const nodeGap = 148;
+    const talentContentHeight = Math.max(920, 356 + Math.max(0, maxBranchCount - 1) * nodeGap + 210);
+    const contentTop = talentContentHeight / 2;
+    this.addScrollPanel('Talent_Tree', 0, -10, 650, 590, talentContentHeight, () => {
+      branchOrder.forEach((branch) => {
+        const x = branchColumns[branch];
+        this.addRect({ name: `Talent_BranchHeader_${branch}`, width: 154, height: 44, x, y: contentTop - 48, fill: UIColors.wood, border: UIColors.woodStroke, borderSize: 4, label: branchLabels[branch], fontSize: 24, textColor: UIColors.whiteText, outline: true });
+        const branchNodes = talentNodes.filter((node) => node.branch === branch);
+        branchNodes.forEach((node, index) => {
+          const y = contentTop - 146 - index * nodeGap;
+          if (index > 0) {
+            this.addRect({ name: `Talent_PathLine_${node.id}`, width: 14, height: 48, x, y: y + nodeGap / 2, fill: new Color(255, 211, 109, 230), border: new Color(80, 46, 24, 210), borderSize: 2 });
+          }
+          const saved = save.talents.find((row) => row.id === node.id);
+          const level = saved?.level ?? 0;
+          const learned = level > 0;
+          const selected = node.id === selectedTalentNodeId;
+          const nextCost = node.costPerLevel[level] ?? null;
+          this.addRect({ name: `Talent_Node_${node.id}`, width: 122, height: 122, x, y, fill: learned ? UIColors.buttonGold : new Color(82, 72, 58, 232), border: selected ? UIColors.actionBlue : learned ? UIColors.highlightGold : UIColors.woodStroke, borderSize: selected ? 9 : learned ? 8 : 6 });
+          this.addRect({ name: `Talent_NodeAura_${node.id}`, width: 92, height: 92, x, y: y + 8, fill: learned ? new Color(255, 230, 140, 70) : new Color(8, 14, 16, 80) });
+          this.addText({ name: `Talent_Label_${node.id}`, value: `${this.getTalentDisplayName(node.id)}\nLv.${level}/${node.maxLevel}`, x, y: y + 12, width: 104, height: 58, fontSize: 21, color: learned ? UIColors.textBrown : UIColors.whiteText, outline: !learned, wrap: true });
+          this.addText({ name: `Talent_NodeDesc_${node.id}`, value: nextCost === null ? '已满级' : `${this.getTalentEffectSummary(node.id)} · ${nextCost}点`, x, y: y - 52, width: 122, height: 30, fontSize: 15, color: learned ? UIColors.textBrown : new Color(232, 222, 198, 230), outline: !learned, wrap: true });
+          if (selected) {
+            this.addRect({ name: `Talent_SelectedRing_${node.id}`, width: 138, height: 138, x, y, fill: new Color(255, 255, 255, 28), border: UIColors.actionBlue, borderSize: 3 });
+          }
+          const selectHit = this.addRect({ name: `Button_TalentSelect_${node.id}`, width: 132, height: 132, x, y, fill: new Color(0, 0, 0, 0) });
+          this.addButtonBehavior(selectHit, `Button_TalentSelect_${node.id}`);
+        });
+      });
     });
-    nodes.forEach((node) => {
-      const saved = save.talents.find((row) => row.id === node[0]);
-      const level = saved?.level ?? 0;
-      const learned = level > 0;
-      const selected = node[0] === selectedTalentNodeId;
-      this.addRect({ name: `Talent_Node_${node[0]}`, width: 134, height: 134, x: node[3], y: node[4], fill: learned ? UIColors.buttonGold : new Color(82, 72, 58, 232), border: selected ? UIColors.actionBlue : learned ? UIColors.highlightGold : UIColors.woodStroke, borderSize: selected ? 9 : learned ? 8 : 6 });
-      this.addRect({ name: `Talent_NodeAura_${node[0]}`, width: 104, height: 104, x: node[3], y: node[4] + 8, fill: learned ? new Color(255, 230, 140, 70) : new Color(8, 14, 16, 80) });
-      this.addText({ name: `Talent_Label_${node[0]}`, value: `${node[1]}\nLv.${level}`, x: node[3], y: node[4] + 10, width: 112, height: 58, fontSize: 24, color: learned ? UIColors.textBrown : UIColors.whiteText, outline: !learned });
-      this.addText({ name: `Talent_NodeDesc_${node[0]}`, value: node[2], x: node[3], y: node[4] - 54, width: 118, height: 28, fontSize: 17, color: learned ? UIColors.textBrown : new Color(232, 222, 198, 230), outline: !learned });
-      if (selected) {
-        this.addRect({ name: `Talent_SelectedRing_${node[0]}`, width: 150, height: 150, x: node[3], y: node[4], fill: new Color(255, 255, 255, 28), border: UIColors.actionBlue, borderSize: 3 });
-      }
-      const selectHit = this.addRect({ name: `Button_TalentSelect_${node[0]}`, width: 134, height: 134, x: node[3], y: node[4], fill: new Color(0, 0, 0, 0) });
-      this.addButtonBehavior(selectHit, `Button_TalentSelect_${node[0]}`);
-    });
+    this.addRect({ name: 'Talent_TreeScrollBar', width: 18, height: 520, x: 322, y: -10, fill: new Color(196, 154, 96, 120), border: new Color(146, 91, 48, 180), borderSize: 2 });
+    this.addRect({ name: 'Talent_TreeScrollThumb', width: 14, height: 160, x: 322, y: 150, fill: new Color(255, 238, 206, 240), border: UIColors.woodStroke, borderSize: 2 });
     this.addButton('Button_TalentLearn', selectedTalentConfig && selectedTalentLevel >= selectedTalentConfig.maxLevel ? '已满级' : '学习/升级', -118, -502, 284, 70, UIColors.buttonGold, UIColors.woodStroke, 30);
     this.addButton('Button_TalentReset', '重置本系', 190, -502, 230, 70, UIColors.woodLight, UIColors.woodStroke, 27);
     this.addCommercialBottomNav('talent');
@@ -857,7 +863,18 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addText({ name: 'MailDetail_Title', value: selectedMail?.title ?? '暂无邮件', x: 116, y: 306, width: 272, height: 36, fontSize: 30, color: UIColors.textBrown, align: 'left' });
     this.addText({ name: 'MailDetail_Meta', value: selectedMail ? `发件人：营地管家\n状态：${selectedMail.claimed ? '已处理' : selectedMail.read ? '已读' : '未读'}` : '发件人：营地管家\n状态：无可查看邮件', x: 116, y: 260, width: 272, height: 54, fontSize: 21, color: new Color(94, 61, 38, 255), align: 'left', wrap: true });
     this.addRect({ name: 'MailDetail_ContentPanel', width: 430, height: 230, x: 84, y: 86, fill: new Color(255, 240, 206, 248), border: new Color(188, 134, 76, 255), borderSize: 4 });
-    this.addText({ name: 'MailDetail_Content', value: selectedMail?.body ?? '当前没有可查看的邮件。完成任务或参与活动后，奖励和公告会显示在这里。', x: 84, y: 90, width: 364, height: 178, fontSize: 24, color: UIColors.textBrown, align: 'left', wrap: true });
+    const mailBody = selectedMail?.body ?? '当前没有可查看的邮件。完成任务或参与活动后，奖励和公告会显示在这里。';
+    const mailBodyHeight = this.estimateWrappedTextHeight(mailBody, 346, 24, 5, 22);
+    const mailContentHeight = Math.max(178, mailBodyHeight + 28);
+    this.addScrollPanel('MailDetail_Content', 84, 90, 364, 178, mailContentHeight, () => {
+      const textNode = this.addText({ name: 'MailDetail_Content', value: mailBody, x: 0, y: mailContentHeight / 2 - mailBodyHeight / 2 - 14, width: 346, height: mailBodyHeight, fontSize: 24, color: UIColors.textBrown, align: 'left', verticalAlign: 'top', wrap: true });
+      const label = textNode.getComponent(Label);
+      if (label) {
+        label.overflow = Label.Overflow.RESIZE_HEIGHT;
+      }
+    });
+    this.addRect({ name: 'MailDetail_ContentScrollBar', width: 14, height: 162, x: 282, y: 90, fill: new Color(196, 154, 96, 120), border: new Color(146, 91, 48, 180), borderSize: 2 });
+    this.addRect({ name: 'MailDetail_ContentScrollThumb', width: 10, height: Math.max(42, Math.min(132, 162 * (178 / mailContentHeight))), x: 282, y: 134, fill: new Color(255, 238, 206, 240), border: UIColors.woodStroke, borderSize: 2 });
     this.addRect({ name: 'MailDetail_RewardContainer', width: 430, height: 172, x: 84, y: -160, fill: new Color(255, 240, 206, 248), border: UIColors.warningRed, borderSize: 4 });
     this.addText({ name: 'MailDetail_RewardTitle', value: '附件奖励', x: 84, y: -80, width: 180, height: 30, fontSize: 25, color: UIColors.textBrown });
     if (attachments.length > 0) {
@@ -2651,15 +2668,45 @@ export class UISkeletonBuilder extends BaseUIComponent {
       attack_power_01: '利爪',
       attack_speed_01: '迅捷',
       crit_rate_01: '暴击',
-      gold_bonus_01: '招财',
-      camp_hp_01: '守护',
+      crit_damage_01: '月牙',
+      pierce_01: '穿刺',
       attack_power_02: '夜巡大师',
-      hp_01: '生命训练',
-      defense_01: '护甲训练',
-      pierce_01: '穿刺夜袭',
-      skill_refresh_01: '灵感闪现',
+      camp_hp_01: '营火',
+      camp_defense_01: '护盾',
+      camp_heal_01: '灯愈',
+      camp_hp_02: '暖营',
+      damage_reduce_01: '厚披风',
+      last_stand_01: '余烬',
+      gold_bonus_01: '招财',
+      exp_bonus_01: '夜记',
+      pet_food_bonus_01: '零食袋',
+      chest_discount_01: '宝箱券',
+      shop_discount_01: '折扣',
+      energy_bonus_01: '精力',
     };
     return names[nodeId] ?? gameLogic.repo.getTalent(nodeId)?.displayName ?? nodeId;
+  }
+
+  private getTalentEffectSummary(nodeId: string): string {
+    const effectType = gameLogic.repo.getTalent(nodeId)?.effects[0]?.type;
+    const names: Record<string, string> = {
+      attackPercent: '攻击',
+      cooldownPercent: '攻速',
+      critRate: '暴击',
+      critDamage: '暴伤',
+      extraTargets: '穿透',
+      campHpPercent: '营地生命',
+      defenseFlat: '护甲',
+      campRegen: '回复',
+      damageReductionPercent: '减伤',
+      goldPercent: '金币',
+      expPercent: '经验',
+      petMaterialPercent: '宠物粮',
+      chestDiscountPercent: '宝箱',
+      shopDiscountPercent: '商店',
+      energyCapFlat: '体力',
+    };
+    return effectType ? names[effectType] ?? effectType : '强化';
   }
 
   private normalizeNodeKey(value: string): string {
@@ -2684,6 +2731,50 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return '守夜小猫';
     }
     return value.length > 7 ? `${value.slice(0, 7)}...` : value;
+  }
+
+  private addScrollPanel(name: string, x: number, y: number, width: number, height: number, contentHeight: number, buildContent: () => void): Node {
+    const viewport = new Node(`${name}ScrollView`);
+    viewport.layer = Layers.Enum.UI_2D;
+    viewport.parent = this.renderRootOverride ?? this.designRoot ?? this.node;
+    viewport.setPosition(x, y, 0);
+    const viewportTransform = viewport.addComponent(UITransform);
+    viewportTransform.setContentSize(width, height);
+    const mask = viewport.addComponent(Mask);
+    mask.type = Mask.Type.GRAPHICS_RECT;
+
+    const content = new Node(`${name}ScrollContent`);
+    content.layer = Layers.Enum.UI_2D;
+    content.parent = viewport;
+    const contentTransform = content.addComponent(UITransform);
+    const safeContentHeight = Math.max(height, contentHeight);
+    contentTransform.setContentSize(width, safeContentHeight);
+    content.setPosition(0, safeContentHeight > height ? -(safeContentHeight - height) / 2 : 0, 0);
+
+    const scrollView = viewport.addComponent(ScrollView);
+    scrollView.content = content;
+    scrollView.vertical = true;
+    scrollView.horizontal = false;
+    scrollView.inertia = true;
+    scrollView.brake = 0.75;
+
+    const previousRoot = this.renderRootOverride;
+    this.renderRootOverride = content;
+    try {
+      buildContent();
+    } finally {
+      this.renderRootOverride = previousRoot;
+    }
+    return viewport;
+  }
+
+  private estimateWrappedTextHeight(value: string, width: number, fontSize: number, minLines = 1, maxLines = 18): number {
+    const charsPerLine = Math.max(8, Math.floor(width / (fontSize * 0.86)));
+    const lineCount = value
+      .split('\n')
+      .reduce((sum, line) => sum + Math.max(1, Math.ceil([...line].length / charsPerLine)), 0);
+    const clampedLines = Math.max(minLines, Math.min(maxLines, lineCount));
+    return Math.ceil(clampedLines * fontSize * 1.36 + 12);
   }
 
   private addText(options: TextOptions): Node {

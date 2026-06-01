@@ -88,13 +88,13 @@ Status values:
 | AC-132 | P0 | Reward idempotency | PARTIAL | `verify_full_loop_acceptance` covers duplicate battle, double reward, task, achievement single/all, activity chest, mail, and shop claims; claimed reward IDs exist for battle | CoreGameplayAgent | Verify all reward sources are idempotent through UI |
 | AC-133 | P1 | Energy recovery | PARTIAL | `verify_full_loop_acceptance` covers `energy_recovery_interval_and_cap` | CoreGameplayAgent | Verify cap and time behavior in Cocos/WeChat |
 | AC-134 | P1 | Daily limits | PARTIAL | `verify_full_loop_acceptance` covers `shop_paid_daily_limit_blocked_no_mutation`, `shop_refresh_ad_success_then_daily_limit`, and `daily_refresh_resets_tasks_and_limits_once` | QAReleaseAgent | Verify buttons disable or toast after limit |
-| AC-140 | P1 | Portrait safe-area | UNVERIFIED | Browser screenshots exist only | UIUXAgent/QAReleaseAgent | Test common phones and aspect ratios |
+| AC-140 | P1 | Portrait safe-area | PARTIAL | `verify_mobile_resilience_contracts` requires fixed-width portrait resolution policy and route screenshots remain covered by `verify_ui_design_parity` | UIUXAgent/QAReleaseAgent | Test common phones and aspect ratios in WeChat/device |
 | AC-141 | P1 | Text fitting | PARTIAL | Static screenshots exist | UIUXAgent | Test long nickname/task/mail text |
 | AC-142 | P1 | Battle weapon bar layout | PARTIAL | Static guard checks HUD placement | UIUXAgent | Verify short-screen battle layout |
-| AC-143 | P1 | Mail long layout | UNVERIFIED | Mail detail UI exists | UIUXAgent | Test long mail body and attachments |
-| AC-144 | P1 | Talent scrolling | UNVERIFIED | Talent tree UI exists; scroll behavior not proven | UIUXAgent | Verify all nodes reachable |
+| AC-143 | P1 | Mail long layout | PARTIAL | `verify_mobile_resilience_contracts` requires `MailDetail_Content` ScrollView/Mask, wrapped body height estimation, and resize-height label behavior | UIUXAgent | Test long mail body and attachments visually |
+| AC-144 | P1 | Talent scrolling | PARTIAL | `verify_mobile_resilience_contracts` requires `Talent_Tree` ScrollView/Mask and data-driven rendering of all 18 configured talent nodes | UIUXAgent | Verify all nodes reachable by touch in Cocos/WeChat |
 | AC-145 | P2 | Interaction feedback | PARTIAL | Buttons/toasts exist | UIUXAgent | Verify press/claim/merge feedback |
-| AC-150 | P1 | Page switching stability | UNVERIFIED | Static routes exist | QAReleaseAgent | Repeatedly switch core pages |
+| AC-150 | P1 | Page switching stability | PARTIAL | `verify_mobile_resilience_contracts` parses `resolveButtonRoute` and verifies all returned targets are declared RouteIds with core page switching targets present | QAReleaseAgent | Repeatedly switch core pages in Cocos/WeChat |
 | AC-151 | P1 | Battle pressure | PARTIAL | Battle model supports multiple monsters/damage | QAReleaseAgent | Stress test runtime FPS/responsiveness |
 | AC-152 | P1 | Memory release | UNVERIFIED | No memory evidence recorded; `verify_launch_evidence` requires performance smoke metrics in final mode | QAReleaseAgent | Re-enter battle repeatedly on device |
 | AC-153 | P1 | Power-saving mode | PARTIAL | Setting exists; reduced effect behavior not proven | CoreGameplayAgent | Verify lower update/effect pressure while playable |

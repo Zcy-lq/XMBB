@@ -26,6 +26,7 @@ const fullLoopAcceptancePath = path.join(projectRoot, 'tools', 'verify_full_loop
 const wechatBuildOutputPath = path.join(projectRoot, 'tools', 'verify_wechat_build_output.mjs');
 const uiDesignParityPath = path.join(projectRoot, 'tools', 'verify_ui_design_parity.mjs');
 const pageFunctionCoveragePath = path.join(projectRoot, 'tools', 'verify_page_function_coverage.mjs');
+const mobileResiliencePath = path.join(projectRoot, 'tools', 'verify_mobile_resilience_contracts.mjs');
 const releaseCompliancePath = path.join(projectRoot, 'tools', 'verify_release_compliance.mjs');
 const launchEvidencePath = path.join(projectRoot, 'tools', 'verify_launch_evidence.mjs');
 const previewImportMapPath = path.join(projectRoot, 'temp', 'programming', 'packer-driver', 'targets', 'preview', 'import-map.json');
@@ -265,7 +266,7 @@ function readMappedPreviewUiChunks() {
     });
 }
 
-for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, saveManagerPath, redDotManagerPath, defaultRedDotRulesPath, dailyResetSystemPath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath, pageFunctionCoveragePath, releaseCompliancePath, launchEvidencePath]) {
+for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, saveManagerPath, redDotManagerPath, defaultRedDotRulesPath, dailyResetSystemPath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath, pageFunctionCoveragePath, mobileResiliencePath, releaseCompliancePath, launchEvidencePath]) {
   if (!fs.existsSync(filePath)) {
     fail(`Missing required file: ${path.relative(projectRoot, filePath)}`);
   }
@@ -294,6 +295,7 @@ if (failures.length === 0) {
   const wechatBuildOutput = read(wechatBuildOutputPath);
   const uiDesignParity = read(uiDesignParityPath);
   const pageFunctionCoverage = read(pageFunctionCoveragePath);
+  const mobileResilience = read(mobileResiliencePath);
   const releaseCompliance = read(releaseCompliancePath);
   const launchEvidence = read(launchEvidencePath);
 
@@ -1127,6 +1129,10 @@ if (failures.length === 0) {
     fail('package.json must expose npm run verify:page-functions for route/page function coverage.');
   }
 
+  if (!packageJson.scripts?.['verify:mobile-resilience']?.includes('tools/verify_mobile_resilience_contracts.mjs')) {
+    fail('package.json must expose npm run verify:mobile-resilience for safe-area, long-text, scroll, and route-switch coverage.');
+  }
+
   if (!packageJson.scripts?.['verify:release-compliance']?.includes('tools/verify_release_compliance.mjs')) {
     fail('package.json must expose npm run verify:release-compliance for WeChat release compliance coverage.');
   }
@@ -1141,6 +1147,10 @@ if (failures.length === 0) {
 
   if (!packageJson.scripts?.['workflow:check']?.includes('verify:page-functions')) {
     fail('package.json workflow:check must include the page function coverage gate.');
+  }
+
+  if (!packageJson.scripts?.['workflow:check']?.includes('verify:mobile-resilience')) {
+    fail('package.json workflow:check must include the mobile resilience gate.');
   }
 
   if (!packageJson.scripts?.['workflow:check']?.includes('verify:release-compliance')) {
@@ -1263,6 +1273,19 @@ if (failures.length === 0) {
   ]) {
     if (!pageFunctionCoverage.includes(pageFunctionToken)) {
       fail(`Page function coverage script is missing required check: ${pageFunctionToken}`);
+    }
+  }
+
+  for (const mobileResilienceToken of [
+    'mobile-resilience',
+    'ResolutionPolicy.FIXED_WIDTH',
+    "this.addScrollPanel('MailDetail_Content'",
+    "this.addScrollPanel('Talent_Tree'",
+    'gameLogic.repo.configs.talents.nodes',
+    'resolveButtonRoute returns undeclared route',
+  ]) {
+    if (!mobileResilience.includes(mobileResilienceToken)) {
+      fail(`Mobile resilience verification script is missing required check: ${mobileResilienceToken}`);
     }
   }
 
