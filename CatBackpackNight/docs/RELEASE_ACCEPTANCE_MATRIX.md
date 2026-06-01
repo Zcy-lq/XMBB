@@ -19,12 +19,12 @@ Status values:
 | AC-011 | P0 | Enter home | PARTIAL | `verify_full_loop_acceptance` covers `accept_agreement_enters_home`; UI handler routes accepted agreement to `home` | QAReleaseAgent | Verify accepted agreement persists and enters home in WeChat |
 | AC-012 | P1 | Compliance info | PARTIAL | Login UI contains agreement, privacy, 16+, health notice nodes | ComplianceService/QAReleaseAgent | Compare against 22-page design and legal text |
 | AC-013 | P1 | Second launch agreement | PARTIAL | `verify_full_loop_acceptance` covers restart clone with accepted agreement; real storage restart evidence missing | QAReleaseAgent | Restart after accepting agreement in Cocos/WeChat |
-| AC-020 | P0 | Home display | PARTIAL | Home builder and route screenshot exist | UIUXAgent/QAReleaseAgent | Verify player info/resources/chapter/start button in Cocos/WeChat |
-| AC-021 | P0 | Bottom navigation | PARTIAL | Route map and static guards cover routes | UIUXAgent/QAReleaseAgent | Tap every nav route on device |
+| AC-020 | P0 | Home display | PARTIAL | `verify_page_function_coverage` covers the home route contract and screenshot; `verify_ui_design_parity` covers local portrait evidence | UIUXAgent/QAReleaseAgent | Verify player info/resources/chapter/start button in Cocos/WeChat |
+| AC-021 | P0 | Bottom navigation | PARTIAL | `verify_page_function_coverage` covers route map and bottom-nav route tokens | UIUXAgent/QAReleaseAgent | Tap every nav route on device |
 | AC-022 | P1 | Settings entry | PARTIAL | Settings route and button handler exist | QAReleaseAgent | Verify settings opens and returns |
 | AC-023 | P1 | Red dots | UNVERIFIED | `RedDotManager` exists; full route evidence missing | UIUXAgent/QAReleaseAgent | Verify task/mail red dots before and after claim |
 | AC-024 | P1 | Insufficient energy | PARTIAL | Battle start can fail with insufficient currency; dev unlimited energy may mask it | CoreGameplayAgent | Test release-mode energy insufficient path |
-| AC-030 | P0 | Open battle prepare | PARTIAL | Home start routes to `battlePrepare` | QAReleaseAgent | Tap from home and record prepare screen |
+| AC-030 | P0 | Open battle prepare | PARTIAL | `verify_page_function_coverage` covers home start and battle-prepare route contracts | QAReleaseAgent | Tap from home and record prepare screen |
 | AC-031 | P1 | Power display | PARTIAL | `getBattlePreparation` computes recommended/my power | CoreGameplayAgent | Verify visible values update after growth |
 | AC-032 | P1 | Weapon preview | PARTIAL | Weapon preview data and UI slots exist | QAReleaseAgent | Verify inventory weapons appear in prepare page |
 | AC-033 | P0 | Start battle | PARTIAL | `verify_full_loop_acceptance` covers `start_first_battle`; `startBattle` and battle scene entry exist | CoreGameplayAgent/QAReleaseAgent | Verify 5 energy cost in release mode and route to battle |
@@ -41,7 +41,7 @@ Status values:
 | AC-052 | P1 | Double ad success | PARTIAL | Ad completion state supported in reward system | PlatformAgent | Verify rewarded-video success grants double |
 | AC-053 | P1 | Double ad failure | PARTIAL | Failure states exist in services/config | PlatformAgent | Verify cancel/fail/unavailable do not grant double |
 | AC-054 | P1 | First-clear reward | PARTIAL | Reward rules exist; first-clear UI evidence missing | CoreGameplayAgent | Verify key wave first-clear idempotency |
-| AC-060 | P0 | Backpack opens | PARTIAL | Backpack page and screenshot exist | QAReleaseAgent | Verify grid/detail/actions in Cocos/WeChat |
+| AC-060 | P0 | Backpack opens | PARTIAL | `verify_page_function_coverage` covers backpack route contract, screenshot, merge/open/sort actions | QAReleaseAgent | Verify grid/detail/actions in Cocos/WeChat |
 | AC-061 | P1 | Item selection | PARTIAL | UI detail nodes exist; selected-state evidence missing | UIUXAgent | Verify selected outline and detail panel |
 | AC-062 | P0 | Same-type merge | PARTIAL | `verify_full_loop_acceptance` covers `backpack_merge`; inventory merge system and self-check exist | CoreGameplayAgent | Verify UI merge consumes two and creates one |
 | AC-063 | P0 | Merge failure safety | PARTIAL | `verify_full_loop_acceptance` covers `merge_failure_no_mutation`; merge result failures exist | CoreGameplayAgent | Verify insufficient materials do not mutate save through UI |
@@ -53,13 +53,13 @@ Status values:
 | AC-073 | P1 | Refresh countdown | PARTIAL | Shop UI has countdown text | UIUXAgent | Verify countdown updates and fits |
 | AC-074 | P1 | Manual shop refresh | PARTIAL | `refreshShop` exists and UI calls success path | PlatformAgent/CoreGameplayAgent | Verify ad/gem branch and daily limits |
 | AC-075 | P1 | Special offer placeholder | UNVERIFIED | Shop tab/card UI exists | UIUXAgent | Verify no payment path and clear coming-soon state |
-| AC-080 | P0 | Pet page opens | PARTIAL | Pet page and screenshot exist | QAReleaseAgent | Verify detail/list states in Cocos/WeChat |
+| AC-080 | P0 | Pet page opens | PARTIAL | `verify_page_function_coverage` covers pet route contract, screenshot, selected/deploy/upgrade actions | QAReleaseAgent | Verify detail/list states in Cocos/WeChat |
 | AC-081 | P0 | Pet upgrade | PARTIAL | `verify_full_loop_acceptance` covers `selected_pet_upgrade`; selected pet binding added and guarded against fixed sample IDs | CoreGameplayAgent | Verify selected pet upgrade in Cocos/WeChat |
 | AC-082 | P0 | Pet upgrade failure | PARTIAL | `verify_full_loop_acceptance` covers `pet_upgrade_failure_no_mutation`; failure reasons exist | CoreGameplayAgent | Verify insufficient materials do not mutate save through UI |
 | AC-083 | P1 | Pet deploy switch | PARTIAL | Selected pet binding added; deploy/detail buttons use current selection | CoreGameplayAgent | Verify selected pet deploy and only one deployed |
 | AC-084 | P1 | Pet locked condition | PARTIAL | Config has locked pets; UI state needs verification | UIUXAgent | Verify locked cards show clear unlock condition |
 | AC-085 | P1 | Pet affects power | PARTIAL | `getPower` includes progression bonuses | CoreGameplayAgent | Verify prepare power changes after pet upgrade |
-| AC-090 | P0 | Talent page opens | PARTIAL | Talent page and screenshot exist | QAReleaseAgent | Verify tabs/tree/detail in runtime |
+| AC-090 | P0 | Talent page opens | PARTIAL | `verify_page_function_coverage` covers talent route contract, screenshot, select/learn/reset actions | QAReleaseAgent | Verify tabs/tree/detail in runtime |
 | AC-091 | P0 | Talent upgrade | PARTIAL | `verify_full_loop_acceptance` covers `selected_talent_upgrade`; learn/reset buttons use current selected node/branch | CoreGameplayAgent | Verify selected talent upgrade and prerequisite blocking |
 | AC-092 | P0 | Talent prerequisite | PARTIAL | `verify_full_loop_acceptance` covers `talent_prerequisite_blocked`; `prerequisite_missing` reason exists | CoreGameplayAgent | Verify blocked node does not spend points through UI |
 | AC-093 | P1 | Talent max level | PARTIAL | `max_level` reason exists | CoreGameplayAgent | Verify max node state in UI |
@@ -72,7 +72,7 @@ Status values:
 | AC-104 | P1 | Daily refresh | UNVERIFIED | Time manager/save fields exist | CoreGameplayAgent | Simulate cross-day reset |
 | AC-105 | P0 | Achievement claim | PARTIAL | `verify_full_loop_acceptance` covers `achievement_claim` and `achievement_duplicate_blocked`; achievement claim system exists | QAReleaseAgent | Verify one achievement reward in UI |
 | AC-106 | P1 | Claim all achievements | PARTIAL | `claimAllAchievements` exists | QAReleaseAgent | Verify multi-claim idempotency |
-| AC-110 | P0 | Mail opens | PARTIAL | Mail list/detail selected-state binding added; detail renders selected mail data | QAReleaseAgent | Verify list and detail drawer in Cocos/WeChat |
+| AC-110 | P0 | Mail opens | PARTIAL | `verify_page_function_coverage` covers mail and mailDetail route contracts, screenshots, selected-state actions | QAReleaseAgent | Verify list and detail drawer in Cocos/WeChat |
 | AC-111 | P0 | Mail attachment claim | PARTIAL | `verify_full_loop_acceptance` covers `mail_claim`; mail list/detail claim buttons use selected mail id | QAReleaseAgent | Verify single attachment grant and read-only mail path |
 | AC-112 | P0 | Mail duplicate prevention | PARTIAL | `verify_full_loop_acceptance` covers `mail_duplicate_blocked`; claimed mail blocks repeat | QAReleaseAgent | Verify fast-click path |
 | AC-113 | P1 | Claim all mails | PARTIAL | `verify_full_loop_acceptance` covers `mail_claim_all` and duplicate blocking; `claimAllMails` exists | QAReleaseAgent | Verify multiple attachments grant once |

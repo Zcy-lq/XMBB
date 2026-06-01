@@ -21,6 +21,7 @@ const defaultSavePath = path.join(projectRoot, 'assets', 'scripts', 'data', 'Def
 const fullLoopAcceptancePath = path.join(projectRoot, 'tools', 'verify_full_loop_acceptance.ts');
 const wechatBuildOutputPath = path.join(projectRoot, 'tools', 'verify_wechat_build_output.mjs');
 const uiDesignParityPath = path.join(projectRoot, 'tools', 'verify_ui_design_parity.mjs');
+const pageFunctionCoveragePath = path.join(projectRoot, 'tools', 'verify_page_function_coverage.mjs');
 const previewImportMapPath = path.join(projectRoot, 'temp', 'programming', 'packer-driver', 'targets', 'preview', 'import-map.json');
 
 const failures = [];
@@ -258,7 +259,7 @@ function readMappedPreviewUiChunks() {
     });
 }
 
-for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath]) {
+for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath, pageFunctionCoveragePath]) {
   if (!fs.existsSync(filePath)) {
     fail(`Missing required file: ${path.relative(projectRoot, filePath)}`);
   }
@@ -282,6 +283,7 @@ if (failures.length === 0) {
   const fullLoopAcceptance = read(fullLoopAcceptancePath);
   const wechatBuildOutput = read(wechatBuildOutputPath);
   const uiDesignParity = read(uiDesignParityPath);
+  const pageFunctionCoverage = read(pageFunctionCoveragePath);
 
   for (const [label, source] of Object.entries({
     'UISkeletonBuilder.ts': uiBuilder,
@@ -1075,8 +1077,16 @@ if (failures.length === 0) {
     fail('package.json must expose npm run verify:design-parity for 22-page UI launch evidence.');
   }
 
+  if (!packageJson.scripts?.['verify:page-functions']?.includes('tools/verify_page_function_coverage.mjs')) {
+    fail('package.json must expose npm run verify:page-functions for route/page function coverage.');
+  }
+
   if (!packageJson.scripts?.['workflow:check']?.includes('verify:design-parity')) {
     fail('package.json workflow:check must include the 22-page UI design parity gate.');
+  }
+
+  if (!packageJson.scripts?.['workflow:check']?.includes('verify:page-functions')) {
+    fail('package.json workflow:check must include the page function coverage gate.');
   }
 
   for (const fullLoopToken of [
@@ -1144,6 +1154,22 @@ if (failures.length === 0) {
   ]) {
     if (!uiDesignParity.includes(designParityToken)) {
       fail(`UI design parity verification script is missing required check: ${designParityToken}`);
+    }
+  }
+
+  for (const pageFunctionToken of [
+    'page-function-coverage',
+    'routes',
+    'screenshotByRoute',
+    'pageContracts',
+    'Button_StartGame',
+    'Button_StartBattle',
+    'Button_MailClaimAll',
+    'Button_TalentLearn',
+    'Button_DefeatRetry',
+  ]) {
+    if (!pageFunctionCoverage.includes(pageFunctionToken)) {
+      fail(`Page function coverage script is missing required check: ${pageFunctionToken}`);
     }
   }
 

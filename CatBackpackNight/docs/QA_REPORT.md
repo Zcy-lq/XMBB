@@ -23,6 +23,7 @@ Changes made:
 - Added `npm run verify:full-loop` and updated `verify_scene_flow_guards` so the full-loop gate cannot be accidentally removed from the release workflow.
 - Added `tools/verify_wechat_build_output.mjs` and `npm run verify:wechat-build` to validate the generated Cocos WeChat Mini Game output.
 - Added `tools/verify_ui_design_parity.mjs` and `npm run verify:design-parity` to aggregate the 22-page design reference audit, 8 page/modal parity scripts, and 22 local portrait screenshot evidence files.
+- Added `tools/verify_page_function_coverage.mjs` and `npm run verify:page-functions` to verify 25 routes, 22 screenshot-backed pages, and 25 key page function contracts.
 - Updated release matrix/runbook/blocker docs to separate automated logic evidence from missing Cocos/WeChat/device evidence.
 
 Fresh verification commands passed:
@@ -32,6 +33,7 @@ node tools/validate_configs.js
 node tools/validate_assets.js
 node tools/audit_design_reference.mjs
 node tools/verify_ui_design_parity.mjs
+node tools/verify_page_function_coverage.mjs
 node tools/verify_scene_flow_guards.mjs
 node tools/build_check.js
 node tools/verify_wechat_build_output.mjs
@@ -45,6 +47,7 @@ Result:
 - Asset gate: 54 asset entries checked.
 - Design reference audit: 22/22 annotated design pages plus 12 legacy references checked.
 - UI design parity gate: 22/22 local portrait screenshots and 8 static parity scripts verified.
+- Page function coverage gate: 25/25 routes, 22/22 screenshot-backed pages, and 25/25 page function contracts verified.
 - Cocos WeChat build output: `build/wechatgame` has 36 files, 4,969,185 bytes, required root files, portrait orientation, and `compileType: game`.
 - Game logic self-check: 12/12 passed.
 - Full-loop acceptance: 38/38 passed.
