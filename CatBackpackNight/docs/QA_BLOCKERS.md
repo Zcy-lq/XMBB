@@ -13,7 +13,7 @@
   - Suggested Fix: Maintain `docs/UI_DESIGN_PARITY_MATRIX.md`, compare every implemented screen against its matching design PNG, and keep the design audit locked to all 22 annotated references.
   - Do Not Modify By QA: visual requirements without a new design reference.
 - WeChat DevTools import and preview evidence is missing.
-  - Evidence: Cocos Creator 3.8.8 generated `build/wechatgame` on 2026-06-01 and `tools/verify_wechat_build_output.mjs` passed for required files, portrait orientation, `compileType: game`, and 4,969,185 bytes. WeChat DevTools `open`, `islogin`, `quit`, `auto --trust-project`, and `login --qr-output` CLI commands repeatedly timed out; no QR image, import screenshot, DevTools console log, or one-loop preview record is stored in the QA docs.
+  - Evidence: Cocos Creator 3.8.8 generated `build/wechatgame` on 2026-06-01 and `tools/verify_wechat_build_output.mjs` passed for required files, portrait orientation, `compileType: game`, and 4,969,185 bytes. WeChat DevTools `open`, `islogin`, `quit`, `auto --trust-project`, and `login --qr-output` CLI commands repeatedly timed out; no QR image, import screenshot, DevTools console log, or one-loop preview record is stored in the QA docs. `tools/verify_launch_evidence.mjs` now emits `BLOCKED_EVIDENCE launch_evidence.json` and final mode fails until this evidence is recorded.
   - Owner Agent: PlatformAgent
   - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
   - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.
@@ -41,7 +41,7 @@
   - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
   - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.
 - Real-device smoke and performance checks are still required.
-  - Evidence: FPS, memory, touch responsiveness, and package-size behavior are not measured on a physical device.
+  - Evidence: FPS, memory, touch responsiveness, and package-size behavior are not measured on a physical device. `tools/verify_launch_evidence.mjs` requires Android, iOS, and performance smoke evidence in final mode.
   - Owner Agent: QAReleaseAgent
   - Suggested Fix: Run the latest WeChat preview on a target phone and record results against `docs/PERFORMANCE_CHECKLIST.md`.
   - Do Not Modify By QA: balancing constants unless device evidence shows a gameplay-affecting issue.

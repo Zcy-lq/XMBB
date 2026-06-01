@@ -64,6 +64,7 @@ cd CatBackpackNight
 & $node tools/validate_configs.js
 & $node tools/validate_assets.js
 & $node tools/verify_release_compliance.mjs
+& $node tools/verify_launch_evidence.mjs
 & $node tools/verify_scene_flow_guards.mjs
 & $node tools/build_check.js
 & $node '..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs' tools/verify_game_logic_self_check.ts
@@ -71,6 +72,16 @@ cd CatBackpackNight
 ```
 
 Expected: every command exits `0`.
+
+For final upload evidence, also run:
+
+```powershell
+$env:XMBB_RELEASE_FINAL='1'
+& $node tools/verify_launch_evidence.mjs
+```
+
+Expected before evidence is collected: fail with `BLOCKED_EVIDENCE launch_evidence.json`.
+Expected after WeChat/真机/UI signoff evidence is recorded: exit `0`.
 
 ## Post-Build WeChat Output Gate
 

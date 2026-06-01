@@ -41,4 +41,5 @@ Status values:
 
 - `verify_ui_design_parity` now runs the 22-page design reference audit, 8 static parity scripts, and validates 22 local portrait screenshot evidence files.
 - Screenshots in `tmp/final_mobile_pages_after_ui_pass` are current local evidence, but they are not final release evidence until each row above is reviewed and signed off against the design reference.
+- Final upload requires `docs/launch_evidence/launch_evidence.json` to include `uiDesignSignoff.pages` with all 22 rows set to `PASS`; `XMBB_RELEASE_FINAL=1 node tools/verify_launch_evidence.mjs` fails until that exists.
 - Pet/talent selected-state actions and WeChat runtime screenshots must be verified before these rows can move to `PASS`.

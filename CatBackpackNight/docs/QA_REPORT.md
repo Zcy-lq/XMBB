@@ -25,6 +25,7 @@ Changes made:
 - Added `tools/verify_ui_design_parity.mjs` and `npm run verify:design-parity` to aggregate the 22-page design reference audit, 8 page/modal parity scripts, and 22 local portrait screenshot evidence files.
 - Added `tools/verify_page_function_coverage.mjs` and `npm run verify:page-functions` to verify 25 routes, 22 screenshot-backed pages, and 25 key page function contracts.
 - Added `tools/verify_release_compliance.mjs` and `npm run verify:release-compliance` to verify readable compliance text, review-mode ad safety, config-driven WeChat IDs, rewarded-video completion gating, and production-input blockers.
+- Added `tools/verify_launch_evidence.mjs`, `npm run verify:launch-evidence`, and `docs/launch_evidence/launch_evidence.template.json` so WeChat DevTools import, runtime full-loop proof, 22-page design signoff, real-device smoke, and performance evidence are machine-checkable before final upload.
 - Wired `Button_RewardDouble` and the daily ad task through `AdService`; reward/progress is granted only after a successful rewarded-video result.
 - Updated release matrix/runbook/blocker docs to separate automated logic evidence from missing Cocos/WeChat/device evidence.
 
@@ -37,6 +38,7 @@ node tools/audit_design_reference.mjs
 node tools/verify_ui_design_parity.mjs
 node tools/verify_page_function_coverage.mjs
 node tools/verify_release_compliance.mjs
+node tools/verify_launch_evidence.mjs
 node tools/verify_scene_flow_guards.mjs
 node tools/build_check.js
 node tools/verify_wechat_build_output.mjs
@@ -54,6 +56,7 @@ Result:
 - Cocos WeChat build output: `build/wechatgame` has 36 files, 4,969,185 bytes, required root files, portrait orientation, and `compileType: game`.
 - Game logic self-check: 12/12 passed.
 - Release compliance code gate: passed with 3 explicit production-input blockers (`wechat.appid`, `wechat.privacyPolicyUrl`, `wechat.userAgreementUrl`).
+- Launch evidence gate: local code gate passed and emitted a required `launch_evidence.json` blocker; `XMBB_RELEASE_FINAL=1` correctly fails until WeChat/真机/UI signoff evidence is recorded.
 - Full-loop acceptance: 41/41 passed.
 
 Still BLOCKED for launch:

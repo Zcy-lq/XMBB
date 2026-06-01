@@ -56,3 +56,5 @@ This document defines the minimum commercial release checks for PlatformAgent an
 - `docs/QA_BLOCKERS.md` is current.
 - `docs/RELEASE_CHECKLIST.md` is current.
 - `npm run workflow:check` exits with code `0`.
+- `XMBB_RELEASE_FINAL=1 node tools/verify_release_compliance.mjs` exits with code `0`.
+- `XMBB_RELEASE_FINAL=1 node tools/verify_launch_evidence.mjs` exits with code `0`.

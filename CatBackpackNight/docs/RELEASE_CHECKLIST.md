@@ -54,6 +54,7 @@ Build from Cocos Creator to WeChat Mini Game:
 - [ ] WeChat DevTools imports the build output.
 - [ ] WeChat DevTools preview runs.
 - [ ] Mock platform layer works when real services are unavailable.
+- [ ] WeChat DevTools screenshots/logs are recorded in `docs/launch_evidence/launch_evidence.json`.
 
 ## 4. Gameplay Gate
 
@@ -71,6 +72,7 @@ Verify:
 - [ ] Daily task claim cannot be repeated.
 - [ ] Achievement claim cannot be repeated.
 - [ ] Mail attachment claim cannot be repeated.
+- [ ] Full runtime loop evidence covers all 15 steps required by `tools/verify_launch_evidence.mjs`.
 
 ## 5. Compliance Gate
 
@@ -80,6 +82,7 @@ Verify:
 - [ ] Health game notice exists.
 - [ ] Real privacy URL and agreement URL are configured before release.
 - [ ] No misleading rewarded ad text.
+- [ ] `XMBB_RELEASE_FINAL=1 node tools/verify_release_compliance.mjs` passes.
 
 ## 6. Asset/Package Gate
 
@@ -100,6 +103,7 @@ Verify:
 - [ ] Common UI is packed into atlas.
 - [ ] Battle characters/effects are packed separately.
 - [ ] Main package size is checked in WeChat DevTools.
+- [ ] `XMBB_RELEASE_FINAL=1 node tools/verify_launch_evidence.mjs` passes.
 
 ## 7. Automated Loop QA Gate
 
@@ -122,3 +126,4 @@ MVP can move to user testing when:
 - WeChat DevTools preview runs.
 - Gameplay loop can be completed for at least one battle.
 - Rewards and currency cannot be duplicated or driven negative.
+- `docs/launch_evidence/launch_evidence.json` proves WeChat import, full loop, 22-page UI signoff, Android/iOS smoke, and performance smoke.

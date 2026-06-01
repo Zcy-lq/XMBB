@@ -11,15 +11,15 @@ Status values:
 
 | AC ID | Priority | Area | Status | Evidence | Owner | Next Action |
 | --- | --- | --- | --- | --- | --- | --- |
-| AC-001 | P0 | WeChat import | BLOCKED | `build/wechatgame` output is generated and passes `verify_wechat_build_output`; WeChat DevTools CLI import/open still times out with no screenshot/log evidence | PlatformAgent | Import the generated WeChat target in DevTools and record launch evidence |
-| AC-002 | P0 | Startup | UNVERIFIED | Browser Preview route screenshots exist; WeChat startup not recorded | QAReleaseAgent | Record Cocos launch and WeChat launch logs/screenshots |
+| AC-001 | P0 | WeChat import | BLOCKED | `build/wechatgame` output is generated and passes `verify_wechat_build_output`; WeChat DevTools CLI import/open still times out with no screenshot/log evidence; `verify_launch_evidence` final mode blocks until import evidence exists | PlatformAgent | Import the generated WeChat target in DevTools and record `docs/launch_evidence/launch_evidence.json` |
+| AC-002 | P0 | Startup | UNVERIFIED | Browser Preview route screenshots exist; WeChat startup is not recorded in `docs/launch_evidence/launch_evidence.json` | QAReleaseAgent | Record Cocos launch and WeChat launch logs/screenshots |
 | AC-003 | P1 | Resource loading | PARTIAL | `verify_runtime_asset_index` and UI asset contract pass locally | QAReleaseAgent | Cold-start home/backpack/battle in Cocos and WeChat |
 | AC-004 | P1 | Config loading | PASS | `validate_configs` passes 19 JSON files | QAReleaseAgent | Keep in regression suite |
 | AC-010 | P0 | Agreement gate | PARTIAL | `verify_full_loop_acceptance` covers `agreement_gate_blocks_start`; `UISkeletonBuilder` blocks start without agreement | QAReleaseAgent | Manually verify toast and route lock in Cocos/WeChat |
 | AC-011 | P0 | Enter home | PARTIAL | `verify_full_loop_acceptance` covers `accept_agreement_enters_home`; UI handler routes accepted agreement to `home` | QAReleaseAgent | Verify accepted agreement persists and enters home in WeChat |
 | AC-012 | P1 | Compliance info | PARTIAL | `verify_release_compliance` verifies readable agreement/privacy/16+/health text, login nodes, review-mode ad safety, and production-input blockers | ComplianceService/QAReleaseAgent | Verify legal URLs and content in WeChat runtime |
 | AC-013 | P1 | Second launch agreement | PARTIAL | `verify_full_loop_acceptance` covers restart clone with accepted agreement; real storage restart evidence missing | QAReleaseAgent | Restart after accepting agreement in Cocos/WeChat |
-| AC-020 | P0 | Home display | PARTIAL | `verify_page_function_coverage` covers the home route contract and screenshot; `verify_ui_design_parity` covers local portrait evidence | UIUXAgent/QAReleaseAgent | Verify player info/resources/chapter/start button in Cocos/WeChat |
+| AC-020 | P0 | Home display | PARTIAL | `verify_page_function_coverage` covers the home route contract and screenshot; `verify_ui_design_parity` covers local portrait evidence; `verify_launch_evidence` requires final UI signoff evidence | UIUXAgent/QAReleaseAgent | Verify player info/resources/chapter/start button in Cocos/WeChat |
 | AC-021 | P0 | Bottom navigation | PARTIAL | `verify_page_function_coverage` covers route map and bottom-nav route tokens | UIUXAgent/QAReleaseAgent | Tap every nav route on device |
 | AC-022 | P1 | Settings entry | PARTIAL | Settings route and button handler exist | QAReleaseAgent | Verify settings opens and returns |
 | AC-023 | P1 | Red dots | UNVERIFIED | `RedDotManager` exists; full route evidence missing | UIUXAgent/QAReleaseAgent | Verify task/mail red dots before and after claim |
@@ -96,13 +96,14 @@ Status values:
 | AC-145 | P2 | Interaction feedback | PARTIAL | Buttons/toasts exist | UIUXAgent | Verify press/claim/merge feedback |
 | AC-150 | P1 | Page switching stability | UNVERIFIED | Static routes exist | QAReleaseAgent | Repeatedly switch core pages |
 | AC-151 | P1 | Battle pressure | PARTIAL | Battle model supports multiple monsters/damage | QAReleaseAgent | Stress test runtime FPS/responsiveness |
-| AC-152 | P1 | Memory release | UNVERIFIED | No memory evidence recorded | QAReleaseAgent | Re-enter battle repeatedly on device |
+| AC-152 | P1 | Memory release | UNVERIFIED | No memory evidence recorded; `verify_launch_evidence` requires performance smoke metrics in final mode | QAReleaseAgent | Re-enter battle repeatedly on device |
 | AC-153 | P1 | Power-saving mode | PARTIAL | Setting exists; reduced effect behavior not proven | CoreGameplayAgent | Verify lower update/effect pressure while playable |
 
 ## Current P0 Launch Blockers
 
 - `AC-001`: WeChat DevTools import and preview evidence is missing.
 - `AC-002`: WeChat launch startup evidence is missing.
+- Final launch evidence: `verify_launch_evidence` emits `BLOCKED_EVIDENCE launch_evidence.json` locally and fails in `XMBB_RELEASE_FINAL=1` until WeChat/真机/UI signoff evidence exists.
 - `AC-033`, `AC-040`, `AC-041`, `AC-050`: the full battle loop has automated acceptance evidence, but no fresh Cocos/WeChat UI proof.
 - `AC-052`, `AC-053`: rewarded-video double reward has automated and UI wiring evidence, but no WeChat ad runtime success/cancel evidence.
 - `AC-081`, `AC-083`, `AC-091`: pet/talent selected-state bindings now have static guard coverage; Cocos/WeChat runtime proof is still required.

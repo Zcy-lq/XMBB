@@ -23,6 +23,7 @@ const wechatBuildOutputPath = path.join(projectRoot, 'tools', 'verify_wechat_bui
 const uiDesignParityPath = path.join(projectRoot, 'tools', 'verify_ui_design_parity.mjs');
 const pageFunctionCoveragePath = path.join(projectRoot, 'tools', 'verify_page_function_coverage.mjs');
 const releaseCompliancePath = path.join(projectRoot, 'tools', 'verify_release_compliance.mjs');
+const launchEvidencePath = path.join(projectRoot, 'tools', 'verify_launch_evidence.mjs');
 const previewImportMapPath = path.join(projectRoot, 'temp', 'programming', 'packer-driver', 'targets', 'preview', 'import-map.json');
 
 const failures = [];
@@ -260,7 +261,7 @@ function readMappedPreviewUiChunks() {
     });
 }
 
-for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath, pageFunctionCoveragePath, releaseCompliancePath]) {
+for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath, wechatBuildOutputPath, uiDesignParityPath, pageFunctionCoveragePath, releaseCompliancePath, launchEvidencePath]) {
   if (!fs.existsSync(filePath)) {
     fail(`Missing required file: ${path.relative(projectRoot, filePath)}`);
   }
@@ -286,6 +287,7 @@ if (failures.length === 0) {
   const uiDesignParity = read(uiDesignParityPath);
   const pageFunctionCoverage = read(pageFunctionCoveragePath);
   const releaseCompliance = read(releaseCompliancePath);
+  const launchEvidence = read(launchEvidencePath);
 
   for (const [label, source] of Object.entries({
     'UISkeletonBuilder.ts': uiBuilder,
@@ -1087,6 +1089,10 @@ if (failures.length === 0) {
     fail('package.json must expose npm run verify:release-compliance for WeChat release compliance coverage.');
   }
 
+  if (!packageJson.scripts?.['verify:launch-evidence']?.includes('tools/verify_launch_evidence.mjs')) {
+    fail('package.json must expose npm run verify:launch-evidence for final WeChat/manual launch evidence coverage.');
+  }
+
   if (!packageJson.scripts?.['workflow:check']?.includes('verify:design-parity')) {
     fail('package.json workflow:check must include the 22-page UI design parity gate.');
   }
@@ -1097,6 +1103,10 @@ if (failures.length === 0) {
 
   if (!packageJson.scripts?.['workflow:check']?.includes('verify:release-compliance')) {
     fail('package.json workflow:check must include the release compliance gate.');
+  }
+
+  if (!packageJson.scripts?.['workflow:check']?.includes('verify:launch-evidence')) {
+    fail('package.json workflow:check must include the launch evidence gate.');
   }
 
   for (const fullLoopToken of [
@@ -1197,6 +1207,21 @@ if (failures.length === 0) {
   ]) {
     if (!releaseCompliance.includes(releaseComplianceToken)) {
       fail(`Release compliance verification script is missing required check: ${releaseComplianceToken}`);
+    }
+  }
+
+  for (const launchEvidenceToken of [
+    'launch-evidence',
+    'BLOCKED_EVIDENCE',
+    'wechatDevToolsImport',
+    'fullLoopRuntime',
+    'uiDesignSignoff',
+    'realDeviceSmoke',
+    'performanceSmoke',
+    'XMBB_RELEASE_FINAL',
+  ]) {
+    if (!launchEvidence.includes(launchEvidenceToken)) {
+      fail(`Launch evidence verification script is missing required check: ${launchEvidenceToken}`);
     }
   }
 

@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "generatedFromBuild": "build/wechatgame",
+  "wechatDevToolsImport": {
+    "status": "PASS",
+    "verifiedAt": "2026-06-01T00:00:00+08:00",
+    "devtoolsVersion": "__RECORD_WECHAT_DEVTOOLS_VERSION__",
+    "appid": "__RECORD_OFFICIAL_OR_TEST_APPID__",
+    "projectPath": "build/wechatgame",
+    "screenshots": [
+      "docs/launch_evidence/screenshots/wechat-devtools-import.png"
+    ],
+    "logs": [
+      "docs/launch_evidence/logs/wechat-devtools-console.txt"
+    ],
+    "notes": "Import build/wechatgame, confirm launch, privacy entries, and one preview run."
+  },
+  "fullLoopRuntime": {
+    "status": "PASS",
+    "runtime": "wechat-devtools",
+    "steps": [
+      { "id": "clear_save", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/01-clear-save.png"] },
+      { "id": "launch_login", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/02-login.png"] },
+      { "id": "agreement_block", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/03-agreement-block.png"] },
+      { "id": "accept_agreement_home", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/04-home.png"] },
+      { "id": "open_battle_prepare", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/05-battle-prepare.png"] },
+      { "id": "start_battle", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/06-battle.png"] },
+      { "id": "reach_victory", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/07-victory.png"] },
+      { "id": "claim_reward_once", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/08-claim-reward.png"] },
+      { "id": "double_reward_ad", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/09-double-reward.png"] },
+      { "id": "duplicate_claim_blocked", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/10-duplicate-blocked.png"] },
+      { "id": "backpack_merge", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/11-backpack-merge.png"] },
+      { "id": "pet_or_talent_upgrade", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/12-growth-upgrade.png"] },
+      { "id": "power_changed", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/13-power-changed.png"] },
+      { "id": "start_second_battle", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/14-second-battle.png"] },
+      { "id": "restart_restore_save", "status": "PASS", "evidence": ["docs/launch_evidence/screenshots/15-restart-restore.png"] }
+    ]
+  },
+  "uiDesignSignoff": {
+    "status": "PASS",
+    "reviewer": "__RECORD_REVIEWER__",
+    "reviewedAt": "2026-06-01T00:00:00+08:00",
+    "pages": [
+      { "page": "01 Login", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-01-login.png", "notes": "" },
+      { "page": "02 Home", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-02-home.png", "notes": "" },
+      { "page": "03 Battle Prepare", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-03-battle-prepare.png", "notes": "" },
+      { "page": "04 Battle", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-04-battle.png", "notes": "" },
+      { "page": "05 Pause Modal", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-05-pause-modal.png", "notes": "" },
+      { "page": "06 Skill Choice", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-06-skill-choice.png", "notes": "" },
+      { "page": "07 Victory", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-07-victory.png", "notes": "" },
+      { "page": "08 Defeat", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-08-defeat.png", "notes": "" },
+      { "page": "09 Backpack", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-09-backpack.png", "notes": "" },
+      { "page": "10 Merge Guide", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-10-merge-guide.png", "notes": "" },
+      { "page": "11 Shop", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-11-shop.png", "notes": "" },
+      { "page": "12 Pet", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-12-pet.png", "notes": "" },
+      { "page": "13 Pet Detail", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-13-pet-detail.png", "notes": "" },
+      { "page": "14 Talent", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-14-talent.png", "notes": "" },
+      { "page": "15 Daily Task", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-15-daily-task.png", "notes": "" },
+      { "page": "16 Achievement", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-16-achievement.png", "notes": "" },
+      { "page": "17 Mail", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-17-mail.png", "notes": "" },
+      { "page": "18 Mail Detail", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-18-mail-detail.png", "notes": "" },
+      { "page": "19 Settings", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-19-settings.png", "notes": "" },
+      { "page": "20 Policy Modal", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-20-policy-modal.png", "notes": "" },
+      { "page": "21 Confirm Modal", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-21-confirm-modal.png", "notes": "" },
+      { "page": "22 Toast Modal", "status": "PASS", "designReference": "__RECORD_DESIGN_REFERENCE__", "screenshot": "docs/launch_evidence/screenshots/design-22-toast-modal.png", "notes": "" }
+    ]
+  },
+  "realDeviceSmoke": {
+    "status": "PASS",
+    "devices": [
+      {
+        "platform": "Android",
+        "model": "__RECORD_LOW_END_ANDROID_MODEL__",
+        "wechatVersion": "__RECORD_WECHAT_VERSION__",
+        "status": "PASS",
+        "screenshots": ["docs/launch_evidence/screenshots/device-android-home.png"],
+        "logs": ["docs/launch_evidence/logs/device-android-notes.txt"]
+      },
+      {
+        "platform": "iOS",
+        "model": "__RECORD_IPHONE_MODEL__",
+        "wechatVersion": "__RECORD_WECHAT_VERSION__",
+        "status": "PASS",
+        "screenshots": ["docs/launch_evidence/screenshots/device-ios-home.png"],
+        "logs": ["docs/launch_evidence/logs/device-ios-notes.txt"]
+      }
+    ]
+  },
+  "performanceSmoke": {
+    "status": "PASS",
+    "averageFpsMin": 30,
+    "peakMemoryMbMax": 512,
+    "coldStartMsMax": 5000,
+    "evidence": [
+      "docs/launch_evidence/logs/performance-smoke.txt"
+    ]
+  }
+}
