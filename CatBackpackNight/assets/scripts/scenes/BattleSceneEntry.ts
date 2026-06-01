@@ -13,6 +13,8 @@ export class BattleSceneEntry extends BaseSceneEntry {
   public screenKey = 'battle' as const;
   private session: BattleSessionModel | null = null;
   private settlementStarted = false;
+  private uiUpdateAccumulator = 0;
+  private readonly powerSavingUiIntervalSec = 0.2;
 
   protected onSceneReady(): void {
     const existingBattle = gameLogic.getActiveBattleStart();
@@ -28,6 +30,7 @@ export class BattleSceneEntry extends BaseSceneEntry {
 
     this.session = gameLogic.createBattleSession();
     this.settlementStarted = false;
+    this.uiUpdateAccumulator = 0;
     this.uiManager?.updateBattleState(this.session.state);
   }
 
@@ -60,11 +63,20 @@ export class BattleSceneEntry extends BaseSceneEntry {
       return;
     }
     this.session.tick(deltaSec);
-    this.uiManager?.updateBattleState(this.session.state);
+    this.uiUpdateAccumulator += deltaSec;
+    if (this.shouldUpdateBattleUi()) {
+      this.uiUpdateAccumulator = 0;
+      this.uiManager?.updateBattleState(this.session.state);
+    }
     if (this.session.state.status !== 'running') {
       this.uiManager?.updateBattleState(this.session.state);
       this.finishBattle(this.session.state.status);
     }
+  }
+
+  private shouldUpdateBattleUi(): boolean {
+    const powerSavingEnabled = gameLogic.getSnapshot().save.settings.powerSavingEnabled;
+    return !powerSavingEnabled || this.uiUpdateAccumulator >= this.powerSavingUiIntervalSec;
   }
 
   private finishBattle(status: Exclude<BattleStatus, 'running'>): void {

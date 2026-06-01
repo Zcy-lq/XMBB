@@ -7,6 +7,7 @@ const read = (...segments) => fs.readFileSync(path.join(projectRoot, ...segments
 
 const gameTypes = read('assets', 'scripts', 'data', 'GameTypes.ts');
 const baseScene = read('assets', 'scripts', 'scenes', 'BaseSceneEntry.ts');
+const battleScene = read('assets', 'scripts', 'scenes', 'BattleSceneEntry.ts');
 const uiBuilder = read('assets', 'scripts', 'ui', 'UISkeletonBuilder.ts');
 const talents = JSON.parse(read('assets', 'configs', 'talents.json'));
 const failures = [];
@@ -64,6 +65,14 @@ for (const token of [
   requireIncludes(uiBuilder, token, 'Talent scrolling contract');
 }
 
+for (const token of ['private clearGeneratedUi', 'this.clearGeneratedUi()', 'child.destroy()']) {
+  requireIncludes(uiBuilder, token, 'Route-switch memory release contract');
+}
+
+for (const token of ['powerSavingUiIntervalSec', 'uiUpdateAccumulator', 'powerSavingEnabled', 'shouldUpdateBattleUi']) {
+  requireIncludes(battleScene, token, 'Power-saving battle pressure contract');
+}
+
 if (!Array.isArray(talents.nodes) || talents.nodes.length < 12) {
   fail(`talents.json should expose the full launch tree, got ${talents.nodes?.length ?? 0} node(s).`);
 }
@@ -91,4 +100,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`[mobile-resilience] PASS fixed-width safe-area policy, long mail scrolling, ${talents.nodes.length} talent nodes, and ${routes.length} route targets verified.`);
+console.log(`[mobile-resilience] PASS fixed-width safe-area policy, long mail scrolling, ${talents.nodes.length} talent nodes, ${routes.length} route targets, UI cleanup, and power-saving battle throttling verified.`);

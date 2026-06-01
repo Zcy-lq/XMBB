@@ -121,7 +121,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
   }
 
   public rebuild(): void {
-    this.node.removeAllChildren();
+    this.clearGeneratedUi();
     this.battleLiveLayer = null;
     this.renderRootOverride = null;
     this.designRoot = new Node('DesignRoot');
@@ -2731,6 +2731,13 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return '守夜小猫';
     }
     return value.length > 7 ? `${value.slice(0, 7)}...` : value;
+  }
+
+  private clearGeneratedUi(): void {
+    [...this.node.children].forEach((child) => {
+      child.removeFromParent();
+      child.destroy();
+    });
   }
 
   private addScrollPanel(name: string, x: number, y: number, width: number, height: number, contentHeight: number, buildContent: () => void): Node {

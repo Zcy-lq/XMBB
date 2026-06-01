@@ -1283,6 +1283,10 @@ if (failures.length === 0) {
     "this.addScrollPanel('Talent_Tree'",
     'gameLogic.repo.configs.talents.nodes',
     'resolveButtonRoute returns undeclared route',
+    'private clearGeneratedUi',
+    'child.destroy()',
+    'powerSavingUiIntervalSec',
+    'shouldUpdateBattleUi',
   ]) {
     if (!mobileResilience.includes(mobileResilienceToken)) {
       fail(`Mobile resilience verification script is missing required check: ${mobileResilienceToken}`);
