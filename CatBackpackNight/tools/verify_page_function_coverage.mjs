@@ -95,7 +95,7 @@ const routeBuilderMethods = {
 const pageContracts = {
   login: ['Button_StartGame', 'Button_ToggleAgreement', 'Button_PolicyAgree', "SceneRouter.instance.go('home')"],
   home: ['TopEntry_DailyTask', 'TopEntry_Mail', 'LeftEntry_Backpack', 'LeftEntry_Shop', 'Button_StartBattle', "NavButton_merge')) return 'merge'"],
-  battlePrepare: ['BattlePrepare_HeroCat', 'Button_StartBattle', 'gameLogic.startBattle()', "SceneRouter.instance.go('battle')"],
+  battlePrepare: ['BattlePrepare_HeroCat', 'Button_Back_BattlePrepare', 'Button_Close_BattlePrepare', 'Button_StartBattle', 'gameLogic.startBattle()', "SceneRouter.instance.go('battle')", "return 'home'"],
   battle: ['Button_BattlePause', "'Button_BattlePause')) return 'pauseModal'", 'Button_AutoMerge', 'updateBattleLiveState'],
   merge: ['Button_MergeConfirm', 'gameLogic.autoMergeAll()', "this.addBottomNav('merge')"],
   mergeGuide: ['MergeGuide_Modal', 'Button_MergeGuideConfirm', 'Button_MergeGuideHelp'],

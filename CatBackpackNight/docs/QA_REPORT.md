@@ -19,7 +19,7 @@ User direction: continue until the WeChat mini game meets launch standards. This
 Changes made:
 
 - Added `assets/scripts/game/MailSystem.ts` so mail claim/delete behavior is testable as a pure gameplay system and still used by `GameLogicFacade`.
-- Added `tools/verify_full_loop_acceptance.ts`, now a 60-check full-loop acceptance script covering clear save, agreement gate, first battle, release-mode energy spend/insufficient-energy safety, pause/resume, auto-merge toggle state, skill choice application/duplicate blocking, victory/defeat settlement, post-settlement rewarded-video double reward, cancelled-ad no-mutation, duplicate reward blocking, backpack merge, open chest success/failure safety, selected pet upgrade/deploy, selected talent upgrade/reset, task/activity/achievement single/all claims, config-backed red-dot thresholds, mail red-dot reduction, mail single/all claim/delete, shop daily-free/paid/refresh daily limits, energy recovery, daily reset, second battle, restart clone, settings persistence, and non-negative economy.
+- Added `tools/verify_full_loop_acceptance.ts`, now a 67-check full-loop acceptance script covering clear save, agreement gate, first battle, release-mode energy spend/insufficient-energy safety, pause/resume, auto-merge toggle state, skill choice application/duplicate blocking, victory/defeat settlement, key-wave first-clear rewards, post-settlement rewarded-video double reward, cancelled-ad no-mutation, duplicate reward blocking, backpack merge, open chest success/failure safety, selected pet upgrade/deploy, selected talent upgrade/reset/max-level blocking, battle-prep power/weapon preview, task/activity/achievement single/all claims, config-backed red-dot thresholds, mail red-dot reduction, mail single/all claim/delete, shop daily-free/paid/refresh/special-placeholder daily limits, energy recovery, daily reset, second battle, restart clone, settings persistence, and non-negative economy.
 - Extracted `DefaultRedDotRules` and `DailyResetSystem` so red-dot thresholds and daily reset behavior are pure gameplay logic covered by the launch gate while still used by runtime managers.
 - Added `npm run verify:full-loop` and updated `verify_scene_flow_guards` so the full-loop gate cannot be accidentally removed from the release workflow.
 - Added `tools/verify_wechat_build_output.mjs` and `npm run verify:wechat-build` to validate the generated Cocos WeChat Mini Game output.
@@ -58,7 +58,7 @@ Result:
 - Game logic self-check: 12/12 passed.
 - Release compliance code gate: passed with 3 explicit production-input blockers (`wechat.appid`, `wechat.privacyPolicyUrl`, `wechat.userAgreementUrl`).
 - Launch evidence gate: local code gate passed and emitted a required `launch_evidence.json` blocker; `XMBB_RELEASE_FINAL=1` correctly fails until WeChat/真机/UI signoff evidence is recorded.
-- Full-loop acceptance: 60/60 passed.
+- Full-loop acceptance: 67/67 passed.
 
 Still BLOCKED for launch:
 

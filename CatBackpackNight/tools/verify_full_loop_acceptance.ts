@@ -208,6 +208,37 @@ const duplicateSettlement = battleRewards.settle(save, {
 });
 check('duplicate_reward_blocked', !duplicateSettlement.ok && duplicateSettlement.reason === 'already_claimed', duplicateSettlement.message);
 
+const firstClearSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(firstClearSave);
+firstClearSave.progress.highestWave = 4;
+firstClearSave.progress.currentWave = 5;
+const firstClearBlueGemBefore = firstClearSave.currencies.blueGem;
+const firstClearTalentPointsBefore = firstClearSave.progress.talentPoints;
+const firstClear = battleRewards.settle(firstClearSave, {
+  battleId: 'full_loop_key_wave_first_clear',
+  wave: 5,
+  status: 'victory',
+  defeatedMonsters: 10,
+  rng: seededRng(41),
+});
+const firstClearAgain = battleRewards.settle(firstClearSave, {
+  battleId: 'full_loop_key_wave_first_clear',
+  wave: 5,
+  status: 'victory',
+  defeatedMonsters: 10,
+});
+check(
+  'first_clear_key_wave_rewards_and_idempotency',
+  firstClear.ok &&
+    firstClear.data?.firstClear === true &&
+    firstClearSave.currencies.blueGem > firstClearBlueGemBefore &&
+    firstClearSave.progress.talentPoints > firstClearTalentPointsBefore &&
+    firstClearSave.progress.currentWave === 6 &&
+    !firstClearAgain.ok &&
+    firstClearAgain.reason === 'already_claimed',
+  `${firstClear.message}; duplicate=${firstClearAgain.message}`,
+);
+
 const defeatSave = cloneSave(save);
 const defeatWaveBefore = defeatSave.progress.currentWave;
 const defeatEnergyBefore = defeatSave.currencies.energy;
@@ -276,6 +307,13 @@ check(
 const petUpgrade = progression.upgradePet(save, 'pet_shadow_cat');
 check('selected_pet_upgrade', petUpgrade.ok && petUpgrade.data?.pet.id === 'pet_shadow_cat', petUpgrade.message);
 
+const petPowerSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(petPowerSave);
+const petPowerBefore = progression.getPower(petPowerSave);
+progression.upgradePet(petPowerSave, 'pet_shadow_cat');
+const petPowerAfter = progression.getPower(petPowerSave);
+check('pet_upgrade_increases_power', petPowerAfter > petPowerBefore, `${petPowerBefore} -> ${petPowerAfter}`);
+
 const petDeploySave = cloneSave(save);
 const petDeploy = progression.deployPet(petDeploySave, 'pet_shadow_cat');
 check(
@@ -307,6 +345,13 @@ check(
 const talentUpgrade = progression.upgradeTalent(save, 'attack_power_01');
 check('selected_talent_upgrade', talentUpgrade.ok && talentUpgrade.data?.node.id === 'attack_power_01', talentUpgrade.message);
 
+const talentPowerSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(talentPowerSave);
+const talentPowerBefore = progression.getPower(talentPowerSave);
+progression.upgradeTalent(talentPowerSave, 'attack_power_01');
+const talentPowerAfter = progression.getPower(talentPowerSave);
+check('talent_upgrade_increases_power', talentPowerAfter > talentPowerBefore, `${talentPowerBefore} -> ${talentPowerAfter}`);
+
 const talentResetSave = cloneSave(save);
 const talentPointsBeforeReset = talentResetSave.progress.talentPoints;
 const talentReset = progression.resetTalents(talentResetSave, 'attack');
@@ -328,9 +373,45 @@ check(
   !talentPrerequisite.ok && talentPrerequisite.reason === 'prerequisite_missing' && JSON.stringify(talentFailureSave) === talentFailureBefore,
   talentPrerequisite.message,
 );
+const talentMaxSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(talentMaxSave);
+const attackPowerMax = repo.getTalent('attack_power_01')?.maxLevel ?? 3;
+const talentMaxNode = talentMaxSave.talents.find((node) => node.id === 'attack_power_01');
+if (talentMaxNode) {
+  talentMaxNode.level = attackPowerMax;
+}
+talentMaxSave.progress.talentPoints = 99;
+const talentMaxBefore = JSON.stringify(talentMaxSave);
+const talentMaxUpgrade = progression.upgradeTalent(talentMaxSave, 'attack_power_01');
+check(
+  'talent_max_level_blocked_no_mutation',
+  !talentMaxUpgrade.ok && talentMaxUpgrade.reason === 'max_level' && JSON.stringify(talentMaxSave) === talentMaxBefore,
+  talentMaxUpgrade.message,
+);
 
 const powerAfterGrowth = progression.getPower(save);
 check('power_changes_after_growth', powerAfterGrowth > powerBeforeGrowth, `${powerBeforeGrowth} -> ${powerAfterGrowth}`);
+const battlePreparationAfterGrowth = {
+  ...{
+    myPower: progression.getPower(save),
+  },
+  weaponPreview: save.inventory
+    .filter((item) => item.itemType === 'weapon')
+    .map((item) => ({
+      itemId: item.itemId,
+      level: item.level,
+      count: item.count,
+      power: repo.getWeaponLevel(item.itemId, item.level)?.power ?? 0,
+    }))
+    .sort((a, b) => b.power - a.power)
+    .slice(0, 10),
+};
+check(
+  'battle_preparation_reflects_growth_and_weapon_preview',
+  battlePreparationAfterGrowth.myPower === powerAfterGrowth &&
+    battlePreparationAfterGrowth.weaponPreview.some((item) => item.itemId === 'weapon_sword' && item.level === 2 && item.count >= 1),
+  JSON.stringify(battlePreparationAfterGrowth),
+);
 
 check(
   'task_progress_updates',
@@ -483,6 +564,17 @@ check(
   !shopFailure.ok && shopFailure.reason === 'insufficient_currency' && shopFailureAfter === shopFailureBefore,
   shopFailure.message,
 );
+const specialOfferSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(specialOfferSave);
+const specialOfferBefore = JSON.stringify({ currencies: specialOfferSave.currencies, inventory: specialOfferSave.inventory, daily: specialOfferSave.daily });
+const specialOffer = shop.buy(specialOfferSave, 'special_placeholder');
+check(
+  'shop_special_offer_unavailable_no_mutation',
+  !specialOffer.ok &&
+    specialOffer.reason === 'unavailable' &&
+    JSON.stringify({ currencies: specialOfferSave.currencies, inventory: specialOfferSave.inventory, daily: specialOfferSave.daily }) === specialOfferBefore,
+  specialOffer.message,
+);
 
 const refreshCancelSave = cloneSave(save);
 const refreshCancelBefore = JSON.stringify({ currencies: refreshCancelSave.currencies, daily: refreshCancelSave.daily, dailyTasks: refreshCancelSave.dailyTasks });
@@ -514,6 +606,13 @@ check(
     refreshLimit.reason === 'daily_limit_reached' &&
     JSON.stringify({ currencies: refreshLimitSave.currencies, daily: refreshLimitSave.daily }) === refreshBeforeLimit,
   refreshLimit.message,
+);
+const refreshNow = new Date('2024-03-10T08:15:00');
+const nextRefreshAt = shop.getNextRefreshAt(refreshNow);
+check(
+  'shop_refresh_countdown_next_time_is_future',
+  nextRefreshAt > refreshNow.getTime() && nextRefreshAt - refreshNow.getTime() <= 24 * 60 * 60 * 1000,
+  `${refreshNow.getTime()} -> ${nextRefreshAt}`,
 );
 
 const energySave = cloneSave(save);
