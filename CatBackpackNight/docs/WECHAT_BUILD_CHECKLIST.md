@@ -1,5 +1,13 @@
 # WeChat Build Checklist
 
+## Current Status - 2026-06-01
+
+- Automated logic gate: `verify_full_loop_acceptance` passes 19/19 checks.
+- Cocos build output: BLOCKED, `build/wechatgame` is absent.
+- Cocos Creator executable: BLOCKED in this environment, no `CocosCreator.exe` was found during the latest probe.
+- WeChat DevTools: installed and GUI process is running, but CLI login/import automation is not returning usable evidence.
+- Launch status: not releasable until Cocos build, WeChat import/preview, and real-device smoke evidence are recorded.
+
 ## Before Build
 
 - `assets/configs/platform.json` exists.

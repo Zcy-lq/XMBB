@@ -19,6 +19,20 @@ This runbook is the P0 launch proof path for the WeChat mini game. Do not mark t
 13. Start second battle.
 14. Restart app and confirm save state persists.
 
+## Automated Evidence
+
+The pure TypeScript full-loop gate covers the launch logic path without the Cocos or WeChat runtime:
+
+```powershell
+$node = 'C:\Users\Administrator\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe'
+cd CatBackpackNight
+& $node '..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs' tools/verify_full_loop_acceptance.ts
+```
+
+Expected: `[full-loop-acceptance] {"passed":true,"checks":19,"failed":0}`.
+
+This automated gate is required, but it does not replace Cocos/WeChat screenshots, storage restart evidence, or real-device performance evidence.
+
 ## Evidence Table
 
 | Step | Result | Screenshot/Log | Notes |
@@ -49,6 +63,8 @@ cd CatBackpackNight
 & $node tools/validate_assets.js
 & $node tools/verify_scene_flow_guards.mjs
 & $node tools/build_check.js
+& $node '..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs' tools/verify_game_logic_self_check.ts
+& $node '..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs' tools/verify_full_loop_acceptance.ts
 ```
 
 Expected: every command exits `0`.
@@ -56,6 +72,6 @@ Expected: every command exits `0`.
 ## Current P0 Runtime Gaps
 
 - WeChat DevTools import and preview evidence is not recorded.
-- Full battle victory/reward claim has static coverage but no current WeChat screenshot/log evidence.
-- Pet/talent selected-state binding has static guard coverage, but no Cocos/WeChat save-delta evidence yet.
-- Restart/save restore proof is not recorded.
+- Full battle victory/reward claim has automated logic coverage but no current Cocos/WeChat screenshot/log evidence.
+- Pet/talent selected-state binding has static and full-loop coverage, but no Cocos/WeChat save-delta evidence yet.
+- Restart/save restore has automated clone-save coverage, but no real Cocos/WeChat storage restart proof is recorded.

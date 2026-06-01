@@ -9,6 +9,7 @@
   "scripts": {
     "typecheck": "npm exec --yes --package typescript@5.3.3 -- tsc --noEmit -p tsconfig.json",
     "verify:game-logic": "npm exec --yes --package tsx -- tsx tools/verify_game_logic_self_check.ts",
+    "verify:full-loop": "npm exec --yes --package tsx -- tsx tools/verify_full_loop_acceptance.ts",
     "verify:scene-flow": "node tools/verify_scene_flow_guards.mjs",
     "refresh:preview-ui": "node tools/refresh_cocos_preview_ui_chunk.mjs",
     "generate:runtime-assets": "node tools/generate_runtime_asset_index.mjs",

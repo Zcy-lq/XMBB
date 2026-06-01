@@ -13,12 +13,12 @@
   - Suggested Fix: Maintain `docs/UI_DESIGN_PARITY_MATRIX.md`, compare every implemented screen against its matching design PNG, and keep the design audit locked to all 22 annotated references.
   - Do Not Modify By QA: visual requirements without a new design reference.
 - WeChat DevTools import and preview evidence is missing.
-  - Evidence: no current `build/wechatgame` import screenshot, DevTools console log, or one-loop preview record is stored in the QA docs.
+  - Evidence: no current `build/wechatgame` import screenshot, DevTools console log, or one-loop preview record is stored in the QA docs. On 2026-06-01 `build/wechatgame` was absent and WeChat DevTools CLI `islogin` did not return within 64 seconds while the DevTools GUI process was running.
   - Owner Agent: PlatformAgent
   - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
   - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.
 - Full launch gameplay loop is not proven through UI and WeChat runtime.
-  - Evidence: battle, reward, backpack merge, shop, pet, talent, task, achievement, mail, settings, and save/restore flows have static/self-check evidence, but several P0 acceptance rows still need runtime proof.
+  - Evidence: `tools/verify_full_loop_acceptance.ts` covers 19 logic checks across agreement, first battle, settlement, duplicate reward blocking, backpack merge, selected pet/talent upgrades, mail claim/delete, shop free-good limit, second battle, restart clone, and non-negative economy. Cocos/WeChat UI screenshots, device logs, and real storage restart proof are still missing.
   - Owner Agent: CoreGameplayAgent/QAReleaseAgent
   - Suggested Fix: Record a complete first-session loop from login agreement through home, battle prepare, battle, settlement claim, growth spend, task/mail claim, settings persistence, restart, and recovery.
   - Do Not Modify By QA: balancing constants unless a reproducible launch-blocking defect requires it.
@@ -31,12 +31,12 @@
 ## P1 Issues
 
 - Cocos Creator editor-side import/hierarchy verification is still required.
-  - Evidence: Browser Preview route screenshots pass, but editor Console import errors and scene/prefab hierarchy have not been independently signed off in the Cocos Creator UI.
+  - Evidence: Browser Preview route screenshots pass, but editor Console import errors and scene/prefab hierarchy have not been independently signed off in the Cocos Creator UI. On 2026-06-01 no `CocosCreator.exe` was found under Program Files, `D:\`, or the Administrator AppData folders; only Cocos Dashboard was previously detected.
   - Owner Agent: QAReleaseAgent
   - Suggested Fix: Open the project in Cocos Creator 3.8.x, confirm clean Console output, and repair any missing script/component binding immediately.
   - Do Not Modify By QA: runtime asset mappings unless a screenshot shows the exact regression.
 - WeChat DevTools import and preview are still required before calling the game release-ready.
-  - Evidence: local Browser Preview is verified. A 2026-05-30 Cocos command-line `wechatgame` build probe refreshed Cocos logs but produced no `build/wechatgame` output, spawned duplicate Cocos processes that locked `temp/logs/project.log`, and WeChat DevTools CLI was not found on this machine.
+  - Evidence: local Browser Preview is verified. A 2026-05-30 Cocos command-line `wechatgame` build probe refreshed Cocos logs but produced no `build/wechatgame` output. On 2026-06-01 `build/wechatgame` was still absent, WeChat DevTools was installed and running, but CLI login/import automation was not usable from this environment.
   - Owner Agent: PlatformAgent
   - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
   - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.

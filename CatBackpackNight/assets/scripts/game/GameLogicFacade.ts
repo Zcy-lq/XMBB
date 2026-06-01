@@ -7,9 +7,10 @@ import { EconomySystem } from './EconomySystem';
 import { GameLogicConfigs, ProgressEventType } from './GameConfigTypes';
 import { GameConfigRepository, getDefaultGameLogicConfigs } from './GameConfigRepository';
 import { failure, GameLogicResult, success } from './GameLogicResult';
-import { cloneSave, ensureProgressRuntimeFields, grantRewards } from './GameLogicUtils';
+import { cloneSave, ensureProgressRuntimeFields } from './GameLogicUtils';
 import { GameEvents, GameEventName } from './GameEvents';
 import { InventorySystem, MergeResult, OpenChestResult } from './InventorySystem';
+import { MailSystem } from './MailSystem';
 import { ClaimResult, PetUpgradeResult, ProgressionSystem, TalentUpgradeResult } from './ProgressionSystem';
 import { AdCompletionState, ShopPurchaseResult, ShopSystem, ShopRefreshResult } from './ShopSystem';
 
@@ -38,6 +39,7 @@ export class GameLogicFacade {
   public readonly progression: ProgressionSystem;
   public readonly shop: ShopSystem;
   public readonly battleRewards: BattleRewardSystem;
+  public readonly mail: MailSystem;
   private activeBattleStart: BattleStartResult | null = null;
 
   public constructor(
@@ -50,6 +52,7 @@ export class GameLogicFacade {
     this.progression = new ProgressionSystem(this.repo);
     this.shop = new ShopSystem(this.repo, this.progression);
     this.battleRewards = new BattleRewardSystem(this.repo, this.progression);
+    this.mail = new MailSystem(this.repo);
   }
 
   public getSnapshot(): GameLogicSnapshot {
@@ -201,77 +204,19 @@ export class GameLogicFacade {
   }
 
   public claimMail(mailId: string): GameLogicResult<{ mail: MailSave; rewards: RewardPayload[] }> {
-    return this.commit('mail-claim', GameEvents.MailClaim, (save) => {
-      const mail = save.mails.find((row) => row.id === mailId);
-      if (!mail) {
-        return failure('config_missing', `missing mail: ${mailId}`);
-      }
-      if (mail.claimed) {
-        return failure('already_claimed', 'mail already claimed');
-      }
-      if (mail.expireAt <= Date.now()) {
-        return failure('unavailable', 'mail expired');
-      }
-      if (mail.attachments.length === 0) {
-        mail.read = true;
-        mail.claimed = true;
-        return success({ mail, rewards: [] }, 'mail read');
-      }
-      const grant = grantRewards(save, mail.attachments, this.repo);
-      if (!grant.ok) {
-        return failure(grant.reason ?? 'invalid_input', grant.message);
-      }
-      mail.read = true;
-      mail.claimed = true;
-      return success({ mail, rewards: mail.attachments }, 'mail claimed');
-    });
+    return this.commit('mail-claim', GameEvents.MailClaim, (save) => this.mail.claimMail(save, mailId));
   }
 
   public claimAllMails(): GameLogicResult<{ claimed: string[]; rewards: RewardPayload[] }> {
-    return this.commit('mail-claim-all', GameEvents.MailClaim, (save) => {
-      const claimed: string[] = [];
-      const rewards: RewardPayload[] = [];
-      for (const mail of save.mails) {
-        if (mail.claimed || mail.expireAt <= Date.now() || mail.attachments.length === 0) {
-          continue;
-        }
-        const grant = grantRewards(save, mail.attachments, this.repo);
-        if (!grant.ok) {
-          return failure(grant.reason ?? 'invalid_input', grant.message);
-        }
-        mail.read = true;
-        mail.claimed = true;
-        claimed.push(mail.id);
-        rewards.push(...mail.attachments);
-      }
-      if (claimed.length === 0) {
-        return failure('not_ready', 'no mail attachments can be claimed');
-      }
-      return success({ claimed, rewards }, 'mails claimed');
-    });
+    return this.commit('mail-claim-all', GameEvents.MailClaim, (save) => this.mail.claimAllMails(save));
   }
 
   public deleteClaimedAndEmptyMails(): GameLogicResult<{ deleted: string[] }> {
-    return this.commit('mail-delete', GameEvents.SaveChanged, (save) => {
-      const deletable = save.mails.filter((mail) => mail.claimed || mail.attachments.length === 0);
-      save.mails = save.mails.filter((mail) => !deletable.includes(mail));
-      return success({ deleted: deletable.map((mail) => mail.id) }, 'mails deleted');
-    });
+    return this.commit('mail-delete', GameEvents.SaveChanged, (save) => this.mail.deleteClaimedAndEmptyMails(save));
   }
 
   public deleteMail(mailId: string): GameLogicResult<{ deleted: string[] }> {
-    return this.commit('mail-delete-one', GameEvents.SaveChanged, (save) => {
-      const mail = save.mails.find((row) => row.id === mailId);
-      if (!mail) {
-        return failure('config_missing', `missing mail: ${mailId}`);
-      }
-      if (!mail.claimed && mail.attachments.length > 0) {
-        return failure('not_ready', 'mail has unclaimed attachments');
-      }
-
-      save.mails = save.mails.filter((row) => row.id !== mailId);
-      return success({ deleted: [mailId] }, 'mail deleted');
-    });
+    return this.commit('mail-delete-one', GameEvents.SaveChanged, (save) => this.mail.deleteMail(save, mailId));
   }
 
   private getPreparedSnapshot(): GameSaveData {

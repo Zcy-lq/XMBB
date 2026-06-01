@@ -12,6 +12,44 @@ This repository now contains the commercial-grade Cocos Creator architecture doc
 
 ## Checks Performed
 
+### 2026-06-01 Launch Logic Full-Loop Gate
+
+User direction: continue until the WeChat mini game meets launch standards. This pass adds a repeatable automated launch-loop gate, but does not mark runtime launch verification as complete.
+
+Changes made:
+
+- Added `assets/scripts/game/MailSystem.ts` so mail claim/delete behavior is testable as a pure gameplay system and still used by `GameLogicFacade`.
+- Added `tools/verify_full_loop_acceptance.ts`, a 19-check full-loop acceptance script covering clear save, agreement gate, first battle, victory settlement, duplicate reward blocking, backpack merge, selected pet/talent upgrades, mail claim/delete, shop daily-free limit, second battle, restart clone, and non-negative economy.
+- Added `npm run verify:full-loop` and updated `verify_scene_flow_guards` so the full-loop gate cannot be accidentally removed from the release workflow.
+- Updated release matrix/runbook/blocker docs to separate automated logic evidence from missing Cocos/WeChat/device evidence.
+
+Fresh verification commands passed:
+
+```powershell
+node tools/validate_configs.js
+node tools/validate_assets.js
+node tools/audit_design_reference.mjs
+node tools/verify_scene_flow_guards.mjs
+node tools/build_check.js
+node ..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs tools/verify_game_logic_self_check.ts
+node ..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs tools/verify_full_loop_acceptance.ts
+```
+
+Result:
+
+- Config gate: 19 JSON files parsed.
+- Asset gate: 54 asset entries checked.
+- Design reference audit: 22/22 annotated design pages plus 12 legacy references checked.
+- Game logic self-check: 12/12 passed.
+- Full-loop acceptance: 19/19 passed.
+
+Still BLOCKED for launch:
+
+- `build/wechatgame` is absent.
+- No `CocosCreator.exe` was found on this machine during the 2026-06-01 probe, so Cocos editor/build verification cannot be completed here.
+- WeChat DevTools is installed and running, but CLI `islogin` did not return within 64 seconds; no import/preview evidence is recorded.
+- Real-device performance, touch, memory, and storage restart evidence is still required.
+
 ### 2026-05-30 Commercial UI Route Polish Pass
 
 User direction: all pages must feel polished and not half-finished.

@@ -18,6 +18,7 @@ const assetReviewCenterPath = path.join(projectRoot, 'assets', 'configs', 'asset
 const assetReviewToolPath = path.join(projectRoot, 'tools', 'asset_review_center.mjs');
 const packagePath = path.join(projectRoot, 'package.json');
 const defaultSavePath = path.join(projectRoot, 'assets', 'scripts', 'data', 'DefaultSave.ts');
+const fullLoopAcceptancePath = path.join(projectRoot, 'tools', 'verify_full_loop_acceptance.ts');
 const previewImportMapPath = path.join(projectRoot, 'temp', 'programming', 'packer-driver', 'targets', 'preview', 'import-map.json');
 
 const failures = [];
@@ -255,7 +256,7 @@ function readMappedPreviewUiChunks() {
     });
 }
 
-for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath]) {
+for (const filePath of [facadePath, uiBuilderPath, battleScenePath, baseScenePath, homeScenePath, uiManagerPath, runtimeSpriteLoaderPath, homeSceneAssetPath, levelsPath, runtimeQualityPath, assetReviewCenterPath, assetReviewToolPath, packagePath, defaultSavePath, fullLoopAcceptancePath]) {
   if (!fs.existsSync(filePath)) {
     fail(`Missing required file: ${path.relative(projectRoot, filePath)}`);
   }
@@ -276,6 +277,7 @@ if (failures.length === 0) {
   const assetReviewCenter = JSON.parse(read(assetReviewCenterPath));
   const packageJson = JSON.parse(read(packagePath));
   const defaultSave = read(defaultSavePath);
+  const fullLoopAcceptance = read(fullLoopAcceptancePath);
 
   for (const [label, source] of Object.entries({
     'UISkeletonBuilder.ts': uiBuilder,
@@ -1051,6 +1053,29 @@ if (failures.length === 0) {
 
   if (packageJson.scripts?.['asset:review'] !== 'node tools/asset_review_center.mjs') {
     fail('package.json must expose npm run asset:review for the central asset acceptance queue.');
+  }
+
+  if (!packageJson.scripts?.['verify:full-loop']?.includes('tools/verify_full_loop_acceptance.ts')) {
+    fail('package.json must expose npm run verify:full-loop for launch-loop acceptance.');
+  }
+
+  for (const fullLoopToken of [
+    'agreement_gate_blocks_start',
+    'start_first_battle',
+    'first_battle_reaches_settlement',
+    'duplicate_reward_blocked',
+    'backpack_merge',
+    'selected_pet_upgrade',
+    'selected_talent_upgrade',
+    'mail_claim',
+    'shop_free_good_once',
+    'start_second_battle_after_growth',
+    'restart_restore_save',
+    'economy_non_negative',
+  ]) {
+    if (!fullLoopAcceptance.includes(fullLoopToken)) {
+      fail(`Full-loop launch acceptance script is missing required check: ${fullLoopToken}`);
+    }
   }
 
   if (!Array.isArray(assetReviewCenter.reviewBuckets?.usable) || !assetReviewCenter.reviewBuckets.usable.includes('productionCandidate')) {
