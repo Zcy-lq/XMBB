@@ -4,7 +4,33 @@ import { fileURLToPath } from 'node:url';
 
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workspaceRoot = path.resolve(projectRoot, '..');
-const designDir = path.join(workspaceRoot, '设计图');
+const annotatedDesignDir = path.join(workspaceRoot, '设计图_AI全页面2K标注版');
+const legacyDesignDir = path.join(workspaceRoot, '设计图');
+const expectedAnnotatedPageCount = 22;
+const expectedAnnotatedDesigns = [
+  '01_LOGIN_登录页.png',
+  '02_HOME_主页.png',
+  '03_BATTLE_PREPARE_战斗准备.png',
+  '04_BATTLE_战斗界面.png',
+  '05_PAUSE_MODAL_暂停弹窗.png',
+  '06_SKILL_CHOICE_技能选择弹窗.png',
+  '07_VICTORY_胜利结算.png',
+  '08_DEFEAT_失败结算.png',
+  '09_BACKPACK_背包.png',
+  '10_MERGE_GUIDE_合成提示.png',
+  '11_SHOP_商店.png',
+  '12_PET_宠物.png',
+  '13_PET_DETAIL_宠物详情.png',
+  '14_TALENT_天赋.png',
+  '15_DAILY_TASK_每日任务.png',
+  '16_ACHIEVEMENT_成就.png',
+  '17_MAIL_邮件.png',
+  '18_MAIL_DETAIL_邮件详情弹窗.png',
+  '19_SETTINGS_设置.png',
+  '20_POLICY_MODAL_协议隐私弹窗.png',
+  '21_CONFIRM_MODAL_通用确认弹窗.png',
+  '22_TOAST_MODAL_提示弹窗.png',
+];
 const uiBuilderPath = path.join(projectRoot, 'assets', 'scripts', 'ui', 'UISkeletonBuilder.ts');
 
 const failures = [];
@@ -40,14 +66,26 @@ function assertNotIncludes(source, token, page, issue, owner, suggestedFix) {
   }
 }
 
-if (!fs.existsSync(designDir)) {
+function listDesignImages(directory) {
+  if (!fs.existsSync(directory)) {
+    return [];
+  }
+  return fs.readdirSync(directory)
+    .filter((name) => /\.(png|jpg|jpeg)$/i.test(name))
+    .map((name) => {
+      const filePath = path.join(directory, name);
+      return { name, filePath, size: name.toLowerCase().endsWith('.png') ? pngSize(filePath) : null };
+    });
+}
+
+if (!fs.existsSync(annotatedDesignDir)) {
   fail(
     'P0',
     'ALL',
-    'Design reference directory is missing.',
-    path.relative(workspaceRoot, designDir),
+    'Annotated 22-page design reference directory is missing.',
+    path.relative(workspaceRoot, annotatedDesignDir),
     'ProductAgent/UIUXAgent',
-    'Create the design reference directory and place annotated page references there.',
+    'Create the AI annotated design reference directory and place all 22 page references there.',
   );
 }
 
@@ -62,38 +100,37 @@ if (!fs.existsSync(uiBuilderPath)) {
   );
 }
 
-let designImages = [];
-if (fs.existsSync(designDir)) {
-  designImages = fs.readdirSync(designDir)
-    .filter((name) => /\.(png|jpg|jpeg)$/i.test(name))
-    .map((name) => {
-      const filePath = path.join(designDir, name);
-      return { name, filePath, size: name.toLowerCase().endsWith('.png') ? pngSize(filePath) : null };
-    });
+let annotatedDesignImages = [];
+let legacyDesignImages = [];
+if (fs.existsSync(annotatedDesignDir)) {
+  annotatedDesignImages = listDesignImages(annotatedDesignDir);
 
-  if (designImages.length < 2) {
+  const annotatedNames = new Set(annotatedDesignImages.map((image) => image.name));
+  const missingAnnotatedDesigns = expectedAnnotatedDesigns.filter((name) => !annotatedNames.has(name));
+  if (annotatedDesignImages.length < expectedAnnotatedPageCount || missingAnnotatedDesigns.length > 0) {
     fail(
       'P0',
       'ALL',
-      'Not enough page design references were found.',
-      `Found ${designImages.length} image(s) in ${path.relative(workspaceRoot, designDir)}`,
+      'The full 22-page AI annotated design reference set is incomplete.',
+      `Found ${annotatedDesignImages.length}/${expectedAnnotatedPageCount} annotated image(s) in ${path.relative(workspaceRoot, annotatedDesignDir)}. Missing: ${missingAnnotatedDesigns.join(', ') || 'none by exact filename'}`,
       'ProductAgent/UIUXAgent',
-      'Add at least LOGIN_01 and HOME_01 annotated design images before claiming UI delivery.',
+      'Restore every numbered annotated page reference before claiming UI delivery.',
     );
   }
 
-  const portraitSheets = designImages.filter((image) => image.size && image.size.height > image.size.width);
-  if (portraitSheets.length < 2) {
+  const readablePngSheets = annotatedDesignImages.filter((image) => image.size);
+  if (readablePngSheets.length < expectedAnnotatedPageCount) {
     fail(
       'P1',
       'ALL',
-      'Design sheets do not look like portrait WeChat mini game references.',
-      `Portrait PNG sheets found: ${portraitSheets.length}`,
+      'Some annotated design sheets do not have readable PNG dimensions.',
+      `Readable PNG sheets found: ${readablePngSheets.length}/${expectedAnnotatedPageCount}`,
       'UIUXAgent',
-      'Use vertical annotated references for login and home pages.',
+      'Use valid PNG references for all 22 launch pages.',
     );
   }
 }
+legacyDesignImages = listDesignImages(legacyDesignDir);
 
 if (fs.existsSync(uiBuilderPath)) {
   const ui = read(uiBuilderPath);
@@ -232,4 +269,5 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log(`[design-reference-audit] PASS: LOGIN_01, HOME_01, and secondary page skeleton contracts checked against ${designImages.length} design image(s).`);
+const legacySuffix = legacyDesignImages.length > 0 ? ` plus ${legacyDesignImages.length} legacy reference image(s)` : '';
+console.log(`[design-reference-audit] PASS: LOGIN_01, HOME_01, and secondary page skeleton contracts checked against ${annotatedDesignImages.length}/${expectedAnnotatedPageCount} annotated design page(s)${legacySuffix}.`);

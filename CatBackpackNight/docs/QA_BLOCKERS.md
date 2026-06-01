@@ -2,7 +2,31 @@
 
 ## P0 Blockers
 
-- None active after the 2026-05-30 Browser Preview route pass and preview-cache guard refresh.
+- Launch acceptance matrix is not complete.
+  - Evidence: `docs/RELEASE_ACCEPTANCE_MATRIX.md` still marks P0 items as `BLOCKED`, `UNVERIFIED`, or `PARTIAL`.
+  - Owner Agent: QAReleaseAgent
+  - Suggested Fix: Drive every P0 row in the release matrix to `PASS` with automated, Cocos, WeChat DevTools, screenshot, or device evidence.
+  - Do Not Modify By QA: acceptance IDs or launch criteria just to reduce scope.
+- The 22-page AI annotated design set has not been signed off against the implemented UI.
+  - Evidence: `设计图_AI全页面2K标注版` contains the current 22-page target, but the older design audit only counted the legacy 12-image design directory.
+  - Owner Agent: UIUXAgent
+  - Suggested Fix: Maintain `docs/UI_DESIGN_PARITY_MATRIX.md`, compare every implemented screen against its matching design PNG, and keep the design audit locked to all 22 annotated references.
+  - Do Not Modify By QA: visual requirements without a new design reference.
+- WeChat DevTools import and preview evidence is missing.
+  - Evidence: no current `build/wechatgame` import screenshot, DevTools console log, or one-loop preview record is stored in the QA docs.
+  - Owner Agent: PlatformAgent
+  - Suggested Fix: Build the WeChat Mini Game target, import it into WeChat DevTools with the configured AppID or test AppID, then record screenshots/logs in `docs/QA_REPORT.md`.
+  - Do Not Modify By QA: game logic or save data schemas unless DevTools exposes a concrete runtime error.
+- Full launch gameplay loop is not proven through UI and WeChat runtime.
+  - Evidence: battle, reward, backpack merge, shop, pet, talent, task, achievement, mail, settings, and save/restore flows have static/self-check evidence, but several P0 acceptance rows still need runtime proof.
+  - Owner Agent: CoreGameplayAgent/QAReleaseAgent
+  - Suggested Fix: Record a complete first-session loop from login agreement through home, battle prepare, battle, settlement claim, growth spend, task/mail claim, settings persistence, restart, and recovery.
+  - Do Not Modify By QA: balancing constants unless a reproducible launch-blocking defect requires it.
+- Selected-state UI actions for pet and talent are not launch-grade yet.
+  - Evidence: the release matrix marks pet upgrade/deploy and talent upgrade as still relying on sample IDs or missing selected-state proof.
+  - Owner Agent: CoreGameplayAgent/UIUXAgent
+  - Suggested Fix: Bind upgrade/deploy/reset actions to the currently selected pet or talent node and verify insufficient-resource, prerequisite, max-level, and power-change states.
+  - Do Not Modify By QA: save migrations unless the selected-state binding exposes a schema issue.
 
 ## P1 Issues
 
