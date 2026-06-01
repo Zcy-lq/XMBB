@@ -48,7 +48,7 @@ Result:
 
 Still BLOCKED for launch:
 
-- WeChat DevTools import/preview is not verified. `open`, `islogin`, and `quit` CLI commands repeatedly timed out; direct IDE launch works, but the CLI local communication did not produce an import or preview result.
+- WeChat DevTools import/preview is not verified. `open`, `islogin`, `quit`, `auto --trust-project`, and `login --qr-output` CLI commands repeatedly timed out; direct IDE launch works, but the CLI local communication did not produce a QR image, import result, or preview result.
 - Real-device performance, touch, memory, and storage restart evidence is still required.
 
 ### 2026-05-30 Commercial UI Route Polish Pass
