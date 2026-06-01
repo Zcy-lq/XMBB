@@ -259,6 +259,21 @@ export class GameLogicFacade {
     });
   }
 
+  public deleteMail(mailId: string): GameLogicResult<{ deleted: string[] }> {
+    return this.commit('mail-delete-one', GameEvents.SaveChanged, (save) => {
+      const mail = save.mails.find((row) => row.id === mailId);
+      if (!mail) {
+        return failure('config_missing', `missing mail: ${mailId}`);
+      }
+      if (!mail.claimed && mail.attachments.length > 0) {
+        return failure('not_ready', 'mail has unclaimed attachments');
+      }
+
+      save.mails = save.mails.filter((row) => row.id !== mailId);
+      return success({ deleted: [mailId] }, 'mail deleted');
+    });
+  }
+
   private getPreparedSnapshot(): GameSaveData {
     const save = this.saveManager.getSnapshot();
     ensureProgressRuntimeFields(save);

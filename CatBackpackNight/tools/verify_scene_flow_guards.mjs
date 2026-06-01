@@ -905,6 +905,7 @@ if (failures.length === 0) {
     'gameLogic.claimActivityChest',
     'gameLogic.claimMail',
     'gameLogic.claimAllMails',
+    'gameLogic.deleteMail',
     'gameLogic.claimAchievement',
     'gameLogic.upgradePet',
     'gameLogic.deployPet',
@@ -926,6 +927,7 @@ if (failures.length === 0) {
     'private claimAchievementFromButton',
     'private claimMailFromButton',
     'private buyShopGoodsFromButton',
+    'private getSelectedMail',
     'private getSelectedPetId',
     'private getSelectedTalentNodeId',
     'private toggleSettingFromButton',
@@ -947,13 +949,34 @@ if (failures.length === 0) {
   }
 
   for (const selectedActionToken of [
+    'Button_MailOpen_',
+    'this.getSelectedMail()',
     'Button_PetSelect_',
     'Button_TalentSelect_',
     'this.getSelectedPetId()',
     'this.getSelectedTalentNodeId()',
   ]) {
     if (!uiBuilder.includes(selectedActionToken)) {
-      fail(`Launch-critical pet/talent UI must expose selected-state action flow: ${selectedActionToken}`);
+      fail(`Launch-critical selected-state UI must expose selected action flow: ${selectedActionToken}`);
+    }
+  }
+
+  const buildMailDetailStart = uiBuilder.indexOf('private buildMailDetail()');
+  const buildMailDetailEnd = uiBuilder.indexOf('\n\n  private buildPolicyModal', buildMailDetailStart);
+  const buildMailDetailBody = buildMailDetailStart >= 0 && buildMailDetailEnd > buildMailDetailStart
+    ? uiBuilder.slice(buildMailDetailStart, buildMailDetailEnd)
+    : '';
+  if (!buildMailDetailBody.includes('const selectedMail = this.getSelectedMail()')) {
+    fail('Mail detail must render the selected mail instead of fixed sample content.');
+  }
+  for (const forbiddenMailDetailLiteral of [
+    "value: '守夜补给已送达'",
+    "value: '发件人：营地管家",
+    "value: '亲爱的守夜者",
+    "'+300', 'rt_icon_gold'",
+  ]) {
+    if (buildMailDetailBody.includes(forbiddenMailDetailLiteral)) {
+      fail(`Mail detail still contains fixed sample content instead of selected mail data: ${forbiddenMailDetailLiteral}`);
     }
   }
 

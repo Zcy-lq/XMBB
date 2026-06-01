@@ -16,7 +16,7 @@ import { RedDotManager } from '../core/RedDotManager';
 import { SaveManager } from '../core/SaveManager';
 import { SceneRouter } from '../core/SceneRouter';
 import { eventBus } from '../core/EventBus';
-import { RouteId, SettingsSave } from '../data/GameTypes';
+import { MailSave, RewardPayload, RouteId, SettingsSave } from '../data/GameTypes';
 import { GameEvents } from '../game/GameEvents';
 import { gameLogic } from '../game/GameLogicFacade';
 import { BattleSessionState } from '../game/BattleSessionModel';
@@ -106,6 +106,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
   private battleState: BattleSessionState | null = null;
   private battleLiveLayer: Node | null = null;
   private renderRootOverride: Node | null = null;
+  private selectedMailId: string | null = null;
   private selectedPetId: string | null = null;
   private selectedTalentNodeId: string | null = null;
 
@@ -558,6 +559,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
 
   private buildMail(): void {
     const save = gameLogic.getSnapshot().save;
+    const selectedMailId = this.getSelectedMail()?.id ?? null;
     this.addNightBackground('Bg_Mail');
     this.addCommercialRouteBackdrop('Mail');
     this.addWoodHeader('邮件');
@@ -570,10 +572,13 @@ export class UISkeletonBuilder extends BaseUIComponent {
     mails.forEach((mail, index) => {
       const y = 328 - index * 118;
       const hasReward = mail.attachments.length > 0 && !mail.claimed;
-      this.addRect({ name: `Mail_Row_${mail.id}`, width: 638, height: 96, x: 0, y, fill: new Color(255, 234, 191, 255), border: new Color(146, 91, 48, 255), borderSize: 4 });
+      const selected = mail.id === selectedMailId;
+      this.addRect({ name: `Mail_Row_${mail.id}`, width: 638, height: 96, x: 0, y, fill: new Color(255, 234, 191, 255), border: selected ? UIColors.actionBlue : new Color(146, 91, 48, 255), borderSize: selected ? 6 : 4 });
       this.addRect({ name: `Mail_Icon_${mail.id}`, width: 58, height: 58, x: -286, y, fill: hasReward ? UIColors.buttonGold : UIColors.parchment, border: UIColors.woodStroke, borderSize: 3, label: hasReward ? '!' : '', fontSize: 22 });
       this.addText({ name: `Mail_Title_${mail.id}`, value: mail.title, x: -60, y: y + 18, width: 350, height: 34, fontSize: 27, color: UIColors.textBrown, align: 'left' });
       this.addText({ name: `Mail_State_${mail.id}`, value: hasReward ? '附件待领取' : mail.read ? '已读' : '未读', x: -116, y: y - 18, width: 238, height: 28, fontSize: 21, color: new Color(94, 61, 38, 255), align: 'left' });
+      const openHit = this.addRect({ name: `Button_MailOpen_${mail.id}`, width: 496, height: 96, x: -70, y, fill: new Color(0, 0, 0, 0) });
+      this.addButtonBehavior(openHit, `Button_MailOpen_${mail.id}`);
       this.addButton(`Button_MailClaim_${mail.id}`, hasReward ? '领取' : '查看', 260, y, 116, 58, hasReward ? UIColors.buttonGold : UIColors.woodLight, UIColors.woodStroke, 24);
     });
     this.addRect({ name: 'Mail_EmptyStatePanel', width: 638, height: 116, x: 0, y: -292, fill: new Color(255, 234, 191, 246), border: new Color(188, 134, 76, 255), borderSize: 4 });
@@ -836,6 +841,10 @@ export class UISkeletonBuilder extends BaseUIComponent {
   }
 
   private buildMailDetail(): void {
+    const selectedMail = this.getSelectedMail();
+    const attachments = selectedMail?.attachments ?? [];
+    const hasClaimableAttachment = Boolean(selectedMail && attachments.length > 0 && !selectedMail.claimed);
+    const canDelete = Boolean(selectedMail && (selectedMail.claimed || attachments.length === 0));
     this.buildMail();
     this.addRect({ name: 'MailDetail_MaskLayer', width: DESIGN_WIDTH, height: DESIGN_HEIGHT, x: 0, y: 0, fill: new Color(0, 0, 0, 146) });
     this.addRect({ name: 'MailDetail_Drawer', width: 520, height: 874, x: 84, y: -10, fill: new Color(247, 225, 188, 252), border: UIColors.woodStroke, borderSize: 9 });
@@ -843,19 +852,24 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addButton('Button_MailDetailClose', '×', 324, 396, 70, 70, UIColors.wood, UIColors.woodStroke, 33);
     this.addRect({ name: 'MailDetail_InfoPanel', width: 430, height: 128, x: 84, y: 278, fill: UIColors.parchment, border: new Color(146, 91, 48, 255), borderSize: 5 });
     this.addRect({ name: 'MailDetail_EnvelopeIcon', width: 72, height: 72, x: -92, y: 278, fill: Color.WHITE, border: UIColors.woodStroke, borderSize: 3 });
-    this.addText({ name: 'MailDetail_Title', value: '守夜补给已送达', x: 116, y: 306, width: 272, height: 36, fontSize: 30, color: UIColors.textBrown, align: 'left' });
-    this.addText({ name: 'MailDetail_Meta', value: '发件人：营地管家\n时间：2026-05-31 12:00', x: 116, y: 260, width: 272, height: 54, fontSize: 21, color: new Color(94, 61, 38, 255), align: 'left', wrap: true });
+    this.addText({ name: 'MailDetail_Title', value: selectedMail?.title ?? '暂无邮件', x: 116, y: 306, width: 272, height: 36, fontSize: 30, color: UIColors.textBrown, align: 'left' });
+    this.addText({ name: 'MailDetail_Meta', value: selectedMail ? `发件人：营地管家\n状态：${selectedMail.claimed ? '已处理' : selectedMail.read ? '已读' : '未读'}` : '发件人：营地管家\n状态：无可查看邮件', x: 116, y: 260, width: 272, height: 54, fontSize: 21, color: new Color(94, 61, 38, 255), align: 'left', wrap: true });
     this.addRect({ name: 'MailDetail_ContentPanel', width: 430, height: 230, x: 84, y: 86, fill: new Color(255, 240, 206, 248), border: new Color(188, 134, 76, 255), borderSize: 4 });
-    this.addText({ name: 'MailDetail_Content', value: '亲爱的守夜者，\n这是您今日的守夜补给，请收下这份小小的心意。希望能帮助您在夜晚变得更强大！\n今晚，继续加油守护营地吧！', x: 84, y: 90, width: 364, height: 178, fontSize: 24, color: UIColors.textBrown, align: 'left', wrap: true });
+    this.addText({ name: 'MailDetail_Content', value: selectedMail?.body ?? '当前没有可查看的邮件。完成任务或参与活动后，奖励和公告会显示在这里。', x: 84, y: 90, width: 364, height: 178, fontSize: 24, color: UIColors.textBrown, align: 'left', wrap: true });
     this.addRect({ name: 'MailDetail_RewardContainer', width: 430, height: 172, x: 84, y: -160, fill: new Color(255, 240, 206, 248), border: UIColors.warningRed, borderSize: 4 });
     this.addText({ name: 'MailDetail_RewardTitle', value: '附件奖励', x: 84, y: -80, width: 180, height: 30, fontSize: 25, color: UIColors.textBrown });
-    this.addCompactRewardCard('MailDetail_RewardCard_Gold', -40, -164, '金币', '+300', 'rt_icon_gold');
-    this.addCompactRewardCard('MailDetail_RewardCard_Gem', 84, -164, '钻石', '+20', 'rt_icon_purple_gem');
-    this.addCompactRewardCard('MailDetail_RewardCard_Chest', 208, -164, '宝箱', 'x1', 'rt_item_chest');
-    this.addButton('Button_MailDetailClaim', '领取附件', -42, -356, 174, 74, UIColors.successGreen, UIColors.woodStroke, 28);
+    if (attachments.length > 0) {
+      attachments.slice(0, 3).forEach((reward, index) => {
+        const display = this.getRewardDisplay(reward);
+        this.addCompactRewardCard(`MailDetail_RewardCard_${index}_${this.normalizeNodeKey(reward.id)}`, -40 + index * 124, -164, display.title, display.amount, display.spriteKey);
+      });
+    } else {
+      this.addText({ name: 'MailDetail_NoAttachment', value: '无附件', x: 84, y: -164, width: 220, height: 40, fontSize: 28, color: UIColors.textBrown });
+    }
+    this.addButton('Button_MailDetailClaim', selectedMail?.claimed ? '已处理' : hasClaimableAttachment ? '领取附件' : '标为已读', -42, -356, 174, 74, selectedMail?.claimed ? UIColors.woodLight : UIColors.successGreen, UIColors.woodStroke, 28);
     this.addButton('Button_MailDetailReply', '回复/查看公告', 130, -356, 190, 74, UIColors.actionBlue, UIColors.woodStroke, 24);
-    this.addButton('Button_MailDetailDelete', '删除', 292, -356, 126, 74, UIColors.warningRed, UIColors.woodStroke, 27);
-    this.addText({ name: 'MailDetail_FooterTip', value: '领取后邮件将自动删除', x: 84, y: -418, width: 360, height: 28, fontSize: 20, color: UIColors.highlightGold, outline: true });
+    this.addButton('Button_MailDetailDelete', canDelete ? '删除' : '先领取', 292, -356, 126, 74, canDelete ? UIColors.warningRed : UIColors.woodLight, UIColors.woodStroke, 27);
+    this.addText({ name: 'MailDetail_FooterTip', value: canDelete ? '已处理或无附件邮件可以删除' : '含未领取附件，先领取后再删除', x: 84, y: -418, width: 360, height: 28, fontSize: 20, color: UIColors.highlightGold, outline: true });
   }
 
   private buildPolicyModal(): void {
@@ -1088,6 +1102,34 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addText({ name: `${name}_Title`, value: title, x, y: y + 56, width: 112, height: 28, fontSize: 22, color: UIColors.textBrown });
     this.addRect({ name: `${name}_${spriteKey}`, width: 72, height: 72, x, y: y + 6, fill: Color.WHITE });
     this.addText({ name: `${name}_Amount`, value: amount, x, y: y - 58, width: 110, height: 28, fontSize: 23, color: new Color(118, 70, 34, 255), outline: false });
+  }
+
+  private getRewardDisplay(reward: RewardPayload): { title: string; amount: string; spriteKey: RuntimeSpriteAssetKey } {
+    if (reward.kind === 'currency') {
+      const currency: Partial<Record<string, { title: string; spriteKey: RuntimeSpriteAssetKey }>> = {
+        gold: { title: '金币', spriteKey: 'rt_icon_gold' },
+        purpleGem: { title: '钻石', spriteKey: 'rt_icon_purple_gem' },
+        blueGem: { title: '蓝宝石', spriteKey: 'rt_icon_blue_gem' },
+        energy: { title: '体力', spriteKey: 'rt_icon_energy' },
+        pawCoin: { title: '爪币', spriteKey: 'rt_icon_paw_coin' },
+      };
+      const display = currency[reward.id] ?? { title: reward.id, spriteKey: 'rt_icon_gold' as RuntimeSpriteAssetKey };
+      return { ...display, amount: `+${reward.amount}` };
+    }
+
+    if (reward.kind === 'weapon') {
+      return { title: '武器', amount: `Lv.${reward.level ?? 1} x${reward.amount}`, spriteKey: 'rt_item_weapon_fishbone_bow' };
+    }
+
+    if (reward.kind === 'petMaterial') {
+      return { title: '宠物粮', amount: `x${reward.amount}`, spriteKey: 'rt_item_lantern' };
+    }
+
+    if (reward.kind === 'talentPoint') {
+      return { title: '天赋点', amount: `+${reward.amount}`, spriteKey: 'rt_item_scroll' };
+    }
+
+    return { title: this.getItemDisplayName(reward.id), amount: `x${reward.amount}`, spriteKey: reward.id.includes('chest') ? 'rt_item_chest' : 'rt_item_weapon_chest' };
   }
 
   private addSuggestionCard(name: string, x: number, y: number, title: string, desc: string, spriteKey: RuntimeSpriteAssetKey): void {
@@ -2062,6 +2104,48 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return this.reportActionResult(gameLogic.claimAllMails(), '所有可领取邮件附件已入账');
     }
 
+    if (name.includes('Button_MailDeleteAll')) {
+      return this.reportActionResult(gameLogic.deleteClaimedAndEmptyMails(), '已删除可清理邮件');
+    }
+
+    if (name.includes('Button_MailOpen_')) {
+      const mailId = name.replace('Button_MailOpen_', '');
+      return this.openMailDetail(mailId);
+    }
+
+    if (name.includes('Button_MailDetailClaim')) {
+      const mail = this.getSelectedMail();
+      if (!mail) {
+        this.showToast('暂无可处理邮件');
+        return true;
+      }
+
+      return this.reportActionResult(gameLogic.claimMail(mail.id), mail.attachments.length > 0 ? '邮件附件已领取' : '邮件已标为已读');
+    }
+
+    if (name.includes('Button_MailDetailDelete')) {
+      const mail = this.getSelectedMail();
+      if (!mail) {
+        this.showToast('暂无可删除邮件');
+        return true;
+      }
+
+      const result = gameLogic.deleteMail(mail.id);
+      if (result.ok) {
+        this.selectedMailId = null;
+        this.showToast('邮件已删除');
+        void SceneRouter.instance.go('mail');
+        return true;
+      }
+
+      return this.reportActionResult(result, '邮件已删除');
+    }
+
+    if (name.includes('Button_MailDetailReply')) {
+      this.showToast('公告详情已展示，客服回复入口待平台接入');
+      return true;
+    }
+
     if (name.includes('Button_MailClaim_')) {
       return this.claimMailFromButton(name);
     }
@@ -2179,6 +2263,26 @@ export class UISkeletonBuilder extends BaseUIComponent {
     return true;
   }
 
+  private openMailDetail(mailId: string): boolean {
+    const mail = gameLogic.getSnapshot().save.mails.find((row) => row.id === mailId);
+    if (!mail) {
+      this.showToast('邮件不存在或已过期');
+      return true;
+    }
+
+    this.selectedMailId = mailId;
+    void SceneRouter.instance.go('mailDetail');
+    return true;
+  }
+
+  private getSelectedMail(): MailSave | null {
+    const save = gameLogic.getSnapshot().save;
+    const selected = this.selectedMailId ? save.mails.find((mail) => mail.id === this.selectedMailId) : undefined;
+    const fallback = selected ?? save.mails.find((mail) => !mail.claimed) ?? save.mails[0];
+    this.selectedMailId = fallback?.id ?? null;
+    return fallback ?? null;
+  }
+
   private getSelectedPetId(): string | null {
     const save = gameLogic.getSnapshot().save;
     const selected = this.selectedPetId ? save.pets.find((pet) => pet.id === this.selectedPetId) : undefined;
@@ -2255,6 +2359,18 @@ export class UISkeletonBuilder extends BaseUIComponent {
 
   private claimMailFromButton(name: string): boolean {
     const mailId = name.replace('Button_MailClaim_', '');
+    const mail = gameLogic.getSnapshot().save.mails.find((row) => row.id === mailId);
+    if (!mail) {
+      this.showToast('邮件不存在或已过期');
+      return true;
+    }
+
+    this.selectedMailId = mailId;
+    if (mail.claimed || mail.attachments.length === 0) {
+      void SceneRouter.instance.go('mailDetail');
+      return true;
+    }
+
     return this.reportActionResult(gameLogic.claimMail(mailId), '邮件附件已领取');
   }
 

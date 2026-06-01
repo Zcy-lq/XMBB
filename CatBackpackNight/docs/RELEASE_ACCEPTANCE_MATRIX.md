@@ -72,11 +72,11 @@ Status values:
 | AC-104 | P1 | Daily refresh | UNVERIFIED | Time manager/save fields exist | CoreGameplayAgent | Simulate cross-day reset |
 | AC-105 | P0 | Achievement claim | PARTIAL | Achievement claim system exists | QAReleaseAgent | Verify one achievement reward |
 | AC-106 | P1 | Claim all achievements | PARTIAL | `claimAllAchievements` exists | QAReleaseAgent | Verify multi-claim idempotency |
-| AC-110 | P0 | Mail opens | PARTIAL | Mail page/detail route exists | QAReleaseAgent | Verify list and detail drawer |
-| AC-111 | P0 | Mail attachment claim | PARTIAL | `claimMail` exists | QAReleaseAgent | Verify single attachment grant |
+| AC-110 | P0 | Mail opens | PARTIAL | Mail list/detail selected-state binding added; detail renders selected mail data | QAReleaseAgent | Verify list and detail drawer in Cocos/WeChat |
+| AC-111 | P0 | Mail attachment claim | PARTIAL | Mail list/detail claim buttons use selected mail id | QAReleaseAgent | Verify single attachment grant and read-only mail path |
 | AC-112 | P0 | Mail duplicate prevention | PARTIAL | Claimed mail blocks repeat | QAReleaseAgent | Verify fast-click path |
 | AC-113 | P1 | Claim all mails | PARTIAL | `claimAllMails` exists | QAReleaseAgent | Verify multiple attachments grant once |
-| AC-114 | P1 | Delete all mails | PARTIAL | `deleteClaimedAndEmptyMails` exists; UI binding needs proof | QAReleaseAgent | Verify only safe mails delete |
+| AC-114 | P1 | Delete all mails | PARTIAL | Delete-all and selected detail delete are bound; unclaimed attachments block delete | QAReleaseAgent | Verify only safe mails delete |
 | AC-115 | P1 | Mail red dot | UNVERIFIED | Red-dot system exists | UIUXAgent | Verify red dot before/after claim |
 | AC-120 | P0 | Settings save | PARTIAL | Settings toggle updates save | QAReleaseAgent | Restart after toggles |
 | AC-121 | P1 | Policy entry | PARTIAL | Settings privacy route exists | ComplianceService | Verify agreement/privacy content and access |
