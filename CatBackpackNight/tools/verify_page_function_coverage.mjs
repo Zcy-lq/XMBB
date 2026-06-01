@@ -110,7 +110,7 @@ const pageContracts = {
   achievement: ['Button_AchievementClaim_', 'Button_AchievementClaimAll', 'gameLogic.claimAchievement', 'gameLogic.claimAllAchievements'],
   mail: ['Button_MailOpen_', 'Button_MailClaim_', 'Button_MailClaimAll', 'Button_MailDeleteAll', 'gameLogic.claimAllMails'],
   mailDetail: ['Button_MailDetailClaim', 'Button_MailDetailDelete', 'Button_MailDetailReply', 'getSelectedMail'],
-  settings: ['Button_Settings_Privacy', 'Button_SettingsLogout', 'toggleSettingFromButton', 'SaveManager.instance.reset()'],
+  settings: ['Button_Settings_Privacy', 'Settings_VersionPanel', 'versionConfig.appVersion', 'Button_SettingsLogout', 'toggleSettingFromButton', 'SaveManager.instance.reset()'],
   policyModal: ['Policy_ScrollTextArea', 'Button_PolicyAgree', 'Button_PolicyDisagree', 'Button_PolicyClose'],
   confirmModal: ['Confirm_Modal', 'Button_ConfirmCancel', 'Button_ConfirmOk', 'Button_ConfirmClose'],
   toastModal: ['ToastCard_Info', 'ToastCard_Success', 'ToastCard_Warning', 'ToastCard_Error'],

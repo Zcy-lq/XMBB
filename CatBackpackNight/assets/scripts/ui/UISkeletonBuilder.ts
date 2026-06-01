@@ -16,6 +16,7 @@ import { RedDotManager } from '../core/RedDotManager';
 import { SaveManager } from '../core/SaveManager';
 import { SceneRouter } from '../core/SceneRouter';
 import { eventBus } from '../core/EventBus';
+import versionConfig from '../../configs/version.json';
 import { MailSave, RewardPayload, RouteId, SettingsSave } from '../data/GameTypes';
 import { GameEvents } from '../game/GameEvents';
 import { gameLogic } from '../game/GameLogicFacade';
@@ -836,7 +837,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addSettingsRow('PowerSave', '省电模式', settings.powerSavingEnabled ? '开启' : '关闭', -76);
     this.addSettingsRow('Privacy', '隐私协议', '查看', -192);
     this.addSettingsRow('Service', '客服与反馈', '联系客服', -308);
-    this.addRect({ name: 'Settings_VersionPanel', width: 620, height: 54, x: 0, y: -404, fill: UIColors.wood, border: UIColors.woodStroke, borderSize: 4, label: '当前版本    V1.0.0', fontSize: 24, textColor: UIColors.whiteText, outline: true });
+    this.addRect({ name: 'Settings_VersionPanel', width: 620, height: 54, x: 0, y: -404, fill: UIColors.wood, border: UIColors.woodStroke, borderSize: 4, label: `当前版本    V${versionConfig.appVersion}`, fontSize: 24, textColor: UIColors.whiteText, outline: true });
     this.addButton('Button_SettingsLogout', '清理缓存并重新登录', 0, -492, 440, 76, UIColors.actionBlue, UIColors.woodStroke, 28);
     this.addRect({ name: 'Settings_SafeNotice', width: 620, height: 54, x: 0, y: -584, fill: new Color(12, 18, 18, 180), border: new Color(220, 220, 220, 110), borderSize: 3, label: '账户安全检测中...', fontSize: 22, textColor: UIColors.whiteText, outline: true });
   }

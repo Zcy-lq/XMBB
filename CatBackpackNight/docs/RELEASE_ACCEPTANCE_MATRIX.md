@@ -80,7 +80,7 @@ Status values:
 | AC-115 | P1 | Mail red dot | PARTIAL | `verify_full_loop_acceptance` covers `mail_red_dot_count_drops_after_claim_all`; unread announcement red dot remains by design | UIUXAgent | Verify visual red-dot count/state in Cocos/WeChat |
 | AC-120 | P0 | Settings save | PARTIAL | `verify_full_loop_acceptance` covers `settings_persist_after_restart`; settings toggle updates save | QAReleaseAgent | Restart after toggles in Cocos/WeChat |
 | AC-121 | P1 | Policy entry | PARTIAL | Settings privacy route exists | ComplianceService | Verify agreement/privacy content and access |
-| AC-122 | P1 | Version display | PARTIAL | Settings version node exists | QAReleaseAgent | Verify version matches config |
+| AC-122 | P1 | Version display | PARTIAL | `verify_page_function_coverage` requires `Settings_VersionPanel` to use `versionConfig.appVersion` from `assets/configs/version.json` | QAReleaseAgent | Verify version text visually in Cocos/WeChat |
 | AC-123 | P0 | Save restore | PARTIAL | `verify_full_loop_acceptance` covers `restart_restore_save`; real Cocos/WeChat storage restart evidence missing | QAReleaseAgent | Restart after reward/merge/pet/talent changes |
 | AC-124 | P0 | Crash/restart safety | PARTIAL | `verify_scene_flow_guards` now enforces clone-before-update and replace-only-after-success in `GameLogicFacade.commit`; real crash/restart proof is missing | QAReleaseAgent/CoreGameplayAgent | Force restart during battle/claim and inspect save |
 | AC-130 | P0 | Non-negative currency | PARTIAL | `verify_full_loop_acceptance` covers `economy_non_negative`, open-chest cost safety, shop purchase limits, and energy cap behavior; self-check covers no negative currency | CoreGameplayAgent | Stress purchase/upgrade/open chest through UI |
