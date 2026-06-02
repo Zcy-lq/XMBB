@@ -13,6 +13,9 @@ export function refreshDailySaveIfNeeded(save: GameSaveData, now = new Date()): 
     adWatchCount: 0,
     shopRefreshCount: 0,
     activityClaimedIds: [],
+    exploreClaimed: false,
+    guildCheckInClaimed: false,
+    guildHelpClaimed: false,
     shopPurchaseCounts: {},
     adPlacementCounts: {},
   };

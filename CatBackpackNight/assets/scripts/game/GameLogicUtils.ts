@@ -12,8 +12,13 @@ export function cloneSave(save: GameSaveData): GameSaveData {
 export function ensureProgressRuntimeFields(save: GameSaveData, now = Date.now()): void {
   save.progress.claimedRewardIds ??= [];
   save.progress.lastEnergyRecoverAt ??= now;
+  save.daily.exploreClaimed ??= false;
+  save.daily.guildCheckInClaimed ??= false;
+  save.daily.guildHelpClaimed ??= false;
   save.daily.shopPurchaseCounts ??= {};
   save.daily.adPlacementCounts ??= {};
+  save.stats.exploreCount ??= 0;
+  save.stats.guildContribution ??= 0;
 }
 
 export function getCurrency(save: GameSaveData, currency: CurrencyKey): number {

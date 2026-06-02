@@ -18,7 +18,7 @@ import { cloneSave, ensureProgressRuntimeFields } from './GameLogicUtils';
 import { GameEvents, GameEventName } from './GameEvents';
 import { InventorySystem, MergeResult, OpenChestResult } from './InventorySystem';
 import { MailSystem } from './MailSystem';
-import { ClaimResult, PetUpgradeResult, ProgressionSystem, TalentUpgradeResult } from './ProgressionSystem';
+import { ClaimResult, ExploreClaimResult, GuildClaimResult, PetUpgradeResult, ProgressionSystem, StageSelectResult, TalentUpgradeResult } from './ProgressionSystem';
 import { AdCompletionState, ShopPurchaseResult, ShopSystem, ShopRefreshResult } from './ShopSystem';
 
 export interface BattlePreparationInfo {
@@ -209,6 +209,22 @@ export class GameLogicFacade {
 
   public claimActivityChest(chestId: string): GameLogicResult<ClaimResult> {
     return this.commit('activity-claim', GameEvents.TaskClaim, (save) => this.progression.claimActivityChest(save, chestId));
+  }
+
+  public claimExploreReward(): GameLogicResult<ExploreClaimResult> {
+    return this.commit('explore-claim', GameEvents.ExploreClaim, (save) => this.progression.claimExploreReward(save));
+  }
+
+  public claimGuildCheckIn(): GameLogicResult<GuildClaimResult> {
+    return this.commit('guild-check-in', GameEvents.GuildClaim, (save) => this.progression.claimGuildCheckIn(save));
+  }
+
+  public claimGuildHelp(): GameLogicResult<GuildClaimResult> {
+    return this.commit('guild-help', GameEvents.GuildClaim, (save) => this.progression.claimGuildHelp(save));
+  }
+
+  public selectBattleWave(delta: number): GameLogicResult<StageSelectResult> {
+    return this.commit('battle-wave-select', GameEvents.BattlePrepareOpen, (save) => this.progression.selectBattleWave(save, delta));
   }
 
   public claimAchievement(achievementId: string): GameLogicResult<ClaimResult> {

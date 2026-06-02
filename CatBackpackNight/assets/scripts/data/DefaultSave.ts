@@ -110,6 +110,9 @@ export function createDefaultSave(now = Date.now()): GameSaveData {
       adWatchCount: 0,
       shopRefreshCount: 0,
       activityClaimedIds: [],
+      exploreClaimed: false,
+      guildCheckInClaimed: false,
+      guildHelpClaimed: false,
       shopPurchaseCounts: {},
       adPlacementCounts: {},
     },
@@ -118,6 +121,8 @@ export function createDefaultSave(now = Date.now()): GameSaveData {
       mergeCount: 0,
       monsterKillCount: 0,
       adWatchCount: 0,
+      exploreCount: 0,
+      guildContribution: 0,
     },
   };
 }

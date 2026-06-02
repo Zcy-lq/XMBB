@@ -115,6 +115,9 @@ export interface DailySave {
   adWatchCount: number;
   shopRefreshCount: number;
   activityClaimedIds: string[];
+  exploreClaimed: boolean;
+  guildCheckInClaimed: boolean;
+  guildHelpClaimed: boolean;
   shopPurchaseCounts?: Record<string, number>;
   adPlacementCounts?: Record<string, number>;
 }
@@ -124,6 +127,8 @@ export interface StatsSave {
   mergeCount: number;
   monsterKillCount: number;
   adWatchCount: number;
+  exploreCount: number;
+  guildContribution: number;
 }
 
 export interface GameSaveData {

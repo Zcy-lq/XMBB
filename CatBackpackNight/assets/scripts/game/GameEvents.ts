@@ -30,10 +30,11 @@ export const GameEvents = {
   TalentUpgrade: 'talent_upgrade',
   TalentReset: 'talent_reset',
   TaskClaim: 'task_claim',
+  ExploreClaim: 'explore_claim',
+  GuildClaim: 'guild_claim',
   AchievementClaim: 'achievement_claim',
   MailClaim: 'mail_claim',
   SettingChange: 'setting_change',
 } as const;
 
 export type GameEventName = (typeof GameEvents)[keyof typeof GameEvents];
-

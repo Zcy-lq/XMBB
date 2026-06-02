@@ -628,6 +628,102 @@ check(
   `once=${recoveredOnce}, cap=${recoveredToCap}, energy=${energySave.currencies.energy}`,
 );
 
+const exploreSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(exploreSave);
+const exploreBefore = cloneSave(exploreSave);
+const exploreMaterialBefore = exploreBefore.inventory.find((item) => item.itemId === 'pet_material_common')?.count ?? 0;
+const exploreClaim = progression.claimExploreReward(exploreSave);
+const exploreAfter = cloneSave(exploreSave);
+const exploreMaterialAfter = exploreAfter.inventory.find((item) => item.itemId === 'pet_material_common')?.count ?? 0;
+check(
+  'explore_claim_consumes_energy_and_grants_rewards',
+  exploreClaim.ok &&
+    exploreAfter.daily.exploreClaimed === true &&
+    exploreAfter.currencies.energy === exploreBefore.currencies.energy - 3 &&
+    exploreAfter.currencies.gold > exploreBefore.currencies.gold &&
+    exploreMaterialAfter > exploreMaterialBefore &&
+    exploreAfter.stats.exploreCount === 1,
+  exploreClaim.message,
+);
+const exploreDuplicateBefore = JSON.stringify(exploreSave);
+const exploreDuplicate = progression.claimExploreReward(exploreSave);
+check(
+  'explore_daily_duplicate_blocked_no_mutation',
+  !exploreDuplicate.ok && exploreDuplicate.reason === 'already_claimed' && JSON.stringify(exploreSave) === exploreDuplicateBefore,
+  exploreDuplicate.message,
+);
+const exploreNoEnergySave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(exploreNoEnergySave);
+exploreNoEnergySave.currencies.energy = 0;
+const exploreNoEnergyBefore = JSON.stringify(exploreNoEnergySave);
+const exploreNoEnergy = progression.claimExploreReward(exploreNoEnergySave);
+check(
+  'explore_insufficient_energy_no_mutation',
+  !exploreNoEnergy.ok && exploreNoEnergy.reason === 'insufficient_currency' && JSON.stringify(exploreNoEnergySave) === exploreNoEnergyBefore,
+  exploreNoEnergy.message,
+);
+
+const guildSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(guildSave);
+guildSave.currencies.energy = 10;
+const guildBefore = cloneSave(guildSave);
+const guildCheckIn = progression.claimGuildCheckIn(guildSave);
+const guildAfterCheckIn = cloneSave(guildSave);
+check(
+  'guild_check_in_once_grants_reward',
+  guildCheckIn.ok &&
+    guildAfterCheckIn.daily.guildCheckInClaimed === true &&
+    guildAfterCheckIn.currencies.pawCoin > guildBefore.currencies.pawCoin &&
+    guildAfterCheckIn.stats.guildContribution > guildBefore.stats.guildContribution,
+  guildCheckIn.message,
+);
+const guildHelpBefore = cloneSave(guildSave);
+const guildHelp = progression.claimGuildHelp(guildSave);
+const guildAfterHelp = cloneSave(guildSave);
+check(
+  'guild_help_once_grants_reward',
+  guildHelp.ok &&
+    guildAfterHelp.daily.guildHelpClaimed === true &&
+    guildAfterHelp.currencies.energy > guildHelpBefore.currencies.energy &&
+    guildAfterHelp.stats.guildContribution > guildHelpBefore.stats.guildContribution,
+  guildHelp.message,
+);
+const guildDuplicateBefore = JSON.stringify(guildSave);
+const guildCheckInDuplicate = progression.claimGuildCheckIn(guildSave);
+const guildHelpDuplicate = progression.claimGuildHelp(guildSave);
+check(
+  'guild_daily_duplicate_blocked_no_mutation',
+  !guildCheckInDuplicate.ok &&
+    guildCheckInDuplicate.reason === 'already_claimed' &&
+    !guildHelpDuplicate.ok &&
+    guildHelpDuplicate.reason === 'already_claimed' &&
+    JSON.stringify(guildSave) === guildDuplicateBefore,
+  `${guildCheckInDuplicate.message}; ${guildHelpDuplicate.message}`,
+);
+
+const stageSave = createDefaultSave(1710000000000);
+progression.syncConfiguredSaveRows(stageSave);
+stageSave.progress.highestWave = 5;
+stageSave.progress.currentWave = 3;
+const stageNext = progression.selectBattleWave(stageSave, 1);
+const stagePrev = progression.selectBattleWave(stageSave, -1);
+check(
+  'stage_select_within_unlocked_bounds',
+  stageNext.ok &&
+    stageNext.data?.wave === 4 &&
+    stagePrev.ok &&
+    stagePrev.data?.wave === 3 &&
+    stageSave.progress.currentWave === 3,
+  `${stageNext.message}; ${stagePrev.message}`,
+);
+const stageLockedBefore = JSON.stringify(stageSave);
+const stageLocked = progression.selectBattleWave(stageSave, 99);
+check(
+  'stage_select_locked_or_out_of_bounds_no_mutation',
+  !stageLocked.ok && stageLocked.reason === 'not_ready' && JSON.stringify(stageSave) === stageLockedBefore,
+  stageLocked.message,
+);
+
 const dailyRefreshSave = cloneSave(save);
 const nextDay = new Date('2024-03-10T08:00:00');
 dailyRefreshSave.daily.dateKey = '2024-03-09';
@@ -635,6 +731,9 @@ dailyRefreshSave.daily.freeGoldClaimed = true;
 dailyRefreshSave.daily.adWatchCount = 4;
 dailyRefreshSave.daily.shopRefreshCount = 3;
 dailyRefreshSave.daily.activityClaimedIds = ['activity_30'];
+dailyRefreshSave.daily.exploreClaimed = true;
+dailyRefreshSave.daily.guildCheckInClaimed = true;
+dailyRefreshSave.daily.guildHelpClaimed = true;
 dailyRefreshSave.daily.shopPurchaseCounts = { daily_free_gold: 1, daily_pet_food: 3 };
 dailyRefreshSave.daily.adPlacementCounts = { battle_reward_double: 2, shop_refresh: 1 };
 dailyRefreshSave.dailyTasks = dailyRefreshSave.dailyTasks.map((task) => ({ ...task, progress: 999, claimed: true }));
@@ -648,6 +747,9 @@ check(
     dailyRefreshSave.daily.freeGoldClaimed === false &&
     dailyRefreshSave.daily.shopRefreshCount === 0 &&
     dailyRefreshSave.daily.activityClaimedIds.length === 0 &&
+    dailyRefreshSave.daily.exploreClaimed === false &&
+    dailyRefreshSave.daily.guildCheckInClaimed === false &&
+    dailyRefreshSave.daily.guildHelpClaimed === false &&
     Object.keys(dailyRefreshSave.daily.shopPurchaseCounts ?? {}).length === 0 &&
     Object.keys(dailyRefreshSave.daily.adPlacementCounts ?? {}).length === 0 &&
     dailyRefreshSave.dailyTasks.every((task) => !task.claimed && task.progress === (task.id === 'daily_login' ? 1 : 0)),

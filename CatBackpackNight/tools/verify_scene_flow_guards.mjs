@@ -953,6 +953,10 @@ if (failures.length === 0) {
   for (const requiredAction of [
     'gameLogic.claimDailyTask',
     'gameLogic.claimActivityChest',
+    'gameLogic.claimExploreReward',
+    'gameLogic.claimGuildCheckIn',
+    'gameLogic.claimGuildHelp',
+    'gameLogic.selectBattleWave',
     'gameLogic.claimMail',
     'gameLogic.claimAllMails',
     'gameLogic.deleteMail',
@@ -969,6 +973,28 @@ if (failures.length === 0) {
   ]) {
     if (!uiBuilder.includes(requiredAction)) {
       fail(`MVP UI action buttons must call real gameplay/save behavior: ${requiredAction}`);
+    }
+  }
+
+  for (const requiredFacadeAction of [
+    'public claimExploreReward',
+    'public claimGuildCheckIn',
+    'public claimGuildHelp',
+    'public selectBattleWave',
+  ]) {
+    if (!facade.includes(requiredFacadeAction)) {
+      fail(`GameLogicFacade is missing required launch action: ${requiredFacadeAction}`);
+    }
+  }
+
+  for (const forbiddenPlaceholderCopy of [
+    '探索系统暂未开放',
+    '公会签到暂未开放',
+    '公会互助暂未开放',
+    '章节切换暂未开放',
+  ]) {
+    if (uiBuilder.includes(forbiddenPlaceholderCopy)) {
+      fail(`Launch page action still uses placeholder copy: ${forbiddenPlaceholderCopy}`);
     }
   }
 
@@ -1217,6 +1243,14 @@ if (failures.length === 0) {
     'shop_refresh_ad_success_then_daily_limit',
     'shop_refresh_countdown_next_time_is_future',
     'energy_recovery_interval_and_cap',
+    'explore_claim_consumes_energy_and_grants_rewards',
+    'explore_daily_duplicate_blocked_no_mutation',
+    'explore_insufficient_energy_no_mutation',
+    'guild_check_in_once_grants_reward',
+    'guild_help_once_grants_reward',
+    'guild_daily_duplicate_blocked_no_mutation',
+    'stage_select_within_unlocked_bounds',
+    'stage_select_locked_or_out_of_bounds_no_mutation',
     'daily_refresh_resets_tasks_and_limits_once',
     'start_second_battle_after_growth',
     'restart_restore_save',

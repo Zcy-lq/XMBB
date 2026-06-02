@@ -23,6 +23,7 @@ import { MailSave, RewardPayload, RouteId, SettingsSave } from '../data/GameType
 import { GameEvents } from '../game/GameEvents';
 import { gameLogic } from '../game/GameLogicFacade';
 import { BattleSessionState } from '../game/BattleSessionModel';
+import { EXPLORE_ENERGY_COST, EXPLORE_REWARDS, GUILD_CHECK_IN_REWARDS, GUILD_HELP_REWARDS } from '../game/ProgressionSystem';
 import { adService } from '../services/AdService';
 import { AnalyticsService } from '../services/AnalyticsService';
 import { RuntimeSpriteAssets, RuntimeSpriteAssetKey } from './RuntimeSpriteAssets';
@@ -397,6 +398,9 @@ export class UISkeletonBuilder extends BaseUIComponent {
   }
 
   private buildExplore(): void {
+    const save = gameLogic.getSnapshot().save;
+    const claimed = save.daily.exploreClaimed === true;
+    const enoughEnergy = save.currencies.energy >= EXPLORE_ENERGY_COST;
     this.addNightBackground('Bg_Explore');
     this.addCommercialRouteBackdrop('Explore');
     this.addWoodHeader('探索');
@@ -412,11 +416,22 @@ export class UISkeletonBuilder extends BaseUIComponent {
       this.addText({ name: `Explore_Title_${card[0]}`, value: card[1], x: card[3], y: card[4] + 48, width: 230, height: 40, fontSize: 30, color: UIColors.textBrown });
       this.addText({ name: `Explore_State_${card[0]}`, value: card[2], x: card[3], y: card[4] - 18, width: 230, height: 58, fontSize: 23, color: new Color(94, 61, 38, 255), wrap: true });
     });
-    this.addButton('Button_ExploreStart', '前往探索', 0, -430, 360, 88, UIColors.buttonGold, UIColors.woodStroke, 34);
+    this.addRect({ name: 'Explore_RewardPreview', width: 600, height: 104, x: 0, y: -296, fill: new Color(255, 234, 191, 242), border: UIColors.woodStroke, borderSize: 5 });
+    this.addText({ name: 'Explore_EnergyCost', value: `消耗体力 ${EXPLORE_ENERGY_COST}   当前 ${save.currencies.energy}/${gameLogic.repo.configs.levels.battle.energyMax}`, x: 0, y: -238, width: 520, height: 34, fontSize: 24, color: UIColors.highlightGold, outline: true });
+    this.addText({ name: 'Explore_DailyState', value: claimed ? '今日已探索，明天重置' : enoughEnergy ? '今日可探索 1 次' : '体力不足，可稍后恢复', x: 0, y: -278, width: 520, height: 32, fontSize: 23, color: claimed ? UIColors.woodLight : enoughEnergy ? UIColors.successGreen : UIColors.warningRed, outline: true });
+    EXPLORE_REWARDS.forEach((reward, index) => {
+      const display = this.getRewardDisplay(reward);
+      this.addCompactRewardCard(`Explore_Reward_${index}_${this.normalizeNodeKey(reward.id)}`, -82 + index * 164, -336, display.title, display.amount, display.spriteKey);
+    });
+    this.addButton('Button_ExploreStart', claimed ? '今日已探索' : '开始探索', 0, -430, 360, 88, claimed ? UIColors.woodLight : UIColors.buttonGold, UIColors.woodStroke, 34);
     this.addBottomNav('explore');
   }
 
   private buildGuild(): void {
+    const save = gameLogic.getSnapshot().save;
+    const checkInClaimed = save.daily.guildCheckInClaimed === true;
+    const helpClaimed = save.daily.guildHelpClaimed === true;
+    const contribution = save.stats.guildContribution ?? 0;
     this.addNightBackground('Bg_Guild');
     this.addCommercialRouteBackdrop('Guild');
     this.addWoodHeader('公会');
@@ -426,9 +441,12 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addRect({ name: 'Guild_InfoPanel', width: 358, height: 280, x: 146, y: 116, fill: new Color(255, 234, 191, 255), border: UIColors.woodStroke, borderSize: 5 });
     this.addText({ name: 'Guild_Level', value: '公会 Lv.1', x: 146, y: 196, width: 260, height: 38, fontSize: 30, color: UIColors.textBrown });
     this.addText({ name: 'Guild_Members', value: '成员 1/30', x: 146, y: 132, width: 260, height: 34, fontSize: 26, color: UIColors.textBrown });
-    this.addText({ name: 'Guild_Contribution', value: '今日贡献 0/100', x: 146, y: 70, width: 260, height: 34, fontSize: 26, color: UIColors.textBrown });
-    this.addButton('Button_GuildCheckIn', '公会签到', -138, -308, 248, 82, UIColors.buttonGold, UIColors.woodStroke, 32);
-    this.addButton('Button_GuildHelp', '互助', 158, -308, 208, 82, UIColors.successGreen, UIColors.woodStroke, 32);
+    this.addText({ name: 'Guild_Contribution', value: `今日贡献 ${contribution}/100`, x: 146, y: 70, width: 260, height: 34, fontSize: 26, color: UIColors.textBrown });
+    this.addRect({ name: 'Guild_DailyPanel', width: 596, height: 154, x: 0, y: -172, fill: new Color(255, 246, 212, 245), border: UIColors.woodStroke, borderSize: 5 });
+    this.addText({ name: 'Guild_CheckInState', value: checkInClaimed ? '签到已完成' : `签到奖励 ${this.formatRewardLine(GUILD_CHECK_IN_REWARDS)}`, x: 0, y: -132, width: 520, height: 32, fontSize: 22, color: checkInClaimed ? UIColors.woodLight : UIColors.textBrown, wrap: true });
+    this.addText({ name: 'Guild_HelpState', value: helpClaimed ? '互助已完成' : `互助奖励 ${this.formatRewardLine(GUILD_HELP_REWARDS)}`, x: 0, y: -178, width: 520, height: 32, fontSize: 22, color: helpClaimed ? UIColors.woodLight : UIColors.textBrown, wrap: true });
+    this.addButton('Button_GuildCheckIn', checkInClaimed ? '已签到' : '公会签到', -138, -308, 248, 82, checkInClaimed ? UIColors.woodLight : UIColors.buttonGold, UIColors.woodStroke, 32);
+    this.addButton('Button_GuildHelp', helpClaimed ? '已互助' : '互助', 158, -308, 208, 82, helpClaimed ? UIColors.woodLight : UIColors.successGreen, UIColors.woodStroke, 32);
     this.addBottomNav('guild');
   }
 
@@ -1121,6 +1139,13 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addText({ name: `${name}_Title`, value: title, x, y: y + 56, width: 112, height: 28, fontSize: 22, color: UIColors.textBrown });
     this.addRect({ name: `${name}_${spriteKey}`, width: 72, height: 72, x, y: y + 6, fill: Color.WHITE });
     this.addText({ name: `${name}_Amount`, value: amount, x, y: y - 58, width: 110, height: 28, fontSize: 23, color: new Color(118, 70, 34, 255), outline: false });
+  }
+
+  private formatRewardLine(rewards: RewardPayload[]): string {
+    return rewards.map((reward) => {
+      const display = this.getRewardDisplay(reward);
+      return `${display.title}${display.amount}`;
+    }).join('、');
   }
 
   private getRewardDisplay(reward: RewardPayload): { title: string; amount: string; spriteKey: RuntimeSpriteAssetKey } {
@@ -2139,23 +2164,20 @@ export class UISkeletonBuilder extends BaseUIComponent {
     }
 
     if (name.includes('Button_ExploreStart')) {
-      this.showToast('探索系统暂未开放，请先通过守夜战斗推进章节');
-      return true;
+      return this.reportActionResult(gameLogic.claimExploreReward(), '探索完成，奖励已入包');
     }
 
     if (name.includes('Button_GuildCheckIn')) {
-      this.showToast('公会签到暂未开放，当前版本不会消耗或发放资源');
-      return true;
+      return this.reportActionResult(gameLogic.claimGuildCheckIn(), '公会签到完成');
     }
 
     if (name.includes('Button_GuildHelp')) {
-      this.showToast('公会互助暂未开放，入口已置为安全占位');
-      return true;
+      return this.reportActionResult(gameLogic.claimGuildHelp(), '互助奖励已领取');
     }
 
     if (name.includes('Button_StagePrev') || name.includes('Button_StageNext')) {
-      this.showToast('章节切换暂未开放，当前使用默认守夜章节');
-      return true;
+      const direction = name.includes('Button_StageNext') ? 1 : -1;
+      return this.reportActionResult(gameLogic.selectBattleWave(direction), '挑战波次已切换');
     }
 
     if (name.includes('Button_RewardDouble')) {

@@ -7,14 +7,44 @@ import {
   getTalentBonus,
   getCurrency,
   grantRewards,
+  hasInventorySpaceForRewards,
   mergeBonuses,
   removeInventoryItem,
   spendCurrency,
 } from './GameLogicUtils';
 
+export const EXPLORE_ENERGY_COST = 3;
+export const EXPLORE_REWARDS: RewardPayload[] = [
+  { kind: 'currency', id: 'gold', amount: 160 },
+  { kind: 'petMaterial', id: 'pet_material_common', amount: 2 },
+];
+export const GUILD_CHECK_IN_REWARDS: RewardPayload[] = [
+  { kind: 'currency', id: 'pawCoin', amount: 30 },
+  { kind: 'currency', id: 'gold', amount: 100 },
+];
+export const GUILD_HELP_REWARDS: RewardPayload[] = [
+  { kind: 'currency', id: 'energy', amount: 2 },
+  { kind: 'currency', id: 'pawCoin', amount: 10 },
+];
+
 export interface ClaimResult {
   id: string;
   rewards: RewardPayload[];
+}
+
+export interface ExploreClaimResult extends ClaimResult {
+  energyCost: number;
+}
+
+export interface GuildClaimResult extends ClaimResult {
+  contribution: number;
+}
+
+export interface StageSelectResult {
+  chapterId: string;
+  wave: number;
+  highestWave: number;
+  maxWave: number;
 }
 
 export interface PetUpgradeResult {
@@ -159,6 +189,88 @@ export class ProgressionSystem {
       return failure('not_ready', 'no achievement can be claimed');
     }
     return success(claimed, 'achievements claimed');
+  }
+
+  public claimExploreReward(save: GameSaveData): GameLogicResult<ExploreClaimResult> {
+    if (save.daily.exploreClaimed === true) {
+      return failure('already_claimed', 'explore reward already claimed today');
+    }
+    if (getCurrency(save, 'energy') < EXPLORE_ENERGY_COST) {
+      return failure('insufficient_currency', 'energy not enough');
+    }
+
+    const rewards = this.cloneRewards(EXPLORE_REWARDS);
+    const space = hasInventorySpaceForRewards(save, rewards, this.repo);
+    if (!space.ok) {
+      return failure(space.reason ?? 'invalid_input', space.message);
+    }
+
+    const spend = spendCurrency(save, { currency: 'energy', amount: EXPLORE_ENERGY_COST });
+    if (!spend.ok) {
+      return failure(spend.reason ?? 'invalid_input', spend.message);
+    }
+
+    const grant = grantRewards(save, rewards, this.repo);
+    if (!grant.ok) {
+      return failure(grant.reason ?? 'invalid_input', grant.message);
+    }
+
+    save.daily.exploreClaimed = true;
+    save.stats.exploreCount = (save.stats.exploreCount ?? 0) + 1;
+    return success({ id: 'daily_explore', rewards, energyCost: EXPLORE_ENERGY_COST }, 'explore reward claimed');
+  }
+
+  public claimGuildCheckIn(save: GameSaveData): GameLogicResult<GuildClaimResult> {
+    if (save.daily.guildCheckInClaimed === true) {
+      return failure('already_claimed', 'guild check-in already claimed today');
+    }
+
+    const rewards = this.cloneRewards(GUILD_CHECK_IN_REWARDS);
+    const grant = grantRewards(save, rewards, this.repo);
+    if (!grant.ok) {
+      return failure(grant.reason ?? 'invalid_input', grant.message);
+    }
+
+    const contribution = 20;
+    save.daily.guildCheckInClaimed = true;
+    save.stats.guildContribution = (save.stats.guildContribution ?? 0) + contribution;
+    return success({ id: 'guild_check_in', rewards, contribution }, 'guild check-in claimed');
+  }
+
+  public claimGuildHelp(save: GameSaveData): GameLogicResult<GuildClaimResult> {
+    if (save.daily.guildHelpClaimed === true) {
+      return failure('already_claimed', 'guild help already claimed today');
+    }
+
+    const rewards = this.cloneRewards(GUILD_HELP_REWARDS);
+    const nonEnergyRewards = rewards.filter((reward) => !(reward.kind === 'currency' && reward.id === 'energy'));
+    const grant = grantRewards(save, nonEnergyRewards, this.repo);
+    if (!grant.ok) {
+      return failure(grant.reason ?? 'invalid_input', grant.message);
+    }
+
+    const energyReward = rewards.find((reward) => reward.kind === 'currency' && reward.id === 'energy');
+    if (energyReward) {
+      save.currencies.energy = Math.min(this.repo.configs.levels.battle.energyMax, getCurrency(save, 'energy') + energyReward.amount);
+    }
+
+    const contribution = 10;
+    save.daily.guildHelpClaimed = true;
+    save.stats.guildContribution = (save.stats.guildContribution ?? 0) + contribution;
+    return success({ id: 'guild_help', rewards, contribution }, 'guild help claimed');
+  }
+
+  public selectBattleWave(save: GameSaveData, delta: number): GameLogicResult<StageSelectResult> {
+    const chapter = this.repo.getChapter(save.progress.chapterId);
+    const maxWave = chapter?.maxWave ?? Math.max(1, save.progress.highestWave);
+    const highestWave = Math.min(maxWave, Math.max(1, save.progress.highestWave));
+    const nextWave = save.progress.currentWave + Math.trunc(delta);
+    if (nextWave < 1 || nextWave > highestWave) {
+      return failure('not_ready', 'selected wave is locked or out of bounds');
+    }
+
+    save.progress.currentWave = nextWave;
+    return success({ chapterId: save.progress.chapterId, wave: nextWave, highestWave, maxWave }, 'battle wave selected');
   }
 
   public getClaimedActivity(save: GameSaveData): number {
@@ -353,5 +465,9 @@ export class ProgressionSystem {
 
   private getMissingTalentRequirement(save: GameSaveData, config: TalentNodeConfig) {
     return config.requires.find((requirement) => this.getTalentSave(save, requirement.id).level < requirement.level) ?? null;
+  }
+
+  private cloneRewards(rewards: RewardPayload[]): RewardPayload[] {
+    return rewards.map((reward) => ({ ...reward }));
   }
 }
