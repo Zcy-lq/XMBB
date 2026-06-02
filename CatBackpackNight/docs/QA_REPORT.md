@@ -65,7 +65,7 @@ Result:
 
 Still BLOCKED for launch:
 
-- WeChat DevTools import/preview is not verified. `open`, `islogin`, `quit`, `auto --trust-project`, and `login --qr-output` CLI commands repeatedly timed out; direct IDE launch works, but the CLI local communication did not produce a QR image, import result, or preview result.
+- WeChat DevTools import/preview is not verified. Earlier `open`, `islogin`, `quit`, `auto --trust-project`, and `login --qr-output` CLI commands timed out; on 2026-06-02 the service port could start and `islogin --port 9420` returned `{"login":false}`, but `login --qr-output tmp/wechat_cli_login_qr.png --port 9420` still timed out without a QR image, import result, or preview result.
 - Real-device performance, touch, memory, and storage restart evidence is still required.
 
 ### 2026-05-30 Commercial UI Route Polish Pass
