@@ -6,7 +6,7 @@ Project: CatBackpackNight
 
 ## Summary
 
-Current status: **MVP code foundation passed static TypeScript verification, Cocos Browser Preview smoke verification, and the 75-check automated launch-loop gate. Final release remains blocked by external WeChat/import/device evidence.**
+Current status: **MVP code foundation passed static TypeScript verification, Cocos Browser Preview smoke verification, and the 76-check automated launch-loop gate. Final release remains blocked by external WeChat/import/device evidence.**
 
 This repository now contains the commercial-grade Cocos Creator architecture documents, UI system plan, asset pipeline, gameplay logic, platform service mocks, and baseline scene/UI scripts. The project is ready for the next validation step in Cocos Creator 3.8.x.
 
@@ -22,7 +22,8 @@ Changes made:
 - Added daily exploration rewards with energy cost, reward preview, duplicate blocking, insufficient-energy no-mutation, and daily reset.
 - Added guild check-in/help rewards with daily claimed states, contribution tracking, energy cap behavior, duplicate blocking, and daily reset.
 - Added unlocked wave selection through stage previous/next buttons, with locked/out-of-bounds no-mutation behavior.
-- Expanded `tools/verify_full_loop_acceptance.ts` from 67 to 75 checks and updated `tools/verify_page_function_coverage.mjs` plus `tools/verify_scene_flow_guards.mjs` so these actions cannot regress into placeholder copy.
+- Added skill-choice reroll/apply flow: battle pauses when skill selection is offered, one paid reroll changes the current candidates, duplicate reroll is blocked, choosing a candidate applies it and returns to battle.
+- Expanded `tools/verify_full_loop_acceptance.ts` from 67 to 76 checks and updated `tools/verify_page_function_coverage.mjs` plus `tools/verify_scene_flow_guards.mjs` so these actions cannot regress into placeholder copy.
 
 Fresh verification commands passed:
 
@@ -46,7 +47,7 @@ node ..\.tools\npm-cache\_npx\fd45a72a545557e9\node_modules\tsx\dist\cli.mjs too
 
 Result:
 
-- Full-loop acceptance: 75/75 passed.
+- Full-loop acceptance: 76/76 passed.
 - Page function coverage: 25/25 routes, 22/22 screenshot-backed pages, and 25/25 page function contracts verified.
 - Release compliance and launch evidence pass in local code mode, and final mode still correctly fails on official AppID/legal URLs and missing `launch_evidence.json`.
 
@@ -57,7 +58,7 @@ User direction: continue until the WeChat mini game meets launch standards. This
 Changes made:
 
 - Added `assets/scripts/game/MailSystem.ts` so mail claim/delete behavior is testable as a pure gameplay system and still used by `GameLogicFacade`.
-- Added `tools/verify_full_loop_acceptance.ts`, now a 75-check full-loop acceptance script covering clear save, agreement gate, first battle, release-mode energy spend/insufficient-energy safety, pause/resume, auto-merge toggle state, skill choice application/duplicate blocking, victory/defeat settlement, key-wave first-clear rewards, post-settlement rewarded-video double reward, cancelled-ad no-mutation, duplicate reward blocking, backpack merge, open chest success/failure safety, selected pet upgrade/deploy, selected talent upgrade/reset/max-level blocking, battle-prep power/weapon preview, task/activity/achievement single/all claims, config-backed red-dot thresholds, mail red-dot reduction, mail single/all claim/delete, shop daily-free/paid/refresh/special-placeholder daily limits, exploration/guild daily action limits, unlocked wave selection, energy recovery, daily reset, second battle, restart clone, settings persistence, and non-negative economy.
+- Added `tools/verify_full_loop_acceptance.ts`, now a 76-check full-loop acceptance script covering clear save, agreement gate, first battle, release-mode energy spend/insufficient-energy safety, pause/resume, auto-merge toggle state, skill choice application/duplicate/reroll flow, victory/defeat settlement, key-wave first-clear rewards, post-settlement rewarded-video double reward, cancelled-ad no-mutation, duplicate reward blocking, backpack merge, open chest success/failure safety, selected pet upgrade/deploy, selected talent upgrade/reset/max-level blocking, battle-prep power/weapon preview, task/activity/achievement single/all claims, config-backed red-dot thresholds, mail red-dot reduction, mail single/all claim/delete, shop daily-free/paid/refresh/special-placeholder daily limits, exploration/guild daily action limits, unlocked wave selection, energy recovery, daily reset, second battle, restart clone, settings persistence, and non-negative economy.
 - Extracted `DefaultRedDotRules` and `DailyResetSystem` so red-dot thresholds and daily reset behavior are pure gameplay logic covered by the launch gate while still used by runtime managers.
 - Added `npm run verify:full-loop` and updated `verify_scene_flow_guards` so the full-loop gate cannot be accidentally removed from the release workflow.
 - Added `tools/verify_wechat_build_output.mjs` and `npm run verify:wechat-build` to validate the generated Cocos WeChat Mini Game output.
@@ -99,7 +100,7 @@ Result:
 - Game logic self-check: 12/12 passed.
 - Release compliance code gate: passed with 3 explicit production-input blockers (`wechat.appid`, `wechat.privacyPolicyUrl`, `wechat.userAgreementUrl`).
 - Launch evidence gate: local code gate passed and emitted a required `launch_evidence.json` blocker; `XMBB_RELEASE_FINAL=1` correctly fails until WeChat/真机/UI signoff evidence is recorded.
-- Full-loop acceptance: 75/75 passed.
+- Full-loop acceptance: 76/76 passed.
 
 Still BLOCKED for launch:
 

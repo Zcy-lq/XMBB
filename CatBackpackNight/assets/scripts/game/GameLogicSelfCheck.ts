@@ -35,7 +35,10 @@ export function runGameLogicSelfCheck(): GameLogicSelfCheckReport {
 
   const session = new BattleSessionModel(save, repo, { battleId: start.data?.battleId, rng: seededRng(7) });
   for (let i = 0; i < 120 && session.state.status === 'running'; i += 1) {
-    session.tick(0.5);
+    const events = session.tick(0.5);
+    if (events.some((event) => event.type === 'skillReady')) {
+      session.applySkillChoice(0);
+    }
   }
   check('battle_session_finishes', session.state.status !== 'running', `status=${session.state.status}`);
   const hasWeaponVisualMetadata = session.state.weaponSlots.every((slot) => Boolean(slot.weaponType && slot.displayName && slot.iconId));

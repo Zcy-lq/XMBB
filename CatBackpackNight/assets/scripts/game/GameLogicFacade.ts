@@ -187,6 +187,17 @@ export class GameLogicFacade {
     return this.commit('shop-refresh', GameEvents.ShopRefresh, (save) => this.shop.refresh(save, adState));
   }
 
+  public spendSkillRefreshCost(amount = 20): GameLogicResult<{ currency: 'purpleGem'; amount: number }> {
+    return this.commit('skill-refresh-cost', GameEvents.SaveChanged, (save) => {
+      const safeAmount = Math.max(0, Math.floor(amount));
+      const spend = this.economy.spend(save, { currency: 'purpleGem', amount: safeAmount });
+      if (!spend.ok) {
+        return failure(spend.reason ?? 'insufficient_currency', spend.message);
+      }
+      return success({ currency: 'purpleGem', amount: safeAmount }, 'skill refresh cost spent');
+    });
+  }
+
   public deployPet(petId: string): GameLogicResult<PetSave> {
     return this.commit('pet-deploy', GameEvents.PetDeploy, (save) => this.progression.deployPet(save, petId));
   }

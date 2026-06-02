@@ -21,6 +21,8 @@ export const GameEvents = {
   RewardClaim: 'reward_claim',
   RewardDoubleAdStart: 'reward_double_ad_start',
   RewardDoubleAdResult: 'reward_double_ad_result',
+  SkillChoiceApplyRequested: 'skill_choice_apply_requested',
+  SkillChoiceRerollRequested: 'skill_choice_reroll_requested',
   WeaponMerge: 'weapon_merge',
   ChestOpen: 'chest_open',
   ShopBuy: 'shop_buy',

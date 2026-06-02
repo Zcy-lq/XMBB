@@ -115,7 +115,7 @@ const pageContracts = {
   confirmModal: ['Confirm_Modal', 'Button_ConfirmCancel', 'Button_ConfirmOk', 'Button_ConfirmClose'],
   toastModal: ['ToastCard_Info', 'ToastCard_Success', 'ToastCard_Warning', 'ToastCard_Error'],
   pauseModal: ['Button_PauseContinue', 'Button_PauseRestart', 'Button_PauseHome', "SceneRouter.instance.go('home')"],
-  skillChoice: ['Button_SkillChoiceClose', 'Button_RefreshVideo', 'Button_SkillChoiceAutoMerge', '_Choose'],
+  skillChoice: ['Button_SkillChoiceClose', 'Button_RefreshVideo', 'Button_SkillChoiceAutoMerge', '_Choose', 'skillChoiceIds', 'GameEvents.SkillChoiceRerollRequested', 'GameEvents.SkillChoiceApplyRequested'],
   victory: ['Button_RewardDouble', 'Button_RewardConfirm', 'Reward_Chest_rt_item_chest', "SceneRouter.instance.go('home')"],
   defeat: ['Button_DefeatRetry', 'Button_DefeatUpgrade', 'Button_DefeatHome', "SceneRouter.instance.go('battlePrepare')"],
 };

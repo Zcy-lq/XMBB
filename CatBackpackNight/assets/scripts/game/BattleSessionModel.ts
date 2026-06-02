@@ -79,6 +79,8 @@ export interface BattleSessionState {
   autoMergeEnabled: boolean;
   status: BattleStatus;
   skillChoiceOffered: boolean;
+  skillChoiceIds: string[];
+  skillRerollsRemaining: number;
   activeSkillIds: string[];
   monsters: BattleMonsterState[];
   weaponSlots: BattleWeaponSlotState[];
@@ -116,6 +118,8 @@ export function createBattleSession(
     autoMergeEnabled: true,
     status: 'running',
     skillChoiceOffered: false,
+    skillChoiceIds: [],
+    skillRerollsRemaining: 1,
     activeSkillIds: [],
     monsters: [],
     weaponSlots: buildWeaponSlots(save.inventory, repo, bonuses),
@@ -164,7 +168,10 @@ export class BattleSessionModel {
 
     if (!this.state.skillChoiceOffered && this.state.elapsedSeconds >= this.repo.configs.levels.battle.skillChoiceAtSecond) {
       this.state.skillChoiceOffered = true;
+      this.getSkillChoices();
+      this.pause();
       events.push({ type: 'skillReady' });
+      return events;
     }
 
     this.spawnTimer -= dt;
@@ -219,15 +226,57 @@ export class BattleSessionModel {
   }
 
   public rollSkillChoices(count = 3): SkillConfig[] {
+    return this.rollSkillChoicesFromPool(count);
+  }
+
+  public getSkillChoices(): SkillConfig[] {
+    if (this.state.skillChoiceIds.length === 0) {
+      this.state.skillChoiceIds = this.rollSkillChoicesFromPool(3).map((skill) => skill.id);
+    }
+    return this.state.skillChoiceIds
+      .map((skillId) => this.repo.getSkill(skillId))
+      .filter((skill): skill is SkillConfig => Boolean(skill));
+  }
+
+  public rerollSkillChoices(): GameLogicResultLike<SkillConfig[]> {
+    if (this.state.skillRerollsRemaining <= 0) {
+      return { ok: false, message: 'skill reroll already used' };
+    }
+
+    const currentIds = new Set(this.state.skillChoiceIds);
+    const choices = this.rollSkillChoicesFromPool(3, currentIds);
+    this.state.skillChoiceIds = choices.map((skill) => skill.id);
+    this.state.skillRerollsRemaining = Math.max(0, this.state.skillRerollsRemaining - 1);
+    return { ok: true, data: choices, message: 'skill choices rerolled' };
+  }
+
+  public applySkillChoice(index: number): GameLogicResultLike<SkillConfig> {
+    const choices = this.getSkillChoices();
+    const skill = choices[index];
+    if (!skill) {
+      return { ok: false, message: 'skill choice is missing' };
+    }
+
+    const result = this.applySkill(skill.id);
+    if (result.ok) {
+      this.state.skillChoiceIds = [];
+      this.resume();
+    }
+    return result;
+  }
+
+  private rollSkillChoicesFromPool(count = 3, excludedIds: Set<string> = new Set()): SkillConfig[] {
     const pool = [...this.repo.configs.levels.skills];
+    const filtered = pool.filter((skill) => !excludedIds.has(skill.id));
+    const activePool = filtered.length >= Math.min(count, pool.length) ? filtered : pool;
     const choices: SkillConfig[] = [];
-    while (choices.length < count && pool.length > 0) {
-      const picked = pickWeighted(pool, this.rng);
+    while (choices.length < count && activePool.length > 0) {
+      const picked = pickWeighted(activePool, this.rng);
       if (!picked) {
         break;
       }
       choices.push(picked);
-      pool.splice(pool.indexOf(picked), 1);
+      activePool.splice(activePool.indexOf(picked), 1);
     }
     return choices;
   }

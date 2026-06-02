@@ -23,6 +23,7 @@ import { MailSave, RewardPayload, RouteId, SettingsSave } from '../data/GameType
 import { GameEvents } from '../game/GameEvents';
 import { gameLogic } from '../game/GameLogicFacade';
 import { BattleSessionState } from '../game/BattleSessionModel';
+import { SkillConfig } from '../game/GameConfigTypes';
 import { EXPLORE_ENERGY_COST, EXPLORE_REWARDS, GUILD_CHECK_IN_REWARDS, GUILD_HELP_REWARDS } from '../game/ProgressionSystem';
 import { adService } from '../services/AdService';
 import { AnalyticsService } from '../services/AnalyticsService';
@@ -1036,17 +1037,20 @@ export class UISkeletonBuilder extends BaseUIComponent {
   }
 
   private buildSkillChoice(): void {
+    const skillChoices = this.getVisibleSkillChoices();
+    const rerollsRemaining = this.battleState?.skillRerollsRemaining ?? 1;
     this.addBattleModalBackdrop('SkillChoice');
     this.addCommercialRouteBackdrop('SkillChoice');
     this.addRect({ name: 'SkillChoice_MaskLayer', width: DESIGN_WIDTH, height: DESIGN_HEIGHT, x: 0, y: 0, fill: new Color(0, 0, 0, 126) });
     this.addRect({ name: 'SkillChoice_Title', width: 420, height: 90, x: -10, y: 500, fill: UIColors.wood, border: UIColors.woodStroke, borderSize: 8, label: '选择一个技能', fontSize: 46, outline: true });
     this.addText({ name: 'SkillChoice_Subtitle', value: '选择后立即生效，本轮战斗仅出现一次', x: -8, y: 440, width: 520, height: 34, fontSize: 23, color: UIColors.highlightGold, outline: true });
     this.addButton('Button_SkillChoiceClose', '×', 318, 500, 74, 74, UIColors.wood, UIColors.woodStroke, 34);
-    this.addSkillCard('SkillCard_1', -225, '火焰强化', '火焰伤害提高 40%\n持续 6 秒', '稀有', '伤害', 'rt_battle_weapon_gold_sword');
-    this.addSkillCard('SkillCard_2', 0, '攻击速度', '攻击速度提高 25%\n持续 5 秒', '普通', '节奏', 'rt_battle_weapon_bow');
-    this.addSkillCard('SkillCard_3', 225, '暴击率', '暴击率提高 15%\n持续 8 秒', '史诗', '爆发', 'rt_item_bomb');
-    this.addButton('Button_RefreshVideo', '▶ 刷新技能   钻 20', -78, -382, 286, 72, UIColors.actionBlue, UIColors.woodStroke, 28);
-    this.addRect({ name: 'SkillChoice_RerollChip', width: 154, height: 54, x: 212, y: -382, fill: new Color(23, 26, 24, 230), border: UIColors.highlightGold, borderSize: 3, label: '剩余刷新 1 次', fontSize: 20, textColor: UIColors.highlightGold, outline: true });
+    [-225, 0, 225].forEach((x, index) => {
+      const view = this.getSkillCardView(skillChoices[index]);
+      this.addSkillCard(`SkillCard_${index + 1}`, x, view.title, view.desc, view.rarity, view.type, view.spriteKey);
+    });
+    this.addButton('Button_RefreshVideo', rerollsRemaining > 0 ? '刷新技能\n钻 20' : '已刷新', -78, -382, 286, 72, rerollsRemaining > 0 ? UIColors.actionBlue : UIColors.woodLight, UIColors.woodStroke, 28);
+    this.addRect({ name: 'SkillChoice_RerollChip', width: 154, height: 54, x: 212, y: -382, fill: new Color(23, 26, 24, 230), border: UIColors.highlightGold, borderSize: 3, label: `剩余刷新 ${rerollsRemaining} 次`, fontSize: 20, textColor: UIColors.highlightGold, outline: true });
     this.addRect({ name: 'SkillChoice_ForceTip', width: 496, height: 50, x: -2, y: -458, fill: new Color(63, 28, 18, 235), border: UIColors.warningRed, borderSize: 4, label: '⚠ 必须选择一个技能才能继续战斗', fontSize: 24, textColor: UIColors.highlightGold, outline: true });
     this.addRect({ name: 'SkillChoice_BottomWeaponBar', width: 704, height: 126, x: 0, y: -592, fill: new Color(18, 20, 20, 245), border: UIColors.woodStroke, borderSize: 6 });
     [-300, -204, -108, -12, 84, 180].forEach((x, index) => {
@@ -1980,6 +1984,70 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addButton(`${name}_Choose`, '选择', x, -204, 190, 86, UIColors.buttonGold, UIColors.woodStroke, 36);
   }
 
+  private getVisibleSkillChoices(): SkillConfig[] {
+    const ids = this.battleState?.skillChoiceIds ?? [];
+    const configured = ids
+      .map((skillId) => gameLogic.repo.getSkill(skillId))
+      .filter((skill): skill is SkillConfig => Boolean(skill));
+    return configured.length > 0 ? configured.slice(0, 3) : gameLogic.repo.configs.levels.skills.slice(0, 3);
+  }
+
+  private getSkillCardView(skill?: SkillConfig): { title: string; desc: string; rarity: string; type: string; spriteKey: RuntimeSpriteAssetKey } {
+    const fallback = gameLogic.repo.configs.levels.skills[0];
+    const row = skill ?? fallback;
+    const titles: Record<string, string> = {
+      skill_flame_power: '火焰强化',
+      skill_quick_paws: '疾风爪击',
+      skill_lucky_claw: '幸运暴击',
+      skill_guard_lamp: '守护灯火',
+      skill_gold_moon: '金月祝福',
+    };
+    const rarityMap: Record<string, string> = {
+      common: '普通',
+      rare: '稀有',
+      epic: '史诗',
+      legendary: '传说',
+    };
+    const spriteMap: Record<string, RuntimeSpriteAssetKey> = {
+      skill_flame_power: 'rt_battle_weapon_gold_sword',
+      skill_quick_paws: 'rt_battle_weapon_bow',
+      skill_lucky_claw: 'rt_item_bomb',
+      skill_guard_lamp: 'rt_item_lantern',
+      skill_gold_moon: 'rt_icon_gold',
+    };
+    return {
+      title: titles[row.id] ?? row.displayName,
+      desc: row.effects.map((effect) => this.formatSkillEffect(effect.type, effect.value)).join('\n'),
+      rarity: rarityMap[row.quality] ?? row.quality,
+      type: this.getSkillTypeLabel(row),
+      spriteKey: spriteMap[row.id] ?? 'rt_item_scroll',
+    };
+  }
+
+  private getSkillTypeLabel(skill: SkillConfig): string {
+    const effectType = skill.effects[0]?.type ?? 'attackPercent';
+    const labels: Record<string, string> = {
+      attackPercent: '伤害',
+      cooldownPercent: '攻速',
+      critRate: '暴击',
+      campHeal: '恢复',
+      goldPercent: '收益',
+    };
+    return labels[effectType] ?? '强化';
+  }
+
+  private formatSkillEffect(type: string, value: number): string {
+    const percent = `${Math.round(value * 100)}%`;
+    const labels: Record<string, string> = {
+      attackPercent: `攻击伤害提高 ${percent}`,
+      cooldownPercent: `攻击间隔缩短 ${percent}`,
+      critRate: `暴击率提高 ${percent}`,
+      campHeal: `营地生命恢复 ${Math.round(value)}`,
+      goldPercent: `金币收益提高 ${percent}`,
+    };
+    return labels[type] ?? `属性提升 ${value}`;
+  }
+
   private addProgressBar(name: string, x: number, y: number, width: number, height: number, ratio: number, fill: Color): Node {
     const root = this.addRect({ name, width, height, x, y, fill: new Color(40, 28, 20, 230), border: UIColors.woodStroke, borderSize: 3 });
     const clamped = Math.max(0, Math.min(1, ratio));
@@ -2185,8 +2253,25 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return true;
     }
 
+    if (name.includes('Button_SkillChoiceClose')) {
+      this.showToast('请先选择一个技能');
+      return true;
+    }
+
     if (name.includes('Button_RefreshVideo')) {
-      this.showToast('技能刷新暂未接入，当前保留本次技能选择');
+      eventBus.emit(GameEvents.SkillChoiceRerollRequested, { cost: 20 });
+      return true;
+    }
+
+    if (name.includes('SkillCard_') && name.includes('_Choose')) {
+      const match = /SkillCard_(\d+)_Choose/.exec(name);
+      const index = Math.max(0, Number(match?.[1] ?? 1) - 1);
+      eventBus.emit(GameEvents.SkillChoiceApplyRequested, { index });
+      return true;
+    }
+
+    if (name.includes('Button_SkillChoiceAutoMerge')) {
+      this.showToast('自动合成已开启，本轮战斗会保留该设置');
       return true;
     }
 

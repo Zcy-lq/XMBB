@@ -35,6 +35,15 @@ function seededRng(seed: number): () => number {
   };
 }
 
+function tickSessionThroughSkillChoices(session: BattleSessionModel, ticks: number, deltaSec: number): void {
+  for (let i = 0; i < ticks && session.state.status === 'running'; i += 1) {
+    const events = session.tick(deltaSec);
+    if (events.some((event) => event.type === 'skillReady')) {
+      session.applySkillChoice(0);
+    }
+  }
+}
+
 const save = createDefaultSave(1710000000000);
 const repo = new GameConfigRepository(getDefaultGameLogicConfigs());
 const progression = new ProgressionSystem(repo);
@@ -95,9 +104,7 @@ check(
 );
 
 const firstSession = new BattleSessionModel(save, repo, { battleId: firstStart.data?.battleId, rng: seededRng(11) });
-for (let i = 0; i < 160 && firstSession.state.status === 'running'; i += 1) {
-  firstSession.tick(0.5);
-}
+tickSessionThroughSkillChoices(firstSession, 160, 0.5);
 check('first_battle_reaches_settlement', firstSession.state.status === 'victory', `status=${firstSession.state.status}`);
 
 const battleControlSession = new BattleSessionModel(save, repo, { battleId: 'full_loop_control_session', rng: seededRng(31) });
@@ -130,6 +137,30 @@ check(
     skillSession.state.activeSkillIds.includes('skill_flame_power') &&
     skillDamageAfter > skillDamageBefore,
   `${skillApply.message}; duplicate=${skillApplyAgain.message}; damage=${skillDamageBefore}->${skillDamageAfter}`,
+);
+
+const skillFlowSession = new BattleSessionModel(save, repo, { battleId: 'full_loop_skill_flow_session', rng: seededRng(33) });
+const skillFlowReadyEvents = skillFlowSession.tick(repo.configs.levels.battle.skillChoiceAtSecond);
+const skillFlowPausedAfterReady = skillFlowSession.state.paused;
+const skillFlowChoices = skillFlowSession.getSkillChoices();
+const skillFlowReroll = skillFlowSession.rerollSkillChoices();
+const skillFlowChoicesAfterReroll = skillFlowSession.getSkillChoices();
+const skillFlowRerollAgain = skillFlowSession.rerollSkillChoices();
+const skillFlowApplyChoice = skillFlowSession.applySkillChoice(0);
+check(
+  'skill_choice_reroll_once_and_apply_choice',
+  skillFlowReadyEvents.some((event) => event.type === 'skillReady') &&
+    skillFlowPausedAfterReady === true &&
+    skillFlowChoices.length === 3 &&
+    skillFlowReroll.ok &&
+    skillFlowChoicesAfterReroll.length === 3 &&
+    skillFlowSession.state.skillRerollsRemaining === 0 &&
+    !skillFlowRerollAgain.ok &&
+    skillFlowRerollAgain.message.includes('used') &&
+    skillFlowApplyChoice.ok &&
+    skillFlowSession.state.paused === false &&
+    skillFlowSession.state.activeSkillIds.includes(skillFlowApplyChoice.data?.id ?? ''),
+  `${skillFlowReroll.message}; second=${skillFlowRerollAgain.message}; apply=${skillFlowApplyChoice.message}`,
 );
 
 const goldBeforeReward = save.currencies.gold;

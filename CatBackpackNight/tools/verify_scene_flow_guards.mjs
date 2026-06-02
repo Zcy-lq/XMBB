@@ -1058,10 +1058,32 @@ if (failures.length === 0) {
     "name.includes('Button_StageNext')",
     "name.includes('Button_RewardDouble')",
     "name.includes('Button_RefreshVideo')",
+    "name.includes('SkillCard_') && name.includes('_Choose')",
   ]) {
     if (!uiBuilder.includes(requiredVisibleButtonHandler)) {
       fail(`Visible MVP button must be functional or explicitly disabled: ${requiredVisibleButtonHandler}`);
     }
+  }
+
+  for (const skillChoiceToken of [
+    'skillChoiceIds',
+    'skillRerollsRemaining',
+    'public getSkillChoices',
+    'public rerollSkillChoices',
+    'public applySkillChoice',
+    'GameEvents.SkillChoiceRerollRequested',
+    'GameEvents.SkillChoiceApplyRequested',
+    "SceneRouter.instance.go('skillChoice')",
+    "SceneRouter.instance.go('battle')",
+    'gameLogic.spendSkillRefreshCost',
+  ]) {
+    if (!uiBuilder.includes(skillChoiceToken) && !battleScene.includes(skillChoiceToken) && !fullLoopAcceptance.includes(skillChoiceToken) && !facade.includes(skillChoiceToken) && !read(path.join(projectRoot, 'assets', 'scripts', 'game', 'BattleSessionModel.ts')).includes(skillChoiceToken)) {
+      fail(`Skill-choice flow is missing required launch behavior: ${skillChoiceToken}`);
+    }
+  }
+
+  if (uiBuilder.includes('技能刷新暂未接入')) {
+    fail('Skill refresh button still uses placeholder copy instead of reroll behavior.');
   }
 
   const buildMailDetailStart = uiBuilder.indexOf('private buildMailDetail()');
@@ -1196,6 +1218,7 @@ if (failures.length === 0) {
     'battle_pause_resume_blocks_and_restores_ticks',
     'battle_auto_merge_toggle_state',
     'skill_choice_offer_apply_and_duplicate_block',
+    'skill_choice_reroll_once_and_apply_choice',
     'battle_double_reward_after_ad',
     'battle_double_duplicate_blocked',
     'battle_double_cancelled_ad_no_mutation',
