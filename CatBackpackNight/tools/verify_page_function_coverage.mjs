@@ -96,10 +96,10 @@ const routeBuilderMethods = {
 
 const pageContracts = {
   login: ['Button_StartGame', 'Button_ToggleAgreement', 'Button_PolicyAgree', "SceneRouter.instance.go('home')"],
-  home: ['TopEntry_DailyTask', 'TopEntry_Mail', 'LeftEntry_Backpack', 'LeftEntry_Shop', 'Button_StartBattle', "NavButton_merge')) return 'merge'"],
+  home: ['TopEntry_DailyTask', 'TopEntry_Mail', 'LeftEntry_Backpack', 'LeftEntry_Shop', 'Button_StartBattle', "this.addBottomNav('battle')", "NavButton_shop')) return 'shop'", "NavButton_backpack')) return 'backpack'", "NavButton_talent')) return 'talent'", "NavButton_pet')) return 'pet'"],
   battlePrepare: ['BattlePrepare_HeroCat', 'Button_Back_BattlePrepare', 'Button_Close_BattlePrepare', 'Button_StartBattle', 'Button_StagePrev', 'Button_StageNext', 'gameLogic.selectBattleWave', 'gameLogic.startBattle()', "SceneRouter.instance.go('battle')", "return 'home'"],
   battle: ['Button_BattlePause', "'Button_BattlePause')) return 'pauseModal'", 'Button_AutoMerge', 'GameEvents.BattleAutoMergeToggleRequested', 'updateBattleLiveState'],
-  merge: ['Button_MergeConfirm', 'gameLogic.autoMergeAll()', "this.addBottomNav('merge')"],
+  merge: ['Button_MergeConfirm', 'gameLogic.autoMergeAll()', "this.addBottomNav('backpack')"],
   mergeGuide: ['MergeGuide_Modal', 'Button_MergeGuideConfirm', 'Button_MergeGuideHelp', 'settings.mergeGuideSeen', 'draft.settings.mergeGuideSeen = true'],
   explore: ['Explore_MapPanel', 'Button_ExploreStart', 'Explore_EnergyCost', 'Explore_RewardPreview', 'Explore_DailyState', 'gameLogic.claimExploreReward'],
   guild: ['Guild_MainPanel', 'Button_GuildCheckIn', 'Button_GuildHelp', 'Guild_CheckInState', 'Guild_HelpState', 'gameLogic.claimGuildCheckIn', 'gameLogic.claimGuildHelp'],

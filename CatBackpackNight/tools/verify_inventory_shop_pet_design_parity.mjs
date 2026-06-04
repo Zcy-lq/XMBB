@@ -47,8 +47,8 @@ for (const snippet of [
   assert.match(uiBuilder, literal(snippet), `pet detail should include ${snippet}`);
 }
 
-assert.match(uiBuilder, /private buildPet\(\): void[\s\S]*?this\.addCommercialBottomNav\('pet'\)/, 'pet page should include mobile bottom navigation');
-assert.match(uiBuilder, /NavButton_shop[\s\S]*?return 'shop'/, 'commercial bottom nav should route to shop');
+assert.match(uiBuilder, /private buildPet\(\): void[\s\S]*?this\.addBottomNav\('pet'\)/, 'pet page should include design mobile bottom navigation');
+assert.match(uiBuilder, /NavButton_shop[\s\S]*?return 'shop'/, 'design bottom nav should route to shop');
 assert.match(uiBuilder, /weapon_bow_Icon[\s\S]*?rt_item_weapon_fishbone_bow/, 'inventory bow icons should use runtime art instead of text placeholders');
 
 console.log('[verify_inventory_shop_pet_design_parity] inventory/shop/pet pages contract is present.');

@@ -182,13 +182,14 @@ if (fs.existsSync(uiBuilderPath)) {
     'Button_StageNext',
     'Home_CurrentStage',
     'Home_CurrentWave',
-    "this.addBottomNav('home')",
-    'NavButton_home',
-    'NavButton_merge',
-    'NavButton_explore',
-    'NavButton_guild',
+    "this.addBottomNav('battle')",
+    'NavButton_shop',
+    'NavButton_backpack',
+    'NavButton_battle',
+    'NavButton_talent',
+    'NavButton_pet',
   ]) {
-    assertIncludes(ui, token, 'HOME_01', 'Home page does not match the annotated HOME_01 layout.', 'UIUXAgent', 'Rebuild the home page around top resources, top function row, left/right feature rails, stage selector, start CTA, and home-active bottom nav.');
+    assertIncludes(ui, token, 'HOME_01', 'Home page does not match the annotated HOME_01 layout.', 'UIUXAgent', 'Rebuild the home page around top resources, top function row, left/right feature rails, stage selector, start CTA, and the design bottom nav.');
   }
 
   for (const token of [
@@ -198,7 +199,12 @@ if (fs.existsSync(uiBuilderPath)) {
     'Home_MailSummary',
     'Home_SupplySummary',
     'Home_SideRail',
-    "this.addBottomNav('battle')",
+    "this.addBottomNav('home')",
+    "{ key: 'home', label: '主界面' }",
+    "{ key: 'merge', label: '合成' }",
+    "{ key: 'explore', label: '探索' }",
+    "{ key: 'guild', label: '公会' }",
+    "{ key: 'settings', label: '设置' }",
     "this.addCampCabin('Home_Cabin'",
     "this.addCampfire('Home_Fire'",
   ]) {
@@ -212,12 +218,16 @@ if (fs.existsSync(uiBuilderPath)) {
     "if (name.includes('LeftEntry_Shop')",
     "if (name.includes('LeftEntry_Backpack')",
     "if (name.includes('RightEntry_Settings')",
-    "if (name.includes('NavButton_home')) return 'home';",
     "if (name.includes('NavButton_battle')) return 'battlePrepare';",
-    "if (name.includes('NavButton_merge')) return 'merge';",
-    "if (name.includes('NavButton_explore')) return 'explore';",
-    "if (name.includes('NavButton_guild')) return 'guild';",
-    "if (name.includes('NavIcon_home')) return UIAssetKeys.icons.home;",
+    "if (name.includes('NavButton_shop')) return 'shop';",
+    "if (name.includes('NavButton_backpack')) return 'backpack';",
+    "if (name.includes('NavButton_talent')) return 'talent';",
+    "if (name.includes('NavButton_pet')) return 'pet';",
+    "if (name.includes('NavIcon_shop')) return UIAssetKeys.icons.shop;",
+    "if (name.includes('NavIcon_backpack')) return UIAssetKeys.icons.backpack;",
+    "if (name.includes('NavIcon_battle')) return UIAssetKeys.icons.battle;",
+    "if (name.includes('NavIcon_talent')) return UIAssetKeys.icons.talent;",
+    "if (name.includes('NavIcon_pet')) return UIAssetKeys.icons.pet;",
   ]) {
     assertIncludes(ui, token, 'HOME_01', 'Home page visual entry is missing a routed interaction.', 'UIUXAgent/ClientArchAgent', 'Bind each HOME_01 interactive entry to an existing route or safe placeholder route.');
   }

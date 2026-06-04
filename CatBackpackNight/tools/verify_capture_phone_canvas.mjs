@@ -19,5 +19,7 @@ assert.match(source, /args\.url \?\? 'http:\/\/localhost:7456'/, 'capture tool d
 assert.match(refreshSource, /path\.extname\(specifier\)/, 'preview refresh should preserve non-TS relative imports such as JSON configs');
 assert.doesNotMatch(refreshSource, /path\.resolve\(path\.dirname\(sourcePath\), `\$\{specifier\}\.ts`\)/, 'preview refresh must not rewrite JSON config imports to *.json.ts');
 assert.match(refreshSource, /inlineJsonImports/, 'preview refresh should inline JSON config imports for generated SystemJS chunks');
+assert.match(refreshSource, /gameConfigRepositoryPath/, 'preview refresh should rebuild GameConfigRepository so JSON gameplay config changes reach Browser Preview screenshots');
+assert.match(refreshSource, /GameConfigRepository/, 'preview refresh output should expose the refreshed GameConfigRepository chunk');
 
 console.log('[verify_capture_phone_canvas] phone canvas capture contract is present.');

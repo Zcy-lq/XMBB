@@ -22,7 +22,7 @@ for (const builder of ['buildMailDetail', 'buildPolicyModal', 'buildConfirmModal
   assert.match(uiBuilder, literal(`${builder}()`), `UISkeletonBuilder should implement ${builder}`);
 }
 
-assert.match(uiBuilder, /private buildTalent\(\): void[\s\S]*?this\.addCommercialBottomNav\('talent'\)/, 'talent should use the commercial 6-item mobile bottom nav');
+assert.match(uiBuilder, /private buildTalent\(\): void[\s\S]*?this\.addBottomNav\('talent'\)/, 'talent should use the design 5-item mobile bottom nav');
 
 for (const snippet of [
   'MailDetail_MaskLayer',

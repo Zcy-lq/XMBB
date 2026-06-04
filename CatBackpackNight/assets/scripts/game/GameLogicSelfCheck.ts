@@ -29,9 +29,15 @@ export function runGameLogicSelfCheck(): GameLogicSelfCheckReport {
   const checks: GameLogicSelfCheckItem[] = [];
   const check = (name: string, passed: boolean, detail: string) => checks.push({ name, passed, detail });
 
-  save.currencies.energy = 0;
+  const energyBeforeBattle = save.currencies.energy;
   const start = battleRewards.startBattle(save, 1);
-  check('dev_unlimited_energy_start', start.ok && start.data?.energyCost === 0 && save.currencies.energy === 0, start.message);
+  check(
+    'battle_start_spends_energy',
+    start.ok &&
+      start.data?.energyCost === repo.configs.levels.battle.energyCost &&
+      save.currencies.energy === energyBeforeBattle - repo.configs.levels.battle.energyCost,
+    start.message,
+  );
 
   const session = new BattleSessionModel(save, repo, { battleId: start.data?.battleId, rng: seededRng(7) });
   for (let i = 0; i < 120 && session.state.status === 'running'; i += 1) {

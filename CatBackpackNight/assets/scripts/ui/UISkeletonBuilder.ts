@@ -41,7 +41,7 @@ const DESIGN_HEIGHT = 1334;
 type TextAlign = 'left' | 'center' | 'right';
 type VerticalAlign = 'top' | 'center' | 'bottom';
 type ResourceKind = 'gold' | 'diamond' | 'blueGem' | 'energy' | 'pawCoin';
-type NavKey = 'home' | 'battle' | 'merge' | 'explore' | 'guild' | 'shop' | 'backpack' | 'talent' | 'pet';
+type NavKey = 'shop' | 'backpack' | 'battle' | 'talent' | 'pet';
 
 interface RectOptions {
   name: string;
@@ -264,7 +264,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addStageSelector(`普通 1-${save.progress.currentWave}`, highestWave, battleInfo.maxWave, waveRatio);
     this.addStartBattleCta(battleInfo.energyCost);
     this.addText({ name: 'Home_EnergyHint', value: `体力 ${save.currencies.energy}/${battleInfo.energyMax}  推荐战力 ${battleInfo.recommendedPower}`, x: 0, y: -532, width: 420, height: 30, fontSize: 20, color: new Color(246, 235, 201, 225), outline: true });
-    this.addBottomNav('home');
+    this.addBottomNav('battle');
   }
 
   private buildShop(): void {
@@ -368,7 +368,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addRect({ name: 'Merge_Result_Icon', width: 116, height: 116, x: 244, y: 160, fill: new Color(255, 255, 255, 0), border: UIColors.whiteText, borderSize: 3 });
     this.addText({ name: 'Merge_Hint', value: '相同装备可以合成为更高等级，消耗金币并记录每日任务进度。', x: 0, y: -80, width: 560, height: 84, fontSize: 25, color: UIColors.textBrown, wrap: true });
     this.addButton('Button_MergeConfirm', '一键合成', 0, -246, 360, 92, UIColors.buttonGold, UIColors.woodStroke, 36);
-    this.addBottomNav('merge');
+    this.addBottomNav('backpack');
   }
 
   private buildMergeGuide(): void {
@@ -427,7 +427,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
       this.addCompactRewardCard(`Explore_Reward_${index}_${this.normalizeNodeKey(reward.id)}`, -82 + index * 164, -336, display.title, display.amount, display.spriteKey);
     });
     this.addButton('Button_ExploreStart', claimed ? '今日已探索' : '开始探索', 0, -430, 360, 88, claimed ? UIColors.woodLight : UIColors.buttonGold, UIColors.woodStroke, 34);
-    this.addBottomNav('explore');
+    this.addButton('Button_Back_Explore', '返回营地', 0, -546, 292, 70, UIColors.wood, UIColors.woodStroke, 28);
   }
 
   private buildGuild(): void {
@@ -450,7 +450,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addText({ name: 'Guild_HelpState', value: helpClaimed ? '互助已完成' : `互助奖励 ${this.formatRewardLine(GUILD_HELP_REWARDS)}`, x: 0, y: -178, width: 520, height: 32, fontSize: 22, color: helpClaimed ? UIColors.woodLight : UIColors.textBrown, wrap: true });
     this.addButton('Button_GuildCheckIn', checkInClaimed ? '已签到' : '公会签到', -138, -308, 248, 82, checkInClaimed ? UIColors.woodLight : UIColors.buttonGold, UIColors.woodStroke, 32);
     this.addButton('Button_GuildHelp', helpClaimed ? '已互助' : '互助', 158, -308, 208, 82, helpClaimed ? UIColors.woodLight : UIColors.successGreen, UIColors.woodStroke, 32);
-    this.addBottomNav('guild');
+    this.addButton('Button_Back_Guild', '返回营地', 0, -546, 292, 70, UIColors.wood, UIColors.woodStroke, 28);
   }
 
   private buildBattle(): void {
@@ -752,7 +752,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
       const selectHit = this.addRect({ name: `Button_PetSelect_${key}`, width: 118, height: 226, x, y, fill: new Color(0, 0, 0, 0) });
       this.addButtonBehavior(selectHit, `Button_PetSelect_${pet.id}`);
     });
-    this.addCommercialBottomNav('pet');
+    this.addBottomNav('pet');
   }
 
   private buildPetDetail(): void {
@@ -851,7 +851,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addRect({ name: 'Talent_TreeScrollThumb', width: 14, height: 160, x: 322, y: 150, fill: new Color(255, 238, 206, 240), border: UIColors.woodStroke, borderSize: 2 });
     this.addButton('Button_TalentLearn', selectedTalentConfig && selectedTalentLevel >= selectedTalentConfig.maxLevel ? '已满级' : '学习/升级', -118, -502, 284, 70, UIColors.buttonGold, UIColors.woodStroke, 30);
     this.addButton('Button_TalentReset', '重置本系', 190, -502, 230, 70, UIColors.woodLight, UIColors.woodStroke, 27);
-    this.addCommercialBottomNav('talent');
+    this.addBottomNav('talent');
   }
 
   private buildSettings(): void {
@@ -1325,11 +1325,11 @@ export class UISkeletonBuilder extends BaseUIComponent {
   private addBottomNav(activeKey: NavKey): void {
     this.addRect({ name: 'BottomNavBg', width: 704, height: 124, x: 0, y: -604, fill: new Color(20, 20, 18, 245), border: UIColors.woodStroke, borderSize: 6 });
     const navItems: NavItem[] = [
-      { key: 'home', label: '主界面' },
+      { key: 'shop', label: '商店' },
+      { key: 'backpack', label: '背包' },
       { key: 'battle', label: '战斗' },
-      { key: 'merge', label: '合成' },
-      { key: 'explore', label: '探索' },
-      { key: 'guild', label: '公会' },
+      { key: 'talent', label: '天赋' },
+      { key: 'pet', label: '宠物' },
     ];
 
     navItems.forEach((item, index) => {
@@ -1364,55 +1364,6 @@ export class UISkeletonBuilder extends BaseUIComponent {
         width: 96,
         height: 30,
         fontSize: 23,
-        color: active ? UIColors.highlightGold : new Color(232, 222, 198, 238),
-        outline: active,
-      });
-    });
-  }
-
-  private addCommercialBottomNav(activeKey: 'shop' | 'backpack' | 'battle' | 'pet' | 'talent' | 'settings'): void {
-    this.addRect({ name: 'BottomNavBg', width: 704, height: 118, x: 0, y: -604, fill: new Color(20, 20, 18, 245), border: UIColors.woodStroke, borderSize: 6 });
-    const navItems = [
-      { key: 'shop', label: '商店' },
-      { key: 'backpack', label: '背包' },
-      { key: 'battle', label: '战斗' },
-      { key: 'pet', label: '宠物' },
-      { key: 'talent', label: '天赋' },
-      { key: 'settings', label: '设置' },
-    ] as const;
-
-    navItems.forEach((item, index) => {
-      const x = -292 + index * 117;
-      const active = item.key === activeKey;
-      const node = this.addRect({
-        name: `NavButton_${item.key}_${active ? 'Active' : 'Inactive'}`,
-        width: 100,
-        height: 98,
-        x,
-        y: -604,
-        fill: active ? new Color(80, 58, 30, 245) : new Color(20, 20, 18, 0),
-        border: active ? UIColors.highlightGold : new Color(70, 50, 35, 255),
-        borderSize: active ? 5 : 3,
-      });
-      const button = node.addComponent(Button);
-      button.target = node;
-      button.transition = Button.Transition.SCALE;
-      button.duration = 0.08;
-      button.zoomScale = 0.96;
-      this.bindButtonAction(node, `NavButton_${item.key}`);
-      this.addRoutedOverlay(`NavIcon_${item.key}`, `NavButton_${item.key}`, 50, 50, x, -574, active ? UIColors.buttonGold : new Color(120, 105, 82, 230), {
-        border: active ? UIColors.highlightGold : UIColors.woodStroke,
-        borderSize: 2,
-      });
-      this.addRoutedText({
-        name: `NavLabel_${item.key}`,
-        actionName: `NavButton_${item.key}`,
-        value: item.label,
-        x,
-        y: -628,
-        width: 88,
-        height: 28,
-        fontSize: 22,
         color: active ? UIColors.highlightGold : new Color(232, 222, 198, 238),
         outline: active,
       });
@@ -2132,11 +2083,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
   }
 
   private resolveButtonRoute(name: string): RouteId | undefined {
-    if (name.includes('NavButton_home')) return 'home';
     if (name.includes('NavButton_battle')) return 'battlePrepare';
-    if (name.includes('NavButton_merge')) return 'merge';
-    if (name.includes('NavButton_explore')) return 'explore';
-    if (name.includes('NavButton_guild')) return 'guild';
     if (name.includes('NavButton_shop')) return 'shop';
     if (name.includes('NavButton_backpack')) return 'backpack';
     if (name.includes('NavButton_pet')) return 'pet';
@@ -3023,11 +2970,6 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Battle_HPBar_Fill')) return undefined;
     if (name.includes('BattleWeapon_Live') && !name.includes('rt_battle_weapon_')) return undefined;
 
-    if (name.includes('NavIcon_home')) return 'rt_cabin';
-    if (name.includes('NavIcon_merge')) return 'rt_item_weapon_chest';
-    if (name.includes('NavIcon_explore')) return 'rt_item_lantern';
-    if (name.includes('NavIcon_guild')) return 'rt_avatar_cat';
-
     const productKey = this.resolveUIProductKey(name);
     const contractedKey = productKey ? resolveUIRuntimeSpriteKey(productKey) : undefined;
     if (contractedKey) {
@@ -3178,10 +3120,6 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Button_Back')) return 'rt_icon_back';
     if (name.includes('Button_BackpackClose') || name.includes('Button_Close') || name.includes('Button_PauseClose') || name.includes('Button_SkillChoiceClose')) return 'rt_icon_close';
 
-    if (name.includes('NavIcon_home')) return 'rt_cabin';
-    if (name.includes('NavIcon_merge')) return 'rt_item_weapon_chest';
-    if (name.includes('NavIcon_explore')) return 'rt_item_lantern';
-    if (name.includes('NavIcon_guild')) return 'rt_avatar_cat';
     if (name.includes('NavIcon_shop')) return 'rt_icon_nav_shop';
     if (name.includes('NavIcon_backpack')) return 'rt_icon_nav_backpack';
     if (name.includes('NavIcon_battle')) return 'rt_icon_nav_battle';
@@ -3261,10 +3199,6 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Button_Back')) return UIAssetKeys.icons.back;
     if (name.includes('Button_BackpackClose') || name.includes('Button_Close')) return UIAssetKeys.icons.close;
 
-    if (name.includes('NavIcon_home')) return UIAssetKeys.icons.home;
-    if (name.includes('NavIcon_merge')) return UIAssetKeys.items.chest;
-    if (name.includes('NavIcon_explore')) return UIAssetKeys.icons.talent;
-    if (name.includes('NavIcon_guild')) return UIAssetKeys.icons.pet;
     if (name.includes('NavIcon_shop')) return UIAssetKeys.icons.shop;
     if (name.includes('NavIcon_backpack')) return UIAssetKeys.icons.backpack;
     if (name.includes('NavIcon_battle')) return UIAssetKeys.icons.battle;

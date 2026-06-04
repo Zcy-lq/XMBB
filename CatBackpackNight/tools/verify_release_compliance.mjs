@@ -76,6 +76,7 @@ const serviceLocatorPath = path.join(projectRoot, 'assets', 'scripts', 'services
 const battleRewardsPath = path.join(projectRoot, 'assets', 'scripts', 'game', 'BattleRewardSystem.ts');
 const gameLogicPath = path.join(projectRoot, 'assets', 'scripts', 'game', 'GameLogicFacade.ts');
 const uiBuilderPath = path.join(projectRoot, 'assets', 'scripts', 'ui', 'UISkeletonBuilder.ts');
+const levelsPath = path.join(projectRoot, 'assets', 'configs', 'levels.json');
 const packagePath = path.join(projectRoot, 'package.json');
 
 for (const filePath of [
@@ -87,6 +88,7 @@ for (const filePath of [
   battleRewardsPath,
   gameLogicPath,
   uiBuilderPath,
+  levelsPath,
   packagePath,
 ]) {
   assertFile(filePath);
@@ -101,6 +103,7 @@ if (failures.length === 0) {
   const battleRewards = read(battleRewardsPath);
   const gameLogic = read(gameLogicPath);
   const uiBuilder = read(uiBuilderPath);
+  const levels = readJson(levelsPath);
   const packageJson = readJson(packagePath);
 
   for (const [label, source] of Object.entries({
@@ -126,6 +129,12 @@ if (failures.length === 0) {
   }
   if (platform.fallbacks?.grantRewardOnlyOnCompletedRewardedVideo !== true) {
     fail('platform.fallbacks.grantRewardOnlyOnCompletedRewardedVideo must be true.');
+  }
+  if (levels.battle?.unlimitedEnergyInDevelopment === true) {
+    fail('Default release candidate levels.json must charge battle energy; unlimitedEnergyInDevelopment cannot be true in committed release config.');
+  }
+  if (!Number.isFinite(levels.battle?.energyCost) || levels.battle.energyCost <= 0) {
+    fail('Default release candidate levels.json must define a positive battle.energyCost.');
   }
 
   if (isPlaceholder(platform.wechat?.appid)) {

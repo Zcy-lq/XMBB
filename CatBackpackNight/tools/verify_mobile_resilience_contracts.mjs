@@ -86,10 +86,14 @@ for (const [, route] of resolveBody.matchAll(/return\s+'([^']+)'/g)) {
   }
 }
 
-for (const coreRoute of ['home', 'battlePrepare', 'merge', 'shop', 'backpack', 'pet', 'talent', 'settings']) {
+for (const coreRoute of ['home', 'battlePrepare', 'shop', 'backpack', 'pet', 'talent', 'settings']) {
   if (!resolveBody.includes(`return '${coreRoute}'`)) {
     fail(`Core page switching must expose route target: ${coreRoute}`);
   }
+}
+
+if (!/name === 'Button_Merge'[\s\S]*\? 'merge' : 'mergeGuide'/.test(resolveBody)) {
+  fail('Core page switching must expose merge through the backpack merge button after the first-time guide.');
 }
 
 if (failures.length > 0) {

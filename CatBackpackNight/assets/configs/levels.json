@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "battle": {
     "energyCost": 5,
-    "unlimitedEnergyInDevelopment": true,
+    "unlimitedEnergyInDevelopment": false,
     "energyMax": 30,
     "energyRecoverIntervalSec": 600,
     "durationSec": 45,

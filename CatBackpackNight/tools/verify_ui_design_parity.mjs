@@ -11,7 +11,9 @@ const screenshotFreshnessSources = [
   'assets/scripts/scenes/BattleSceneEntry.ts',
   'assets/scripts/game/BattleSessionModel.ts',
   'assets/scripts/game/GameEvents.ts',
+  'assets/scripts/game/GameConfigRepository.ts',
   'assets/scripts/configs/RouteConfig.ts',
+  'assets/configs/levels.json',
   'tools/refresh_cocos_preview_ui_chunk.mjs',
 ].map((relativePath) => path.join(projectRoot, relativePath));
 const expectedScreenshots = [

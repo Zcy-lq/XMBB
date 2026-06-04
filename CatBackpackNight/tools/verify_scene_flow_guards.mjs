@@ -609,11 +609,15 @@ if (failures.length === 0) {
   }
 
   if (!facade.includes('this.repo.getBattleEnergyCost()')) {
-    fail('GameLogicFacade battle preparation must expose development unlimited-energy cost.');
+    fail('GameLogicFacade battle preparation must expose config-driven battle energy cost.');
   }
 
-  if (!read(path.join(projectRoot, 'assets', 'configs', 'levels.json')).includes('"unlimitedEnergyInDevelopment": true')) {
-    fail('levels.json must keep development unlimited energy enabled until production balancing is restored.');
+  if (levels?.battle?.unlimitedEnergyInDevelopment !== false) {
+    fail('Default release candidate levels.json must not enable development unlimited energy.');
+  }
+
+  if (!Number.isFinite(levels?.battle?.energyCost) || levels.battle.energyCost <= 0) {
+    fail('Default release candidate levels.json must define a positive battle energy cost.');
   }
 
   for (const dynamicBattleName of [
@@ -861,14 +865,31 @@ if (failures.length === 0) {
   }
 
   for (const expectedBottomRoute of [
-    "if (name.includes('NavButton_merge')) return 'merge';",
-    "if (name.includes('NavButton_explore')) return 'explore';",
-    "if (name.includes('NavButton_guild')) return 'guild';",
-    "if (name.includes('NavIcon_home')) return UIAssetKeys.icons.home;",
-    "if (name.includes('NavIcon_home')) return 'rt_cabin';",
+    "if (name.includes('NavButton_shop')) return 'shop';",
+    "if (name.includes('NavButton_backpack')) return 'backpack';",
+    "if (name.includes('NavButton_talent')) return 'talent';",
+    "if (name.includes('NavButton_pet')) return 'pet';",
+    "if (name.includes('NavIcon_shop')) return UIAssetKeys.icons.shop;",
+    "if (name.includes('NavIcon_backpack')) return UIAssetKeys.icons.backpack;",
+    "if (name.includes('NavIcon_battle')) return UIAssetKeys.icons.battle;",
+    "if (name.includes('NavIcon_talent')) return UIAssetKeys.icons.talent;",
+    "if (name.includes('NavIcon_pet')) return UIAssetKeys.icons.pet;",
   ]) {
     if (!uiBuilder.includes(expectedBottomRoute)) {
       fail(`HOME_01 bottom nav mapping is missing design-specific behavior: ${expectedBottomRoute}`);
+    }
+  }
+
+  const addBottomNavBody = /private addBottomNav\([^)]*\): void \{([\s\S]*?)\n  private addRoutedOverlay/.exec(uiBuilder)?.[1] ?? '';
+  for (const forbiddenBottomNav of [
+    "{ key: 'home', label: '主界面' }",
+    "{ key: 'merge', label: '合成' }",
+    "{ key: 'explore', label: '探索' }",
+    "{ key: 'guild', label: '公会' }",
+    "{ key: 'settings', label: '设置' }",
+  ]) {
+    if (addBottomNavBody.includes(forbiddenBottomNav)) {
+      fail(`HOME_01 bottom nav still renders legacy entry: ${forbiddenBottomNav}`);
     }
   }
 
@@ -1129,11 +1150,11 @@ if (failures.length === 0) {
     'rt_icon_side_task',
     'rt_icon_side_mail',
     'rt_icon_side_rank',
+    'rt_icon_nav_shop',
+    'rt_icon_nav_backpack',
     'rt_icon_nav_battle',
-    'rt_cabin',
-    'rt_item_weapon_chest',
-    'rt_item_lantern',
-    'rt_avatar_cat',
+    'rt_icon_nav_talent',
+    'rt_icon_nav_pet',
   ]) {
     if (placeholderIds.has(id)) {
       fail(`Homepage P0 icon must be independently generated and cannot remain runtimePlaceholder: ${id}`);

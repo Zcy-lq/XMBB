@@ -9,6 +9,7 @@ const uiBuilderPath = path.join(projectRoot, 'assets', 'scripts', 'ui', 'UISkele
 const runtimeSpriteAssetsPath = path.join(projectRoot, 'assets', 'scripts', 'ui', 'RuntimeSpriteAssets.ts');
 const baseSceneEntryPath = path.join(projectRoot, 'assets', 'scripts', 'scenes', 'BaseSceneEntry.ts');
 const routeConfigPath = path.join(projectRoot, 'assets', 'scripts', 'configs', 'RouteConfig.ts');
+const gameConfigRepositoryPath = path.join(projectRoot, 'assets', 'scripts', 'game', 'GameConfigRepository.ts');
 const previewRoot = path.join(projectRoot, 'temp', 'programming', 'packer-driver', 'targets', 'preview');
 const previewImportMapPath = path.join(previewRoot, 'import-map.json');
 const generatedChunkDir = path.join(previewRoot, 'chunks', 'codex');
@@ -205,6 +206,7 @@ const routeChunk = refreshImportMapSource(routeConfigPath, 'RouteConfig', (map) 
 const baseSceneChunk = refreshImportMapSource(baseSceneEntryPath, 'BaseSceneEntry', (map) =>
   collectMappedChunksMatching(map, (source) => source.includes('BaseSceneEntry') && source.includes('resolvePreviewScreenKey')),
 );
+const gameConfigRepositoryChunk = refreshImportMapSource(gameConfigRepositoryPath, 'GameConfigRepository');
 
 fs.writeFileSync(previewImportMapPath, `${JSON.stringify(importMap, null, 2)}\n`, 'utf8');
 
@@ -219,4 +221,5 @@ console.log(JSON.stringify({
   runtimeChunkPath: path.relative(projectRoot, runtimeChunk.chunkPath),
   routeChunk,
   baseSceneChunk,
+  gameConfigRepositoryChunk,
 }, null, 2));
