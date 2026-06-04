@@ -473,18 +473,80 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addProgressBar('Battle_HPBar', 30, 487, 300, 32, hpRatio, UIColors.successGreen);
     this.addText({ name: 'Battle_HPText', value: `${Math.ceil(campHp)} / ${Math.ceil(campHpMax)}`, x: 30, y: 487, width: 160, height: 34, fontSize: 26, color: UIColors.whiteText, outline: true });
     this.addText({ name: 'Battle_KillCounter', value: `击败 ${battleState?.defeatedMonsters ?? 0}/${battleState?.spawnedMonsters ?? 0}`, x: -224, y: 532, width: 180, height: 32, fontSize: 24, color: UIColors.highlightGold, outline: true });
-    this.addRect({ name: 'Battle_WeaponSlotBar', width: 720, height: 176, x: 0, y: -574, fill: new Color(23, 26, 24, 238), border: UIColors.woodStroke, borderSize: 8 });
-    const slotPositions = [-292, -174, -56, 62, 180];
-    for (let i = 0; i < slotPositions.length; i += 1) {
-      this.addBattleWeaponSlot(`BattleWeapon_Static_${i + 1}`, slotPositions[i], -574, undefined, 0);
-    }
-    this.addButton('Button_AutoMerge', autoMergeEnabled ? '自动\n合成' : '手动\n合成', 306, -574, 96, 118, autoMergeEnabled ? UIColors.wood : UIColors.woodLight, UIColors.woodStroke, 28);
-    this.addRect({ name: 'Battle_AutoMergeState', width: 52, height: 26, x: 306, y: -506, fill: autoMergeEnabled ? UIColors.successGreen : UIColors.warningRed, border: UIColors.whiteText, borderSize: 2, label: autoMergeEnabled ? '开' : '关', fontSize: 16, textColor: UIColors.whiteText, outline: true });
+    this.addBattleSideControls(autoMergeEnabled);
+    this.addBattlePetSkillRow();
+    this.addBattleItemQuickBar();
+    this.addBattleWeaponBar(autoMergeEnabled);
     if (this.battleState?.monsters.some((monster) => monster.alive)) {
       this.updateBattleLiveState();
     } else {
       this.addBattleDesignPreviewLayer();
     }
+  }
+
+  private addBattleSideControls(autoMergeEnabled: boolean): void {
+    this.addRect({ name: 'Battle_SideControlGroup', width: 86, height: 292, x: 320, y: -48, fill: new Color(20, 20, 18, 210), border: UIColors.woodStroke, borderSize: 5 });
+    this.addBattleSideButton('Battle_SideAuto', 'Button_BattleSideAuto', autoMergeEnabled ? '自动' : '手动', 42, autoMergeEnabled ? UIColors.buttonGold : UIColors.woodLight);
+    this.addBattleSideButton('Battle_SideSpeed', 'Button_BattleSpeed', 'x2\n倍速', -54, UIColors.wood);
+    this.addBattleSideButton('Battle_SideRetreat', 'Button_BattleRetreat', '撤退', -150, UIColors.warningRed);
+  }
+
+  private addBattleSideButton(name: string, actionName: string, label: string, y: number, fill: Color): void {
+    const node = this.addRect({ name, width: 68, height: 82, x: 320, y, fill, border: UIColors.woodStroke, borderSize: 4, label, fontSize: label.includes('\n') ? 18 : 22, textColor: UIColors.whiteText, outline: true });
+    this.addButtonBehavior(node, actionName);
+  }
+
+  private addBattlePetSkillRow(): void {
+    this.addRect({ name: 'Battle_PetSkillRow', width: 610, height: 82, x: -48, y: -334, fill: new Color(18, 20, 19, 228), border: new Color(170, 98, 54, 245), borderSize: 6 });
+    this.addBattlePetSkillSlot('Battle_PetSkillSlot_1', -280, -334, '柴', '可用', UIColors.buttonGold, 'Button_BattlePetSkill_1');
+    this.addBattlePetSkillSlot('Battle_PetSkillSlot_2', -182, -334, '黑', '4.2', new Color(78, 62, 60, 245), 'Button_BattlePetSkill_2');
+    this.addBattlePetSkillSlot('Battle_PetSkillSlot_3', -84, -334, '橘', '冷却', UIColors.woodLight, 'Button_BattlePetSkill_3');
+    [-4, 76, 156].forEach((x, index) => {
+      this.addRect({ name: `Battle_PetSkillSlot_Locked_${index + 1}`, width: 66, height: 66, x, y: -334, fill: new Color(38, 36, 34, 238), border: new Color(92, 76, 58, 220), borderSize: 4 });
+      this.addRect({ name: `Battle_PetSkillSlot_Locked_${index + 1}_rt_icon_lock`, width: 34, height: 34, x, y: -326, fill: Color.WHITE });
+    });
+  }
+
+  private addBattlePetSkillSlot(name: string, x: number, y: number, title: string, state: string, fill: Color, actionName: string): void {
+    const node = this.addRect({ name, width: 74, height: 72, x, y, fill, border: UIColors.woodStroke, borderSize: 4 });
+    this.addButtonBehavior(node, actionName);
+    this.addRect({ name: `${name}_rt_avatar_cat`, width: 42, height: 42, x, y: y + 10, fill: Color.WHITE });
+    this.addText({ name: `${name}_Title`, value: title, x, y: y - 10, width: 58, height: 22, fontSize: 16, color: UIColors.whiteText, outline: true });
+    this.addText({ name: `${name}_State`, value: state, x, y: y - 30, width: 58, height: 20, fontSize: 15, color: UIColors.highlightGold, outline: true });
+  }
+
+  private addBattleItemQuickBar(): void {
+    this.addRect({ name: 'Battle_ItemQuickBar', width: 610, height: 76, x: -48, y: -426, fill: new Color(18, 20, 19, 230), border: new Color(128, 86, 48, 245), borderSize: 5 });
+    this.addBattleQuickItem('Battle_ItemPotionRed', -282, -426, 'rt_item_energy_potion', '3', new Color(198, 64, 48, 255), 'Button_BattleItem_Red');
+    this.addBattleQuickItem('Battle_ItemPotionBlue', -186, -426, 'rt_item_potion_blue', '2', UIColors.blueGem, 'Button_BattleItem_Blue');
+    this.addBattleQuickItem('Battle_ItemPotionGreen', -90, -426, 'rt_item_lantern', '1', UIColors.successGreen, 'Button_BattleItem_Green');
+    const equip = this.addRect({ name: 'Battle_ItemEquipEmpty', width: 70, height: 62, x: 18, y: -426, fill: new Color(36, 34, 30, 238), border: new Color(92, 76, 58, 230), borderSize: 4, label: '+', fontSize: 34, textColor: UIColors.highlightGold, outline: true });
+    this.addButtonBehavior(equip, 'Button_BattleItem_Equip');
+    this.addText({ name: 'Battle_ItemEquipText', value: '未装备', x: 128, y: -426, width: 150, height: 32, fontSize: 22, color: UIColors.highlightGold, outline: true });
+  }
+
+  private addBattleQuickItem(name: string, x: number, y: number, spriteKey: RuntimeSpriteAssetKey, count: string, badgeFill: Color, actionName: string): void {
+    const node = this.addRect({ name, width: 76, height: 62, x, y, fill: new Color(36, 34, 30, 238), border: UIColors.woodStroke, borderSize: 4 });
+    this.addButtonBehavior(node, actionName);
+    this.addRect({ name: `${name}_${spriteKey}`, width: 44, height: 44, x: x - 8, y: y + 4, fill: Color.WHITE });
+    this.addRect({ name: `${name}_CountBadge`, width: 26, height: 26, x: x + 24, y: y - 18, fill: badgeFill, border: UIColors.whiteText, borderSize: 2, label: count, fontSize: 16, textColor: UIColors.whiteText, outline: true });
+  }
+
+  private addBattleWeaponBar(autoMergeEnabled: boolean): void {
+    this.addRect({ name: 'Battle_WeaponSlotBar', width: 720, height: 176, x: 0, y: -574, fill: new Color(23, 26, 24, 238), border: UIColors.woodStroke, borderSize: 8 });
+    const weaponSlots: Array<{ x: number; key: RuntimeSpriteAssetKey | undefined; level: number }> = [
+      { x: -292, key: 'rt_battle_weapon_gold_sword', level: 10 },
+      { x: -174, key: 'rt_battle_weapon_bow', level: 8 },
+      { x: -56, key: 'rt_battle_weapon_spear', level: 6 },
+      { x: 62, key: 'rt_item_bomb', level: 7 },
+      { x: 180, key: 'rt_battle_weapon_orb', level: 5 },
+    ];
+    weaponSlots.forEach((slot, index) => {
+      this.addBattleWeaponSlot(`BattleWeapon_Static_${index + 1}`, slot.x, -574, slot.key, 0.64);
+      this.addText({ name: `BattleWeapon_Static_${index + 1}_Level`, value: `Lv.${slot.level}`, x: slot.x, y: -607, width: 72, height: 22, fontSize: 17, color: UIColors.whiteText, outline: true });
+    });
+    this.addButton('Button_AutoMerge', autoMergeEnabled ? '自动\n合成' : '手动\n合成', 306, -574, 96, 118, autoMergeEnabled ? UIColors.wood : UIColors.woodLight, UIColors.woodStroke, 28);
+    this.addRect({ name: 'Battle_AutoMergeState', width: 52, height: 26, x: 306, y: -506, fill: autoMergeEnabled ? UIColors.successGreen : UIColors.warningRed, border: UIColors.whiteText, borderSize: 2, label: autoMergeEnabled ? '开' : '关', fontSize: 16, textColor: UIColors.whiteText, outline: true });
   }
 
   private addBattleDesignPreviewLayer(): void {
@@ -2150,8 +2212,28 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return true;
     }
 
-    if (name.includes('Button_AutoMerge')) {
+    if (name.includes('Button_BattleSideAuto') || name.includes('Button_AutoMerge')) {
       eventBus.emit(GameEvents.BattleAutoMergeToggleRequested, {});
+      return true;
+    }
+
+    if (name.includes('Button_BattleSpeed')) {
+      this.showToast('倍速将在正式战斗节奏接入后生效');
+      return true;
+    }
+
+    if (name.includes('Button_BattleRetreat')) {
+      void SceneRouter.instance.go('pauseModal');
+      return true;
+    }
+
+    if (name.includes('Button_BattlePetSkill')) {
+      this.showToast('宠物技能冷却中，请稍后释放');
+      return true;
+    }
+
+    if (name.includes('Button_BattleItem')) {
+      this.showToast('道具将在战斗道具系统接入后消耗');
       return true;
     }
 

@@ -17,4 +17,37 @@ assert.match(source, /if \(!this\.battleState\) \{\s*this\.addCharacterStand\('B
 assert.match(source, /BattleDemo_rt_monster_goblin/, 'battle preview layer should include goblin enemies');
 assert.match(source, /BattleDemo_Damage_/, 'battle preview layer should include damage numbers');
 
+for (const requiredBattleHud of [
+  'Battle_SideControlGroup',
+  'Battle_SideAuto',
+  'Battle_SideSpeed',
+  'Battle_SideRetreat',
+  'Battle_PetSkillRow',
+  'Battle_PetSkillSlot_1',
+  'Battle_PetSkillSlot_2',
+  'Battle_PetSkillSlot_Locked',
+  'Battle_ItemQuickBar',
+  'Battle_ItemPotionRed',
+  'Battle_ItemPotionBlue',
+  'Battle_ItemPotionGreen',
+  'Battle_ItemEquipEmpty',
+  'Battle_WeaponSlotBar',
+  'Button_AutoMerge',
+]) {
+  assert.match(source, new RegExp(requiredBattleHud), `battle page should include design HUD component ${requiredBattleHud}`);
+}
+assert.match(source, /BattleWeapon_Static_\$\{index \+ 1\}/, 'battle page should generate five design weapon slots');
+assert.match(source, /weaponSlots\.forEach/, 'battle page weapon bar should render the configured weapon slot list');
+
+assert.match(
+  source,
+  /private buildBattle\(\): void[\s\S]*Battle_PetSkillRow[\s\S]*Battle_ItemQuickBar[\s\S]*Battle_WeaponSlotBar/,
+  'battle page vertical HUD order should match the design: pet skills, item quick bar, weapon bar',
+);
+assert.match(
+  source,
+  /private buildBattle\(\): void[\s\S]*Battle_SideAuto[\s\S]*Battle_SideSpeed[\s\S]*Battle_SideRetreat/,
+  'battle page should include the design side controls for auto, speed, and retreat',
+);
+
 console.log('[verify_battle_design_parity] battle page design parity contract is present.');
