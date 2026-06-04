@@ -34,11 +34,20 @@ function encodeProjectImportSpec(sourcePath, specifier) {
     return specifier;
   }
 
-  return pathToFileURL(path.resolve(path.dirname(sourcePath), `${specifier}.ts`)).href;
+  const targetSpecifier = path.extname(specifier) ? specifier : `${specifier}.ts`;
+  return pathToFileURL(path.resolve(path.dirname(sourcePath), targetSpecifier)).href;
+}
+
+function inlineJsonImports(sourcePath, source) {
+  return source.replace(/import\s+([A-Za-z_$][\w$]*)\s+from\s+'([^']+\.json)';/g, (match, binding, specifier) => {
+    const jsonPath = path.resolve(path.dirname(sourcePath), specifier);
+    const json = fs.readFileSync(jsonPath, 'utf8').trim();
+    return `const ${binding} = ${json} as const;`;
+  });
 }
 
 function rewriteProjectImports(sourcePath, source) {
-  return source.replace(/from '([^']+)'/g, (match, specifier) => {
+  return inlineJsonImports(sourcePath, source).replace(/from '([^']+)'/g, (match, specifier) => {
     return `from '${encodeProjectImportSpec(sourcePath, specifier)}'`;
   });
 }

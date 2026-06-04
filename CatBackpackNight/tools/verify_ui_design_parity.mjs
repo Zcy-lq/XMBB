@@ -6,6 +6,14 @@ import { fileURLToPath } from 'node:url';
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const workspaceRoot = path.resolve(projectRoot, '..');
 const screenshotDir = path.join(projectRoot, 'tmp', 'final_mobile_pages_after_ui_pass');
+const screenshotFreshnessSources = [
+  'assets/scripts/ui/UISkeletonBuilder.ts',
+  'assets/scripts/scenes/BattleSceneEntry.ts',
+  'assets/scripts/game/BattleSessionModel.ts',
+  'assets/scripts/game/GameEvents.ts',
+  'assets/scripts/configs/RouteConfig.ts',
+  'tools/refresh_cocos_preview_ui_chunk.mjs',
+].map((relativePath) => path.join(projectRoot, relativePath));
 const expectedScreenshots = [
   '01_login.png',
   '02_home.png',
@@ -45,6 +53,7 @@ const minScreenshotHeight = 1280;
 const targetPortraitAspect = 750 / 1334;
 const aspectTolerance = 0.02;
 const failures = [];
+const newestFreshnessSourceMs = Math.max(...screenshotFreshnessSources.map((filePath) => fs.statSync(filePath).mtimeMs));
 
 function fail(message) {
   failures.push(message);
@@ -109,6 +118,9 @@ if (!fs.existsSync(screenshotDir)) {
     const byteSize = fs.statSync(screenshotPath).size;
     if (byteSize < 100_000) {
       fail(`Screenshot evidence is suspiciously small: ${path.relative(projectRoot, screenshotPath)} has ${byteSize} bytes`);
+    }
+    if (fs.statSync(screenshotPath).mtimeMs < newestFreshnessSourceMs) {
+      fail(`Screenshot evidence is stale and must be recaptured after UI/source changes: ${path.relative(projectRoot, screenshotPath)}`);
     }
   }
 }

@@ -279,21 +279,23 @@ export class UISkeletonBuilder extends BaseUIComponent {
 
     this.addTabs(['每日商店', '钻石商店', '特惠礼包'], ['Daily', 'Diamond', 'Bundle'], 0, 370, 668, 76, 0);
     this.addRect({ name: 'RedDot_ShopDailyTab', width: 28, height: 28, x: -108, y: 402, fill: UIColors.warningRed, border: UIColors.whiteText, borderSize: 2, label: '!', fontSize: 18 });
-    this.addRect({ name: 'Shop_MainPanel', width: 710, height: 846, x: 0, y: -68, fill: new Color(28, 25, 20, 238), border: UIColors.woodStroke, borderSize: 8 });
+    this.addRect({ name: 'Shop_MainPanel', width: 710, height: 820, x: 0, y: -82, fill: new Color(28, 25, 20, 238), border: UIColors.woodStroke, borderSize: 8 });
+    this.addRect({ name: 'Shop_GoodsGridPanel', width: 672, height: 622, x: 0, y: -46, fill: new Color(12, 18, 18, 55), border: new Color(255, 219, 147, 64), borderSize: 3 });
 
     const cards: ShopItemOptions[] = [
-      { name: 'GoodsGold', x: -224, y: 130, title: '金币', subtitle: 'x5000', price: '免费', tag: '每日', color: UIColors.buttonGold },
-      { name: 'GoodsStone', x: 0, y: 130, title: '强化石', subtitle: 'x20', price: '钻石 50', color: UIColors.blueGem },
-      { name: 'GoodsEgg', x: 224, y: 130, title: '宠物蛋', subtitle: 'x1', price: '钻石 300', tag: '热卖', color: UIColors.purpleGem },
-      { name: 'GoodsChest', x: -224, y: -198, title: '武器宝箱', subtitle: 'x1', price: '蓝钻 200', color: new Color(198, 88, 34, 255) },
-      { name: 'GoodsDiamond', x: 0, y: -198, title: '钻石', subtitle: 'x100', price: '蓝钻 6', color: UIColors.blueGem },
-      { name: 'GoodsEnergy', x: 224, y: -198, title: '体力', subtitle: 'x20', price: '蓝钻 10', tag: '限购', color: UIColors.warningRed },
+      { name: 'GoodsGold', x: -224, y: 104, title: '金币', subtitle: 'x5000', price: '免费', tag: '每日', color: UIColors.buttonGold },
+      { name: 'GoodsStone', x: 0, y: 104, title: '强化石', subtitle: 'x20', price: '钻石 50', color: UIColors.blueGem },
+      { name: 'GoodsEgg', x: 224, y: 104, title: '宠物蛋', subtitle: 'x1', price: '钻石 300', tag: '热卖', color: UIColors.purpleGem },
+      { name: 'GoodsChest', x: -224, y: -204, title: '武器宝箱', subtitle: 'x1', price: '蓝钻 200', color: new Color(198, 88, 34, 255) },
+      { name: 'GoodsDiamond', x: 0, y: -204, title: '钻石', subtitle: 'x100', price: '蓝钻 6', color: UIColors.blueGem },
+      { name: 'GoodsEnergy', x: 224, y: -204, title: '体力', subtitle: 'x20', price: '蓝钻 10', tag: '限购', color: UIColors.warningRed },
     ];
     cards.forEach((item) => this.addShopCard(item));
 
-    this.addText({ name: 'Shop_ResetLabel', value: '刷新倒计时：12:34:56', x: 0, y: -416, width: 360, height: 38, fontSize: 28, color: UIColors.whiteText });
-    this.addButton('Button_RefreshShopSmall', '刷新', 0, -474, 250, 70, UIColors.successGreen, UIColors.woodStroke, 30);
-    this.addText({ name: 'Shop_FooterHint', value: '观看广告刷新商店', x: 0, y: -528, width: 360, height: 32, fontSize: 22, color: new Color(230, 220, 200, 230) });
+    this.addRect({ name: 'Shop_RefreshPanel', width: 642, height: 126, x: 0, y: -468, fill: new Color(20, 24, 20, 232), border: UIColors.woodStroke, borderSize: 5 });
+    this.addText({ name: 'Shop_ResetLabel', value: '刷新倒计时：12:34:56', x: -116, y: -444, width: 346, height: 38, fontSize: 25, color: UIColors.whiteText });
+    this.addButton('Button_RefreshShopSmall', '刷新', 210, -444, 190, 60, UIColors.successGreen, UIColors.woodStroke, 28);
+    this.addText({ name: 'Shop_FooterHint', value: '观看广告刷新商店', x: 0, y: -510, width: 360, height: 30, fontSize: 21, color: new Color(230, 220, 200, 230) });
   }
 
   private buildBackpack(): void {
@@ -458,6 +460,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     const secondsLeft = battleState ? battleState.secondsLeft : 45;
     const campHp = battleState ? battleState.campHp : 10;
     const campHpMax = battleState ? battleState.campHpMax : 10;
+    const autoMergeEnabled = battleState?.autoMergeEnabled ?? true;
     const hpRatio = campHpMax > 0 ? campHp / campHpMax : 0;
 
     this.addNightBackground('Bg_BattleForest');
@@ -475,7 +478,8 @@ export class UISkeletonBuilder extends BaseUIComponent {
     for (let i = 0; i < slotPositions.length; i += 1) {
       this.addBattleWeaponSlot(`BattleWeapon_Static_${i + 1}`, slotPositions[i], -574, undefined, 0);
     }
-    this.addButton('Button_AutoMerge', '自动\n合成', 306, -574, 96, 118, UIColors.wood, UIColors.woodStroke, 28);
+    this.addButton('Button_AutoMerge', autoMergeEnabled ? '自动\n合成' : '手动\n合成', 306, -574, 96, 118, autoMergeEnabled ? UIColors.wood : UIColors.woodLight, UIColors.woodStroke, 28);
+    this.addRect({ name: 'Battle_AutoMergeState', width: 52, height: 26, x: 306, y: -506, fill: autoMergeEnabled ? UIColors.successGreen : UIColors.warningRed, border: UIColors.whiteText, borderSize: 2, label: autoMergeEnabled ? '开' : '关', fontSize: 16, textColor: UIColors.whiteText, outline: true });
     if (this.battleState?.monsters.some((monster) => monster.alive)) {
       this.updateBattleLiveState();
     } else {
@@ -855,16 +859,19 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addNightBackground('Bg_Settings');
     this.addCommercialRouteBackdrop('Settings');
     this.addWoodHeader('设置');
-    this.addRect({ name: 'Settings_MainPanel', width: 690, height: 772, x: 0, y: 24, fill: new Color(239, 205, 157, 248), border: UIColors.woodStroke, borderSize: 8 });
-    this.addSettingsRow('Music', '背景音乐', settings.musicEnabled ? '开启' : '关闭', 272);
-    this.addSettingsRow('Sfx', '音效', settings.soundEnabled ? '开启' : '关闭', 156);
-    this.addSettingsRow('Vibrate', '震动', settings.vibrationEnabled ? '开启' : '关闭', 40);
-    this.addSettingsRow('PowerSave', '省电模式', settings.powerSavingEnabled ? '开启' : '关闭', -76);
-    this.addSettingsRow('Privacy', '隐私协议', '查看', -192);
-    this.addSettingsRow('Service', '客服与反馈', '联系客服', -308);
-    this.addRect({ name: 'Settings_VersionPanel', width: 620, height: 54, x: 0, y: -404, fill: UIColors.wood, border: UIColors.woodStroke, borderSize: 4, label: `当前版本    V${versionConfig.appVersion}`, fontSize: 24, textColor: UIColors.whiteText, outline: true });
-    this.addButton('Button_SettingsLogout', '清理缓存并重新登录', 0, -492, 440, 76, UIColors.actionBlue, UIColors.woodStroke, 28);
-    this.addRect({ name: 'Settings_SafeNotice', width: 620, height: 54, x: 0, y: -584, fill: new Color(12, 18, 18, 180), border: new Color(220, 220, 220, 110), borderSize: 3, label: '账户安全检测中...', fontSize: 22, textColor: UIColors.whiteText, outline: true });
+    this.addRect({ name: 'Settings_MainPanel', width: 690, height: 914, x: 0, y: -24, fill: new Color(239, 205, 157, 248), border: UIColors.woodStroke, borderSize: 8 });
+    this.addSettingsRow('Music', '背景音乐', settings.musicEnabled ? '开启' : '关闭', 326);
+    this.addSettingsRow('Sfx', '音效', settings.soundEnabled ? '开启' : '关闭', 252);
+    this.addSettingsRow('Vibrate', '震动', settings.vibrationEnabled ? '开启' : '关闭', 178);
+    this.addSettingsRow('PowerSave', '省电模式', settings.powerSavingEnabled ? '开启' : '关闭', 104);
+    this.addSettingsRow('ExchangeCode', '兑换码', '输入兑换码', 30);
+    this.addSettingsRow('UserAgreement', '用户协议', '查看', -44);
+    this.addSettingsRow('PrivacyPolicy', '隐私政策', '查看', -118);
+    this.addSettingsRow('HelpCenter', '帮助中心', '查看', -192);
+    this.addSettingsRow('Service', '联系客服', '联系客服', -266);
+    this.addRect({ name: 'Settings_VersionPanel', width: 620, height: 50, x: 0, y: -356, fill: UIColors.wood, border: UIColors.woodStroke, borderSize: 4, label: `当前版本    V${versionConfig.appVersion}`, fontSize: 23, textColor: UIColors.whiteText, outline: true });
+    this.addButton('Button_SettingsLogout', '清理缓存并重新登录', 0, -438, 440, 66, UIColors.actionBlue, UIColors.woodStroke, 26);
+    this.addRect({ name: 'Settings_SafeNotice', width: 620, height: 50, x: 0, y: -526, fill: new Color(12, 18, 18, 180), border: new Color(220, 220, 220, 110), borderSize: 3, label: '账户安全检测中...', fontSize: 21, textColor: UIColors.whiteText, outline: true });
   }
 
   private buildMailDetail(): void {
@@ -1039,6 +1046,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
   private buildSkillChoice(): void {
     const skillChoices = this.getVisibleSkillChoices();
     const rerollsRemaining = this.battleState?.skillRerollsRemaining ?? 1;
+    const autoMergeEnabled = this.battleState?.autoMergeEnabled ?? true;
     this.addBattleModalBackdrop('SkillChoice');
     this.addCommercialRouteBackdrop('SkillChoice');
     this.addRect({ name: 'SkillChoice_MaskLayer', width: DESIGN_WIDTH, height: DESIGN_HEIGHT, x: 0, y: 0, fill: new Color(0, 0, 0, 126) });
@@ -1057,7 +1065,8 @@ export class UISkeletonBuilder extends BaseUIComponent {
       const keys: Array<RuntimeSpriteAssetKey | undefined> = ['rt_battle_weapon_sword', 'rt_battle_weapon_bow', 'rt_battle_weapon_spear', 'rt_item_bomb', 'rt_battle_weapon_orb', 'rt_battle_weapon_orb'];
       this.addBattleWeaponSlot(`SkillChoice_BattleWeapon_${index + 1}`, x, -592, keys[index], 1);
     });
-    this.addButton('Button_SkillChoiceAutoMerge', '自动\n合成', 304, -592, 98, 108, UIColors.wood, UIColors.woodStroke, 24);
+    this.addButton('Button_SkillChoiceAutoMerge', autoMergeEnabled ? '自动\n合成' : '手动\n合成', 304, -592, 98, 108, autoMergeEnabled ? UIColors.wood : UIColors.woodLight, UIColors.woodStroke, 24);
+    this.addRect({ name: 'SkillChoice_AutoMergeState', width: 52, height: 24, x: 304, y: -532, fill: autoMergeEnabled ? UIColors.successGreen : UIColors.warningRed, border: UIColors.whiteText, borderSize: 2, label: autoMergeEnabled ? '开' : '关', fontSize: 15, textColor: UIColors.whiteText, outline: true });
   }
 
   private addTopPlayerBar(): void {
@@ -1452,13 +1461,15 @@ export class UISkeletonBuilder extends BaseUIComponent {
   }
 
   private addShopCard(item: ShopItemOptions): void {
-    this.addRect({ name: `GoodsCard_${item.name}`, width: 214, height: 315, x: item.x, y: item.y, fill: UIColors.parchment, border: UIColors.woodStroke, borderSize: 6 });
+    this.addRect({ name: `GoodsCard_${item.name}`, width: 206, height: 282, x: item.x, y: item.y, fill: UIColors.parchment, border: UIColors.woodStroke, borderSize: 6 });
     if (item.tag) {
-      this.addRect({ name: `GoodsTag_${item.name}`, width: 74, height: 32, x: item.x - 58, y: item.y + 134, fill: UIColors.warningRed, border: UIColors.woodStroke, borderSize: 2, label: item.tag, fontSize: 18 });
+      this.addRect({ name: `GoodsTag_${item.name}`, width: 70, height: 30, x: item.x - 58, y: item.y + 116, fill: UIColors.warningRed, border: UIColors.woodStroke, borderSize: 2, label: item.tag, fontSize: 17 });
     }
-    this.addText({ name: `${item.name}_Title`, value: item.title, x: item.x, y: item.y + 112, width: 168, height: 36, fontSize: 30, color: UIColors.textBrown });
-    this.addRect({ name: `${item.name}_Icon`, width: 150, height: 150, x: item.x, y: item.y + 13, fill: item.color });
-    this.addButton(`${item.name}_Buy`, item.price, item.x, item.y - 120, 176, 58, UIColors.successGreen, UIColors.woodStroke, 25);
+    this.addText({ name: `${item.name}_Title`, value: item.title, x: item.x, y: item.y + 102, width: 166, height: 34, fontSize: 28, color: UIColors.textBrown });
+    this.addRect({ name: `ShopItemIconFrame_${item.name}`, width: 122, height: 122, x: item.x, y: item.y + 26, fill: new Color(255, 244, 205, 238), border: new Color(188, 134, 76, 255), borderSize: 4 });
+    this.addRect({ name: `${item.name}_Icon`, width: 100, height: 100, x: item.x, y: item.y + 26, fill: item.color });
+    this.addText({ name: `${item.name}_Subtitle`, value: item.subtitle, x: item.x, y: item.y - 56, width: 144, height: 30, fontSize: 23, color: UIColors.textBrown });
+    this.addButton(`${item.name}_Buy`, item.price, item.x, item.y - 110, 174, 54, UIColors.successGreen, UIColors.woodStroke, 23);
   }
 
   private updateBattleLiveState(): void {
@@ -2091,19 +2102,24 @@ export class UISkeletonBuilder extends BaseUIComponent {
   }
 
   private addSettingsRow(key: string, title: string, value: string, y: number): void {
-    this.addRect({ name: `Settings_Row_${key}`, width: 620, height: 88, x: 0, y, fill: new Color(255, 234, 191, 255), border: new Color(146, 91, 48, 255), borderSize: 4 });
+    this.addRect({ name: `Settings_Row_${key}`, width: 620, height: 62, x: 0, y, fill: new Color(255, 234, 191, 255), border: new Color(146, 91, 48, 255), borderSize: 4 });
     const iconLabel: Record<string, string> = {
       Music: '♪',
       Sfx: '♪',
       Vibrate: '▣',
       PowerSave: '叶',
-      Privacy: '文',
+      ExchangeCode: '礼',
+      UserAgreement: '文',
+      PrivacyPolicy: '盾',
+      HelpCenter: '?',
       Service: '耳',
     };
     const isToggle = value === '开启' || value === '关闭';
-    this.addRect({ name: `Settings_Icon_${key}`, width: 46, height: 46, x: -266, y, fill: isToggle ? UIColors.highlightGold : UIColors.actionBlue, border: UIColors.woodStroke, borderSize: 3, label: iconLabel[key] ?? '设', fontSize: 25, textColor: UIColors.textBrown, outline: true });
-    this.addText({ name: `Settings_Title_${key}`, value: title, x: -56, y, width: 330, height: 38, fontSize: 28, color: UIColors.textBrown, align: 'left' });
-    this.addButton(`Button_Settings_${key}`, value, 226, y, isToggle ? 122 : 142, 56, isToggle ? (value === '开启' ? UIColors.successGreen : UIColors.woodLight) : UIColors.actionBlue, UIColors.woodStroke, 23);
+    const actionWidth = isToggle ? 122 : value.length > 4 ? 170 : 142;
+    const actionFontSize = isToggle ? 23 : value.length > 4 ? 20 : 22;
+    this.addRect({ name: `Settings_Icon_${key}`, width: 40, height: 40, x: -268, y, fill: isToggle ? UIColors.highlightGold : UIColors.actionBlue, border: UIColors.woodStroke, borderSize: 3, label: iconLabel[key] ?? '设', fontSize: 22, textColor: UIColors.textBrown, outline: true });
+    this.addText({ name: `Settings_Title_${key}`, value: title, x: -56, y, width: 330, height: 34, fontSize: 26, color: UIColors.textBrown, align: 'left' });
+    this.addButton(`Button_Settings_${key}`, value, 226, y, actionWidth, 46, isToggle ? (value === '开启' ? UIColors.successGreen : UIColors.woodLight) : UIColors.actionBlue, UIColors.woodStroke, actionFontSize);
   }
 
   private addButtonBehavior(node: Node, actionName: string): void {
@@ -2145,7 +2161,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Button_PauseHome') || name.includes('Button_DefeatHome') || name.includes('Button_RewardConfirm')) return 'home';
     if (name.includes('Button_DefeatUpgrade')) return 'backpack';
     if (name.includes('Button_MailDetail')) return 'mail';
-    if (name.includes('Button_PolicyClose') || name.includes('Button_PolicyDisagree')) return 'login';
+    if (name.includes('Button_PolicyClose') || name.includes('Button_PolicyDisagree')) return SceneRouter.instance.current.params?.from === 'settings' ? 'settings' : 'login';
     if (name.includes('Button_ConfirmClose') || name.includes('Button_ConfirmCancel') || name.includes('Button_ConfirmOk')) return 'home';
     if (name === 'Button_Merge') return SaveManager.instance.load().settings.mergeGuideSeen ? 'merge' : 'mergeGuide';
     if (name.includes('Button_MergeGuideConfirm')) return 'backpack';
@@ -2187,7 +2203,12 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return true;
     }
 
-    if (name.includes('Button_MergeConfirm') || name.includes('Button_AutoMerge')) {
+    if (name.includes('Button_AutoMerge')) {
+      eventBus.emit(GameEvents.BattleAutoMergeToggleRequested, {});
+      return true;
+    }
+
+    if (name.includes('Button_MergeConfirm')) {
       return this.reportActionResult(gameLogic.autoMergeAll(), '合成完成，背包已更新');
     }
 
@@ -2271,7 +2292,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     }
 
     if (name.includes('Button_SkillChoiceAutoMerge')) {
-      this.showToast('自动合成已开启，本轮战斗会保留该设置');
+      eventBus.emit(GameEvents.BattleAutoMergeToggleRequested, {});
       return true;
     }
 
@@ -2416,8 +2437,23 @@ export class UISkeletonBuilder extends BaseUIComponent {
       return true;
     }
 
-    if (name.includes('Button_Settings_Privacy')) {
-      void SceneRouter.instance.go('policyModal');
+    if (name.includes('Button_Settings_ExchangeCode')) {
+      this.showToast('兑换码请关注正式活动公告');
+      return true;
+    }
+
+    if (name.includes('Button_Settings_UserAgreement') || name.includes('Button_Settings_PrivacyPolicy')) {
+      void SceneRouter.instance.go('policyModal', { from: 'settings', payload: { document: name.includes('UserAgreement') ? 'userAgreement' : 'privacyPolicy' } });
+      return true;
+    }
+
+    if (name.includes('Button_Settings_HelpCenter')) {
+      this.showToast('帮助中心：完成战斗、整理背包、领取任务奖励');
+      return true;
+    }
+
+    if (name.includes('Button_Settings_Service')) {
+      this.showToast('客服将在微信平台能力接入后打开');
       return true;
     }
 
@@ -2627,7 +2663,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     };
     const settingKey = settingMap[key];
     if (!settingKey) {
-      this.showToast(key === 'Privacy' ? '用户协议与隐私政策入口已保留' : '客服与反馈入口已保留');
+      this.showToast('该设置项无需切换');
       return true;
     }
 
@@ -3105,7 +3141,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Button_ResultAction') || name.includes('Button_RewardDouble') || name.includes('Button_PetDetailDeploy') || name.includes('Button_PetLevelUp') || name.includes('Button_MailDetailClaim') || name.includes('Button_MailClaimAll') || name.includes('Button_AchievementClaimAll')) return 'rt_btn_green';
     if (name.includes('Button_PauseToggleOn')) return 'rt_btn_green';
     if (name.includes('Button_PauseToggleOff')) return 'rt_btn_brown';
-    if (name.includes('Button_Settings_Privacy') || name.includes('Button_Settings_Service')) return 'rt_btn_blue';
+    if (name.includes('Button_Settings_ExchangeCode') || name.includes('Button_Settings_UserAgreement') || name.includes('Button_Settings_PrivacyPolicy') || name.includes('Button_Settings_HelpCenter') || name.includes('Button_Settings_Service')) return 'rt_btn_blue';
     if (name.includes('Button_Settings_')) return 'rt_btn_green';
     if (name.includes('Button_RefreshShop') || name.includes('Buy')) return 'rt_btn_green';
     if (name.includes('Button_BackHome') || name.includes('Button_Refresh') || name.includes('Button_PauseRestart') || name.includes('Button_DefeatUpgrade') || name.includes('Button_PetDetailBackList') || name.includes('Button_MailDetailReply')) return 'rt_btn_blue';
@@ -3209,7 +3245,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Button_RefreshShop') || name.includes('Buy')) return UIAssetKeys.buttons.green;
     if (name.includes('Button_PauseToggleOn')) return UIAssetKeys.buttons.green;
     if (name.includes('Button_PauseToggleOff')) return UIAssetKeys.buttons.brown;
-    if (name.includes('Button_Settings_Privacy') || name.includes('Button_Settings_Service')) return UIAssetKeys.buttons.blue;
+    if (name.includes('Button_Settings_ExchangeCode') || name.includes('Button_Settings_UserAgreement') || name.includes('Button_Settings_PrivacyPolicy') || name.includes('Button_Settings_HelpCenter') || name.includes('Button_Settings_Service')) return UIAssetKeys.buttons.blue;
     if (name.includes('Button_Settings_')) return UIAssetKeys.buttons.green;
     if (name.includes('Button_BackHome') || name.includes('Button_Refresh')) return UIAssetKeys.buttons.blue;
     if (name.includes('Button_Stage') || name.includes('Button_Merge') || name.includes('Button_BackpackClose') || name.includes('Button_ShopBack') || name.includes('Button_Back_') || name.includes('Button_Close_') || name.includes('Button_Help_')) return UIAssetKeys.buttons.brown;

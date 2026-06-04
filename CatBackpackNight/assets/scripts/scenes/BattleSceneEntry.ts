@@ -18,6 +18,7 @@ export class BattleSceneEntry extends BaseSceneEntry {
   private readonly powerSavingUiIntervalSec = 0.2;
   private unsubscribeSkillApply: (() => void) | null = null;
   private unsubscribeSkillReroll: (() => void) | null = null;
+  private unsubscribeAutoMergeToggle: (() => void) | null = null;
 
   protected onSceneReady(): void {
     const existingBattle = gameLogic.getActiveBattleStart();
@@ -41,6 +42,7 @@ export class BattleSceneEntry extends BaseSceneEntry {
   protected onDestroy(): void {
     this.unsubscribeSkillApply?.();
     this.unsubscribeSkillReroll?.();
+    this.unsubscribeAutoMergeToggle?.();
   }
 
   protected update(deltaSec: number): void {
@@ -128,12 +130,29 @@ export class BattleSceneEntry extends BaseSceneEntry {
   private bindSkillChoiceEvents(): void {
     this.unsubscribeSkillApply?.();
     this.unsubscribeSkillReroll?.();
+    this.unsubscribeAutoMergeToggle?.();
     this.unsubscribeSkillApply = eventBus.on<{ index?: number }>(GameEvents.SkillChoiceApplyRequested, (payload) => {
       this.applySkillChoice(payload?.index ?? 0);
     });
     this.unsubscribeSkillReroll = eventBus.on<{ cost?: number }>(GameEvents.SkillChoiceRerollRequested, (payload) => {
       this.rerollSkillChoices(payload?.cost ?? 20);
     });
+    this.unsubscribeAutoMergeToggle = eventBus.on(GameEvents.BattleAutoMergeToggleRequested, () => {
+      this.toggleBattleAutoMerge();
+    });
+  }
+
+  private toggleBattleAutoMerge(): void {
+    if (!this.session) {
+      this.uiManager?.showToast('battle session missing');
+      return;
+    }
+
+    const enabled = !this.session.state.autoMergeEnabled;
+    this.session.setAutoMerge(enabled);
+    this.uiManager?.showToast(enabled ? '自动合成已开启' : '自动合成已关闭');
+    this.uiManager?.updateBattleState(this.session.state);
+    void SceneRouter.instance.go(SceneRouter.instance.currentRoute === 'skillChoice' ? 'skillChoice' : 'battle');
   }
 
   private applySkillChoice(index: number): void {

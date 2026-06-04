@@ -6,8 +6,10 @@ const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 const read = (...segments) => fs.readFileSync(path.join(projectRoot, ...segments), 'utf8');
 
 const gameTypes = read('assets', 'scripts', 'data', 'GameTypes.ts');
+const gameEvents = read('assets', 'scripts', 'game', 'GameEvents.ts');
 const routeConfig = read('assets', 'scripts', 'configs', 'RouteConfig.ts');
 const uiBuilder = read('assets', 'scripts', 'ui', 'UISkeletonBuilder.ts');
+const battleScene = read('assets', 'scripts', 'scenes', 'BattleSceneEntry.ts');
 const baseScene = read('assets', 'scripts', 'scenes', 'BaseSceneEntry.ts');
 const screenshotDir = path.join(projectRoot, 'tmp', 'final_mobile_pages_after_ui_pass');
 
@@ -96,13 +98,13 @@ const pageContracts = {
   login: ['Button_StartGame', 'Button_ToggleAgreement', 'Button_PolicyAgree', "SceneRouter.instance.go('home')"],
   home: ['TopEntry_DailyTask', 'TopEntry_Mail', 'LeftEntry_Backpack', 'LeftEntry_Shop', 'Button_StartBattle', "NavButton_merge')) return 'merge'"],
   battlePrepare: ['BattlePrepare_HeroCat', 'Button_Back_BattlePrepare', 'Button_Close_BattlePrepare', 'Button_StartBattle', 'Button_StagePrev', 'Button_StageNext', 'gameLogic.selectBattleWave', 'gameLogic.startBattle()', "SceneRouter.instance.go('battle')", "return 'home'"],
-  battle: ['Button_BattlePause', "'Button_BattlePause')) return 'pauseModal'", 'Button_AutoMerge', 'updateBattleLiveState'],
+  battle: ['Button_BattlePause', "'Button_BattlePause')) return 'pauseModal'", 'Button_AutoMerge', 'GameEvents.BattleAutoMergeToggleRequested', 'updateBattleLiveState'],
   merge: ['Button_MergeConfirm', 'gameLogic.autoMergeAll()', "this.addBottomNav('merge')"],
   mergeGuide: ['MergeGuide_Modal', 'Button_MergeGuideConfirm', 'Button_MergeGuideHelp', 'settings.mergeGuideSeen', 'draft.settings.mergeGuideSeen = true'],
   explore: ['Explore_MapPanel', 'Button_ExploreStart', 'Explore_EnergyCost', 'Explore_RewardPreview', 'Explore_DailyState', 'gameLogic.claimExploreReward'],
   guild: ['Guild_MainPanel', 'Button_GuildCheckIn', 'Button_GuildHelp', 'Guild_CheckInState', 'Guild_HelpState', 'gameLogic.claimGuildCheckIn', 'gameLogic.claimGuildHelp'],
   backpack: ['Button_Merge', 'Button_OpenChest', 'Button_BackpackSort', 'gameLogic.openChest()'],
-  shop: ['Button_RefreshShopSmall', 'buyShopGoodsFromButton', 'Button_ShopAddCurrency', 'gameLogic.refreshShop'],
+  shop: ['Shop_GoodsGridPanel', 'Shop_RefreshPanel', 'ShopItemIconFrame', 'Button_RefreshShopSmall', 'buyShopGoodsFromButton', 'Button_ShopAddCurrency', 'gameLogic.refreshShop'],
   pet: ['Button_PetSelect_', 'Button_PetLevelUp', 'Button_PetDeploy', 'gameLogic.upgradePet'],
   petDetail: ['Button_PetDetailUpgrade', 'Button_PetDetailDeploy', 'Button_PetDetailBackList', "Button_PetDetailBackList') || name.includes('Button_PetDetailDeploy')) return 'pet'"],
   talent: ['Button_TalentSelect_', 'Button_TalentLearn', 'Button_TalentReset', 'gameLogic.upgradeTalent'],
@@ -110,12 +112,12 @@ const pageContracts = {
   achievement: ['Button_AchievementClaim_', 'Button_AchievementClaimAll', 'gameLogic.claimAchievement', 'gameLogic.claimAllAchievements'],
   mail: ['Button_MailOpen_', 'Button_MailClaim_', 'Button_MailClaimAll', 'Button_MailDeleteAll', 'gameLogic.claimAllMails'],
   mailDetail: ['Button_MailDetailClaim', 'Button_MailDetailDelete', 'Button_MailDetailReply', 'getSelectedMail'],
-  settings: ['Button_Settings_Privacy', 'Settings_VersionPanel', 'versionConfig.appVersion', 'Button_SettingsLogout', 'toggleSettingFromButton', 'SaveManager.instance.reset()'],
+  settings: ['Button_Settings_ExchangeCode', 'Button_Settings_UserAgreement', 'Button_Settings_PrivacyPolicy', 'Button_Settings_HelpCenter', 'Button_Settings_Service', 'Settings_VersionPanel', 'versionConfig.appVersion', 'Button_SettingsLogout', 'toggleSettingFromButton', 'SaveManager.instance.reset()'],
   policyModal: ['Policy_ScrollTextArea', 'Button_PolicyAgree', 'Button_PolicyDisagree', 'Button_PolicyClose'],
   confirmModal: ['Confirm_Modal', 'Button_ConfirmCancel', 'Button_ConfirmOk', 'Button_ConfirmClose'],
   toastModal: ['ToastCard_Info', 'ToastCard_Success', 'ToastCard_Warning', 'ToastCard_Error'],
   pauseModal: ['Button_PauseContinue', 'Button_PauseRestart', 'Button_PauseHome', "SceneRouter.instance.go('home')"],
-  skillChoice: ['Button_SkillChoiceClose', 'Button_RefreshVideo', 'Button_SkillChoiceAutoMerge', '_Choose', 'skillChoiceIds', 'GameEvents.SkillChoiceRerollRequested', 'GameEvents.SkillChoiceApplyRequested'],
+  skillChoice: ['Button_SkillChoiceClose', 'Button_RefreshVideo', 'Button_SkillChoiceAutoMerge', '_Choose', 'skillChoiceIds', 'GameEvents.SkillChoiceRerollRequested', 'GameEvents.SkillChoiceApplyRequested', 'GameEvents.BattleAutoMergeToggleRequested'],
   victory: ['Button_RewardDouble', 'Button_RewardConfirm', 'Reward_Chest_rt_item_chest', "SceneRouter.instance.go('home')"],
   defeat: ['Button_DefeatRetry', 'Button_DefeatUpgrade', 'Button_DefeatHome', "SceneRouter.instance.go('battlePrepare')"],
 };
@@ -160,6 +162,10 @@ for (const [route, tokens] of Object.entries(pageContracts)) {
     requireIncludes(uiBuilder, token, `Page function contract ${route}`);
   }
 }
+
+requireIncludes(gameEvents, 'BattleAutoMergeToggleRequested', 'Battle auto-merge event contract');
+requireIncludes(battleScene, 'BattleAutoMergeToggleRequested', 'BattleScene auto-merge listener contract');
+requireIncludes(battleScene, 'toggleBattleAutoMerge', 'BattleScene auto-merge toggle contract');
 
 for (const forbidden of [
   "pet: () => this.buildPlaceholder",
