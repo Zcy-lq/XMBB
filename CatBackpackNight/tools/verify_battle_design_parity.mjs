@@ -49,12 +49,26 @@ assert.match(
   /private buildBattle\(\): void[\s\S]*Battle_SideAuto[\s\S]*Battle_SideSpeed[\s\S]*Battle_SideRetreat/,
   'battle page should include the design side controls for auto, speed, and retreat',
 );
+assert.match(
+  source,
+  /getBattleWaveMaxSpawn\(battleState\.wave\)/,
+  'battle kill counter should compare defeated monsters against the configured wave total, not only spawned monsters',
+);
+assert.doesNotMatch(
+  source,
+  /Battle_KillCounter', `击败 \$\{battleState\.defeatedMonsters\}\/\$\{battleState\.spawnedMonsters\}`/,
+  'battle kill counter should not make an in-progress wave look completed when all currently spawned monsters are dead',
+);
 
 assert.match(
   source,
   /battleLaneStartX[\s\S]*battleLaneEndX[\s\S]*laneEndX \+ monster\.x \* \(laneStartX - laneEndX\)/,
   'battle monsters should project model x=1..0 from a right-side entrance toward the camp danger line',
 );
+assert.match(source, /const battleLaneStartX = 430;/, 'battle monsters should spawn from offscreen right, not inside the visible middle field');
+assert.match(source, /const battleLaneEndX = -118;/, 'battle monsters should advance to a clear camp danger line near the hero');
+assert.match(source, /Battle_EntrancePortal/, 'battle field should show a right-side monster entrance, not only static placed enemies');
+assert.match(source, /Battle_EntranceWarning/, 'battle field should show the monster entry lane as active pressure');
 assert.doesNotMatch(
   source,
   /private syncBattleMonster[\s\S]*28 \+ monster\.x \* 126/,
@@ -77,11 +91,24 @@ assert.doesNotMatch(
 );
 assert.match(source, /Battle_HeroCommandArm_Live/, 'battle hero should include a command arm instead of body bobbing');
 assert.match(source, /Battle_HeroMuzzleFlash_Live/, 'battle hero should show a local muzzle flash when attacking');
+assert.match(source, /const battleHeroArmY = 150;/, 'battle hero command arm should have a grounded fixed y position');
+assert.doesNotMatch(
+  source,
+  /Battle_HeroCommandArm_Live[^\n]*battleState\.elapsedSeconds|Battle_HeroCommandArm_Live[^\n]*commandLean/,
+  'battle hero command arm should not wave up and down while commanding',
+);
 assert.match(
   source,
   /battleMuzzleX[\s\S]*battleMuzzleY[\s\S]*originX = battleMuzzleX[\s\S]*originY = battleMuzzleY/,
   'battle attack visuals should originate from the grounded hero weapon position',
 );
+assert.doesNotMatch(
+  source,
+  /private getBattleHeroMuzzlePosition[\s\S]*?return \{[\s\S]*elapsedSeconds[\s\S]*?\};/,
+  'battle hero muzzle position should not bob vertically with elapsed time',
+);
+assert.match(source, /_AdvanceShadow/, 'battle monsters should render a ground advance shadow to make slow pushing readable');
+assert.match(source, /_ThreatGlow/, 'battle monsters should render growing threat pressure as they approach camp');
 for (const fieldPrimitive of ['Battle_AdvanceLane', 'Battle_CampDanger', 'Battle_RightEntranceMist']) {
   assert.match(
     source,

@@ -460,6 +460,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     const secondsLeft = battleState ? battleState.secondsLeft : 45;
     const campHp = battleState ? battleState.campHp : 10;
     const campHpMax = battleState ? battleState.campHpMax : 10;
+    const waveMonsterTotal = this.getBattleWaveMaxSpawn(wave);
     const autoMergeEnabled = battleState?.autoMergeEnabled ?? true;
     const hpRatio = campHpMax > 0 ? campHp / campHpMax : 0;
 
@@ -468,6 +469,9 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addRect({ name: 'Battle_CampDangerMist', width: 38, height: 610, x: -96, y: 74, fill: new Color(255, 84, 52, 34) });
     this.addRect({ name: 'Battle_CampDangerLine', width: 4, height: 560, x: -96, y: 74, fill: new Color(255, 232, 150, 56) });
     this.addRect({ name: 'Battle_RightEntranceMist', width: 84, height: 620, x: 344, y: 70, fill: new Color(38, 77, 92, 46) });
+    this.addRect({ name: 'Battle_EntrancePortal', width: 32, height: 520, x: 356, y: 72, fill: new Color(70, 150, 184, 58) });
+    this.addRect({ name: 'Battle_EntranceWarning', width: 74, height: 6, x: 318, y: 286, fill: new Color(255, 216, 96, 92) });
+    this.addRect({ name: 'Battle_EntranceWarningEcho', width: 118, height: 4, x: 296, y: 268, fill: new Color(255, 216, 96, 48) });
     [222, 142, 64, -18, -98].forEach((laneY, index) => {
       this.addRect({ name: `Battle_AdvanceLane_${index + 1}`, width: 552, height: 4, x: 118, y: laneY - 56, fill: new Color(255, 225, 138, index % 2 === 0 ? 34 : 24) });
     });
@@ -478,7 +482,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.addRect({ name: 'Battle_HPHeart', width: 58, height: 58, x: -160, y: 487, fill: UIColors.warningRed, border: UIColors.woodStroke, borderSize: 3, label: '♥', fontSize: 32 });
     this.addProgressBar('Battle_HPBar', 30, 487, 300, 32, hpRatio, UIColors.successGreen);
     this.addText({ name: 'Battle_HPText', value: `${Math.ceil(campHp)} / ${Math.ceil(campHpMax)}`, x: 30, y: 487, width: 160, height: 34, fontSize: 26, color: UIColors.whiteText, outline: true });
-    this.addText({ name: 'Battle_KillCounter', value: `击败 ${battleState?.defeatedMonsters ?? 0}/${battleState?.spawnedMonsters ?? 0}`, x: -224, y: 532, width: 180, height: 32, fontSize: 24, color: UIColors.highlightGold, outline: true });
+    this.addText({ name: 'Battle_KillCounter', value: `击败 ${battleState?.defeatedMonsters ?? 0}/${waveMonsterTotal}`, x: -224, y: 532, width: 180, height: 32, fontSize: 24, color: UIColors.highlightGold, outline: true });
     this.addBattleSideControls(autoMergeEnabled);
     this.addBattlePetSkillRow();
     this.addBattleItemQuickBar();
@@ -1504,7 +1508,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     this.setLabelText('Battle_WavePlate_Border', `第 ${battleState.wave} 波`);
     this.setLabelText('Battle_TimerPlate_Border', `⏱ ${this.formatSeconds(battleState.secondsLeft)}`);
     this.setLabelText('Battle_HPText', `${Math.ceil(battleState.campHp)} / ${Math.ceil(battleState.campHpMax)}`);
-    this.setLabelText('Battle_KillCounter', `击败 ${battleState.defeatedMonsters}/${battleState.spawnedMonsters}`);
+    this.setLabelText('Battle_KillCounter', `击败 ${battleState.defeatedMonsters}/${this.getBattleWaveMaxSpawn(battleState.wave)}`);
     this.replaceProgressFill('Battle_HPBar', 30, 487, 300, 32, hpRatio, UIColors.successGreen);
 
     const layer = this.getBattleLiveLayer();
@@ -1617,17 +1621,17 @@ export class UISkeletonBuilder extends BaseUIComponent {
 
   private syncBattleHero(layer: Node, keep: Set<string>, battleState: BattleSessionState): void {
     const attackImpulse = this.getBattleHeroAttackImpulse(battleState);
-    const commandLean = Math.sin(battleState.elapsedSeconds * 4.2) * 3;
     const swing = Math.sin(battleState.elapsedSeconds * 8.4) * 8;
     const heroX = -266 - attackImpulse * 4;
     const heroY = 122;
+    const battleHeroArmY = 150;
     const { x: battleMuzzleX, y: battleMuzzleY } = this.getBattleHeroMuzzlePosition(battleState);
     this.syncLiveRect(layer, keep, 'Battle_HeroShadow_Live', 198 + attackImpulse * 8, 32, -266, 32, new Color(0, 0, 0, 135));
     this.syncLiveRect(layer, keep, 'Battle_HeroAura_Live', 170 + attackImpulse * 10, 190 + attackImpulse * 8, heroX, heroY, new Color(255, 214, 104, 58));
     this.syncLiveRect(layer, keep, 'Battle_HeroBody_Live', 168, 168, heroX, heroY, Color.WHITE, undefined, 24, UIColors.whiteText, 'rt_hero_cat');
     this.syncLiveRect(layer, keep, 'Battle_HeroGlyph_Live', 138, 110, heroX, heroY + 2, new Color(0, 0, 0, 0), '猫', 72, UIColors.whiteText);
     this.syncLiveRect(layer, keep, 'Battle_HeroName_Live', 84, 34, -266, 42, new Color(16, 20, 19, 210), '守夜', 24, UIColors.whiteText);
-    this.syncLiveRect(layer, keep, 'Battle_HeroCommandArm_Live', 86 + attackImpulse * 18, 14 + attackImpulse * 4, -196 + commandLean - attackImpulse * 4, 152 + commandLean, new Color(96, 58, 35, 245));
+    this.syncLiveRect(layer, keep, 'Battle_HeroCommandArm_Live', 86 + attackImpulse * 18, 14 + attackImpulse * 4, -196 - attackImpulse * 6, battleHeroArmY, new Color(96, 58, 35, 245));
     this.syncLiveRect(layer, keep, 'Battle_HeroWeapon_Live', 122 + attackImpulse * 24, 14 + attackImpulse * 5, battleMuzzleX - 38 + swing - attackImpulse * 6, battleMuzzleY, UIColors.highlightGold);
     if (attackImpulse > 0) {
       this.syncLiveRect(layer, keep, 'Battle_HeroMuzzleFlash_Live', 44 + attackImpulse * 38, 44 + attackImpulse * 38, battleMuzzleX, battleMuzzleY, new Color(255, 212, 88, Math.floor(160 * attackImpulse)));
@@ -1641,8 +1645,11 @@ export class UISkeletonBuilder extends BaseUIComponent {
     const elite = monster.monsterId.includes('elite') || monster.hpMax > (config?.baseHp ?? monster.hpMax) * 1.8;
     const name = `Battle_Monster_${this.normalizeNodeKey(monster.uid)}`;
     const deathRatio = monster.alive ? 0 : Math.min(1, (monster.deathAgeSec ?? 0) / 2.4);
+    const advanceRatio = Math.max(0, Math.min(1, 1 - monster.x));
     const alpha = monster.alive ? 250 : Math.max(95, 235 - deathRatio * 140);
     const monsterColor = monster.alive ? this.getMonsterColor(monster.monsterId, elite) : new Color(120, 112, 108, alpha);
+    this.syncLiveRect(layer, keep, `${name}_AdvanceShadow`, 112 + advanceRatio * 96, 16 + advanceRatio * 12, x, laneY - 58, new Color(0, 0, 0, Math.floor(monster.alive ? 92 + advanceRatio * 58 : 72)));
+    this.syncLiveRect(layer, keep, `${name}_ThreatGlow`, size + 42 + advanceRatio * 74, Math.max(18, size * 0.34), x, laneY - 54, new Color(255, 86, 42, Math.floor(advanceRatio * 54)));
     this.syncLiveRect(layer, keep, `${name}_Shadow`, size + 24, 24, x, laneY - 56, new Color(0, 0, 0, monster.alive ? 135 : 80));
     this.syncLiveRect(layer, keep, `${name}_Outline`, size + 12, size + 12, x, bodyY, new Color(14, 16, 18, Math.max(90, alpha - 20)));
     this.syncLiveRect(layer, keep, `${name}_Body`, size, size, x, bodyY, monsterColor, monster.alive ? this.getMonsterGlyph(monster.monsterId) : '×', elite ? 36 : 32);
@@ -1866,8 +1873,8 @@ export class UISkeletonBuilder extends BaseUIComponent {
   }
 
   private getBattleMonsterPosition(monster: BattleSessionState['monsters'][number], index: number, elapsedSeconds: number): { x: number; laneY: number; bodyY: number; size: number } {
-    const battleLaneStartX = 384;
-    const battleLaneEndX = -76;
+    const battleLaneStartX = 430;
+    const battleLaneEndX = -118;
     const laneStartX = battleLaneStartX;
     const laneEndX = battleLaneEndX;
     const advanceX = laneEndX + monster.x * (laneStartX - laneEndX);
@@ -1896,12 +1903,16 @@ export class UISkeletonBuilder extends BaseUIComponent {
     return Math.abs(hash || fallbackIndex) % 5;
   }
 
+  private getBattleWaveMaxSpawn(wave: number): number {
+    const chapterId = gameLogic.getSnapshot().save.progress.chapterId;
+    return gameLogic.repo.getWave(chapterId, wave)?.maxSpawn ?? Math.max(1, wave);
+  }
+
   private getBattleHeroMuzzlePosition(battleState: BattleSessionState): { x: number; y: number } {
     const attackImpulse = this.getBattleHeroAttackImpulse(battleState);
-    const commandLean = Math.sin(battleState.elapsedSeconds * 4.2) * 3;
     return {
       x: -142 + attackImpulse * 14,
-      y: 158 + commandLean,
+      y: 156,
     };
   }
 
@@ -3098,7 +3109,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Battle_Monster')) return undefined;
     if (name.includes('Battle_MonsterHp')) return undefined;
     if (name.includes('Battle_Damage')) return undefined;
-    if (name.includes('Battle_AdvanceLane') || name.includes('Battle_CampDanger') || name.includes('Battle_RightEntranceMist')) return undefined;
+    if (name.includes('Battle_AdvanceLane') || name.includes('Battle_CampDanger') || name.includes('Battle_RightEntranceMist') || name.includes('Battle_Entrance')) return undefined;
     if (name.includes('Battle_HPBar_Fill')) return undefined;
     if (name.includes('BattleWeapon_Live') && !name.includes('rt_battle_weapon_')) return undefined;
 
@@ -3289,7 +3300,7 @@ export class UISkeletonBuilder extends BaseUIComponent {
     if (name.includes('Battle_Monster')) return undefined;
     if (name.includes('Battle_MonsterHp')) return undefined;
     if (name.includes('Battle_Damage')) return undefined;
-    if (name.includes('Battle_AdvanceLane') || name.includes('Battle_CampDanger') || name.includes('Battle_RightEntranceMist')) return undefined;
+    if (name.includes('Battle_AdvanceLane') || name.includes('Battle_CampDanger') || name.includes('Battle_RightEntranceMist') || name.includes('Battle_Entrance')) return undefined;
     if (name.includes('Battle_HPBar_Fill')) return undefined;
     if (name.includes('BattlePrepare_HeroCat_Sprite')) return undefined;
     if (name.includes('BattlePrepare_Enemy_rt_monster_')) return undefined;
