@@ -1,7 +1,7 @@
 import { ClaimableProgressSave, GameSaveData, PetSave, RewardPayload, TalentNodeSave } from '../data/GameTypes';
 import { DailyTaskConfig, PetConfig, PetLevelCostRule, ProgressEventType, TalentNodeConfig } from './GameConfigTypes';
 import { GameConfigRepository } from './GameConfigRepository';
-import { failure, GameLogicResult, success } from './GameLogicResult';
+import { failure, failureFrom, GameLogicResult, success } from './GameLogicResult';
 import {
   getPetBonus,
   getTalentBonus,
@@ -325,18 +325,18 @@ export class ProgressionSystem {
 
     const materialResult = removeInventoryItem(save, this.repo.configs.pets.materialItemId, cost.petMaterial, 1, 'material');
     if (!materialResult.ok) {
-      return materialResult as GameLogicResult<PetUpgradeResult>;
+      return failureFrom<PetUpgradeResult>(materialResult);
     }
     if (cost.gold > 0) {
       const spendGold = spendCurrency(save, { currency: 'gold', amount: cost.gold });
       if (!spendGold.ok) {
-        return spendGold as GameLogicResult<PetUpgradeResult>;
+        return failureFrom<PetUpgradeResult>(spendGold);
       }
     }
     if (cost.blueGem > 0) {
       const spendBlueGem = spendCurrency(save, { currency: 'blueGem', amount: cost.blueGem });
       if (!spendBlueGem.ok) {
-        return spendBlueGem as GameLogicResult<PetUpgradeResult>;
+        return failureFrom<PetUpgradeResult>(spendBlueGem);
       }
     }
 

@@ -1,7 +1,7 @@
 import { GameSaveData, RewardPayload } from '../data/GameTypes';
 import { BattleStatus } from './BattleSessionModel';
 import { GameConfigRepository } from './GameConfigRepository';
-import { failure, GameLogicResult, success } from './GameLogicResult';
+import { failure, failureFrom, GameLogicResult, success } from './GameLogicResult';
 import {
   ensureProgressRuntimeFields,
   getCurrency,
@@ -78,7 +78,7 @@ export class BattleRewardSystem {
     if (energyCost > 0) {
       const spend = spendCurrency(save, { currency: 'energy', amount: energyCost });
       if (!spend.ok) {
-        return spend as GameLogicResult<BattleStartResult>;
+        return failureFrom<BattleStartResult>(spend);
       }
     }
     save.progress.currentWave = wave;

@@ -1,7 +1,7 @@
 import { GameSaveData, RewardPayload } from '../data/GameTypes';
 import { ShopGoodsConfig } from './GameConfigTypes';
 import { GameConfigRepository } from './GameConfigRepository';
-import { failure, GameLogicResult, success } from './GameLogicResult';
+import { failure, failureFrom, GameLogicResult, success } from './GameLogicResult';
 import {
   ensureProgressRuntimeFields,
   getCurrency,
@@ -14,7 +14,7 @@ import {
 } from './GameLogicUtils';
 import { ProgressionSystem } from './ProgressionSystem';
 
-export type AdCompletionState = 'success' | 'cancel' | 'no_fill' | 'error' | 'not_requested';
+export type AdCompletionState = 'success' | 'cancel' | 'cancelled' | 'no_fill' | 'error' | 'not_requested';
 
 export interface ShopPurchaseOptions {
   adState?: AdCompletionState;
@@ -61,16 +61,16 @@ export class ShopSystem {
 
     const paymentCheck = this.checkPayment(save, goods, options.adState ?? 'not_requested');
     if (!paymentCheck.ok) {
-      return paymentCheck as GameLogicResult<ShopPurchaseResult>;
+      return failureFrom<ShopPurchaseResult>(paymentCheck);
     }
     const rewardCheck = hasInventorySpaceForRewards(save, goods.rewards, this.repo);
     if (!rewardCheck.ok) {
-      return rewardCheck as GameLogicResult<ShopPurchaseResult>;
+      return failureFrom<ShopPurchaseResult>(rewardCheck);
     }
 
     const pay = this.applyPayment(save, goods, options.adState ?? 'not_requested');
     if (!pay.ok) {
-      return pay as GameLogicResult<ShopPurchaseResult>;
+      return failureFrom<ShopPurchaseResult>(pay);
     }
     const grant = grantRewards(save, goods.rewards, this.repo);
     if (!grant.ok) {
@@ -100,7 +100,7 @@ export class ShopSystem {
       }
       const pay = spendCurrency(save, this.repo.configs.shop.manualRefreshCost);
       if (!pay.ok) {
-        return pay as GameLogicResult<ShopRefreshResult>;
+        return failureFrom<ShopRefreshResult>(pay);
       }
     }
 

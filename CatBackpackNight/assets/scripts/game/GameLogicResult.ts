@@ -29,3 +29,7 @@ export function success<T = void>(data?: T, message = 'ok'): GameLogicResult<T> 
 export function failure<T = void>(reason: GameLogicErrorCode, message: string, data?: T): GameLogicResult<T> {
   return { ok: false, reason, message, data };
 }
+
+export function failureFrom<T>(result: GameLogicResult): GameLogicResult<T> {
+  return failure<T>(result.reason ?? 'invalid_input', result.message);
+}

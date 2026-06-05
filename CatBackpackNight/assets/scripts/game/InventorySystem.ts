@@ -1,6 +1,6 @@
 import { GameSaveData, InventoryItemSave, RewardPayload } from '../data/GameTypes';
 import { GameConfigRepository } from './GameConfigRepository';
-import { failure, GameLogicResult, success } from './GameLogicResult';
+import { failure, failureFrom, GameLogicResult, success } from './GameLogicResult';
 import {
   addInventoryItem,
   countInventorySlots,
@@ -59,7 +59,7 @@ export class InventorySystem {
 
     const result = removeInventoryItem(save, itemId, 2, level, 'weapon');
     if (!result.ok) {
-      return result as GameLogicResult<MergeResult>;
+      return failureFrom<MergeResult>(result);
     }
     addInventoryItem(save, itemId, 'weapon', 1, level + 1);
     save.stats.mergeCount += 1;
@@ -113,16 +113,16 @@ export class InventorySystem {
     const rewards = [picked.reward];
     const space = hasInventorySpaceForRewards(save, rewards, this.repo);
     if (!space.ok) {
-      return space as GameLogicResult<OpenChestResult>;
+      return failureFrom<OpenChestResult>(space);
     }
 
     const cost = spendCurrency(save, chest.openCost);
     if (!cost.ok) {
-      return cost as GameLogicResult<OpenChestResult>;
+      return failureFrom<OpenChestResult>(cost);
     }
     const consume = removeInventoryItem(save, chestId, 1, 1, 'chest');
     if (!consume.ok) {
-      return consume as GameLogicResult<OpenChestResult>;
+      return failureFrom<OpenChestResult>(consume);
     }
     const grant = grantRewards(save, rewards, this.repo);
     if (!grant.ok) {

@@ -50,4 +50,59 @@ assert.match(
   'battle page should include the design side controls for auto, speed, and retreat',
 );
 
+assert.match(
+  source,
+  /battleLaneStartX[\s\S]*battleLaneEndX[\s\S]*laneEndX \+ monster\.x \* \(laneStartX - laneEndX\)/,
+  'battle monsters should project model x=1..0 from a right-side entrance toward the camp danger line',
+);
+assert.doesNotMatch(
+  source,
+  /private syncBattleMonster[\s\S]*28 \+ monster\.x \* 126/,
+  'battle monster rendering should not compress monster advance into a tiny center band',
+);
+assert.match(
+  source,
+  /private syncBattleMonster[\s\S]*this\.getBattleMonsterPosition\(monster, index, elapsedSeconds\)/,
+  'battle monster body should use the shared lane projection helper',
+);
+assert.match(
+  source,
+  /private syncBattleDamageNumber[\s\S]*this\.getBattleMonsterPosition\(monster, Math\.max\(0, monsterIndex\), battleState\.elapsedSeconds\)/,
+  'battle damage numbers should follow the same live monster position as the body and hit effects',
+);
+assert.doesNotMatch(
+  source,
+  /private syncBattleHero[\s\S]*const bob = Math\.sin[\s\S]*heroY = [^;]*bob/s,
+  'battle hero body should stay grounded and must not bob vertically like an idle menu mascot',
+);
+assert.match(source, /Battle_HeroCommandArm_Live/, 'battle hero should include a command arm instead of body bobbing');
+assert.match(source, /Battle_HeroMuzzleFlash_Live/, 'battle hero should show a local muzzle flash when attacking');
+assert.match(
+  source,
+  /battleMuzzleX[\s\S]*battleMuzzleY[\s\S]*originX = battleMuzzleX[\s\S]*originY = battleMuzzleY/,
+  'battle attack visuals should originate from the grounded hero weapon position',
+);
+for (const fieldPrimitive of ['Battle_AdvanceLane', 'Battle_CampDanger', 'Battle_RightEntranceMist']) {
+  assert.match(
+    source,
+    new RegExp(`name\\.includes\\('${fieldPrimitive}'\\)[\\s\\S]*?return undefined`),
+    `battle field primitive ${fieldPrimitive} should not be replaced by the generic dark panel runtime sprite`,
+  );
+}
+assert.doesNotMatch(
+  source,
+  /name: 'Battle_CampDangerLine'[^\n]*border:/,
+  'battle camp danger line should render as a subtle primitive, not a bordered debug axis',
+);
+assert.match(
+  source,
+  /private getBattleLiveLayer\(\): Node[\s\S]*this\.placeBattleLiveLayer\(.*layer.*\)/,
+  'battle live layer should be deliberately placed between field art and HUD',
+);
+assert.doesNotMatch(
+  source,
+  /Battle_LiveLayer[\s\S]*setSiblingIndex\(999\)/,
+  'battle live layer must not sit above side controls and bottom HUD',
+);
+
 console.log('[verify_battle_design_parity] battle page design parity contract is present.');

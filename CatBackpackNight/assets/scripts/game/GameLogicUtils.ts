@@ -1,7 +1,7 @@
 import { CurrencyKey, GameSaveData, InventoryItemSave, RewardPayload } from '../data/GameTypes';
 import { BattleBonusType, CurrencyCost, PetConfig, TalentNodeConfig } from './GameConfigTypes';
 import { GameConfigRepository } from './GameConfigRepository';
-import { failure, GameLogicResult, success } from './GameLogicResult';
+import { failure, failureFrom, GameLogicResult, success } from './GameLogicResult';
 
 export type BonusMap = Partial<Record<BattleBonusType, number>>;
 
@@ -133,7 +133,7 @@ export function removeInventoryItem(
 export function grantRewards(save: GameSaveData, rewards: RewardPayload[], repo: GameConfigRepository): GameLogicResult<RewardPayload[]> {
   const spaceResult = hasInventorySpaceForRewards(save, rewards, repo);
   if (!spaceResult.ok) {
-    return spaceResult as GameLogicResult<RewardPayload[]>;
+    return failureFrom<RewardPayload[]>(spaceResult);
   }
 
   for (const reward of rewards) {

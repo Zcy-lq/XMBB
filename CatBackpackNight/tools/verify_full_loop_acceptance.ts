@@ -11,6 +11,8 @@ import { MailSystem } from '../assets/scripts/game/MailSystem';
 import { ProgressionSystem } from '../assets/scripts/game/ProgressionSystem';
 import { ShopSystem } from '../assets/scripts/game/ShopSystem';
 
+declare const process: { exit(code?: number): never };
+
 interface CheckRow {
   step: string;
   passed: boolean;
@@ -277,7 +279,7 @@ const defeatStart = battleRewards.startBattle(defeatSave, defeatWaveBefore);
 const defeatSettlement = battleRewards.settle(defeatSave, {
   battleId: defeatStart.data?.battleId ?? 'full_loop_defeat_battle',
   wave: defeatWaveBefore,
-  status: 'defeat',
+  status: 'fail',
   defeatedMonsters: 1,
 });
 check(
@@ -775,12 +777,12 @@ check(
   didRefreshDaily &&
     !didRefreshAgain &&
     dailyRefreshSave.daily.dateKey === getLocalDateKey(nextDay) &&
-    dailyRefreshSave.daily.freeGoldClaimed === false &&
+    !dailyRefreshSave.daily.freeGoldClaimed &&
     dailyRefreshSave.daily.shopRefreshCount === 0 &&
     dailyRefreshSave.daily.activityClaimedIds.length === 0 &&
-    dailyRefreshSave.daily.exploreClaimed === false &&
-    dailyRefreshSave.daily.guildCheckInClaimed === false &&
-    dailyRefreshSave.daily.guildHelpClaimed === false &&
+    !dailyRefreshSave.daily.exploreClaimed &&
+    !dailyRefreshSave.daily.guildCheckInClaimed &&
+    !dailyRefreshSave.daily.guildHelpClaimed &&
     Object.keys(dailyRefreshSave.daily.shopPurchaseCounts ?? {}).length === 0 &&
     Object.keys(dailyRefreshSave.daily.adPlacementCounts ?? {}).length === 0 &&
     dailyRefreshSave.dailyTasks.every((task) => !task.claimed && task.progress === (task.id === 'daily_login' ? 1 : 0)),

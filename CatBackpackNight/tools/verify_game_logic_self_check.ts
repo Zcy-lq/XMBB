@@ -1,5 +1,7 @@
 import { runGameLogicSelfCheck } from '../assets/scripts/game/GameLogicSelfCheck';
 
+declare const process: { exit(code?: number): never };
+
 const report = runGameLogicSelfCheck();
 const failed = report.checks.filter((item) => !item.passed);
 
